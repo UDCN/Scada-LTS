@@ -2,7 +2,7 @@
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see http://www.gnu.org/licenses/.
 --%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html>
 <%@include file="/WEB-INF/tags/decl.tagf"%>
 <%@attribute name="styles" fragment="true" %>
 <%@attribute name="dwr" %>
@@ -28,27 +28,29 @@
 
 <html>
 <head>
-  <title><c:choose>
-    <c:when test="${!empty instanceDescription}">${instanceDescription}</c:when>
-    <c:otherwise><fmt:message key="header.title"/></c:otherwise>
-  </c:choose></title>
-  
+  <title>Supervisorio ScadaBR SMN</title>
+
   <!-- Meta -->
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta charset="utf-8"/>
   <meta http-equiv="content-type" content="application/xhtml+xml;charset=utf-8"/>
-  <meta http-equiv="Content-Style-Type" content="text/css" />  
-  <meta name="Copyright" content="ScadaLTS &copy;2018"/>
-  <meta name="DESCRIPTION" content="ScadaLTS Software"/>
-  <meta name="KEYWORDS" content="ScadaLTS Software"/>
-  
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="Copyright" content="ScadaBR  &copy;2009-2011 Fundação Certi, MCA Sistemas, Unis Sistemas, Conetec. Todos os direitos reservados. <br> &copy;2018 Companhia de aguas e Esgotos do RN - CAERN."/>
+  <meta name="DESCRIPTION" content="Sistema Supervisório SCADABR da CAERN para monitoramento dos sistemas de água e esgoto de Natal/RN"/>
+  <meta name="KEYWORDS" content="ScadaBR CAERN Supervisório Natal"/>
+
   <!-- Style -->
   <link rel="icon" href="images/favicon.ico"/>
   <link rel="shortcut icon" href="images/favicon.ico"/>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
   <link id="pagestyle" href="assets/common.css" type="text/css" rel="stylesheet"/>
+
   <c:forTokens items="${css}" var="cssfile" delims=", ">
     <link href="resources/${cssfile}.css" type="text/css" rel="stylesheet"/>
   </c:forTokens>
   <jsp:invoke fragment="styles"/>
-  
+    <!-- Style -->
+
   <!-- Scripts -->
   <script type="text/javascript">
   	var djConfig = { isDebug: false, extraLocale: ['en-us', 'nl', 'nl-nl', 'ja-jp', 'fi-fi', 'sv-se', 'zh-cn', 'zh-tw','xx'] };
@@ -61,9 +63,9 @@
     <script type="text/javascript" src="resources/jQuery/plugins/${plugin}.js"></script>
   </c:forTokens>
   <script type="text/javascript">
-	var jQuery = $; 
+	var jQuery = $;
 	$ = null;
-  </script> 
+  </script>
   <script type="text/javascript" src="dwr/engine.js"></script>
   <script type="text/javascript" src="dwr/util.js"></script>
   <script type="text/javascript" src="dwr/interface/MiscDwr.js"></script>
@@ -79,7 +81,7 @@
   <c:if test="${!simple}">
     <script type="text/javascript" src="resources/header.js"></script>
     <script type="text/javascript">
-    
+
 	    function loadjscssfile(filename, filetype){
 			if (filetype=="js"){ //if filename is a external JavaScript file
 	    		var fileref=document.createElement('script')
@@ -94,27 +96,27 @@
 			if (typeof fileref!="undefined")
 	    		document.getElementsByTagName("head")[0].appendChild(fileref)
 		};
-    
+
       dwr.util.setEscapeHtml(false);
       <c:if test="${!empty sessionUser}">
         dojo.addOnLoad(mango.header.onLoad);
         dojo.addOnLoad(function() { setUserMuted(${sessionUser.muted}); });
       </c:if>
-      
+
       function setLocale(locale) {
           MiscDwr.setLocale(locale, function() { window.location = window.location });
       }
-      
+
       function setHomeUrl() {
           MiscDwr.setHomeUrl(window.location.href, function() { alert("Home URL saved"); });
       }
-      
+
       function goHomeUrl() {
           MiscDwr.getHomeUrl(function(loc) { window.location = loc; });
       }
 
       function swapStyleSheet(sheet) {
-        document.getElementById("pagestyle").setAttribute("href", sheet); 
+        document.getElementById("pagestyle").setAttribute("href", sheet);
         localStorage.setItem('theme', sheet);
       }
 
@@ -138,109 +140,138 @@
   </c:if>
 </head>
 
+<script>
+    /* When the user clicks on the button,
+    toggle between hiding and showing the dropdown content */
+    function myDropdownFunction() {
+      document.getElementById("myDropdown").classList.toggle("show");
+    }
+
+    function filterFunction() {
+      var input, filter, ul, li, a, i;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      div = document.getElementById("myDropdown");
+      a = div.getElementsByTagName("a");
+      for (i = 0; i < a.length; i++) {
+        if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+          a[i].style.display = "";
+        } else {
+          a[i].style.display = "none";
+        }
+      }
+    }
+</script>
+
 <body>
-<table width="100%" cellspacing="0" cellpadding="0" border="0" id="mainHeader">
-  <tr>
-    <td><img id="logo" src="assets/logo.png" alt="Logo"/></td>
-    <c:if test="${!simple}">
-      <td align="center" width="99%" id="eventsRow">
-        <a href="events.shtm">
-          <span id="__header__alarmLevelDiv" style="display:none;">
-            <img id="__header__alarmLevelImg" src="images/spacer.gif" alt="" border="0" title=""/>
-            <span id="__header__alarmLevelText"></span>
-          </span>
-        </a>
-      </td>
-    </c:if>
-    <c:if test="${!empty instanceDescription}">
-      <td align="right" valign="bottom" class="projectTitle" style="padding:5px; white-space: nowrap;">${instanceDescription}</td>
-    </c:if>
-  </tr>
-</table>
+  <header id="mainHeader" >
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#" style="font-size: 18pt; font-family: Impact, Charcoal, sans-serif; color: black;">Supervisorio ScadaBR Natal/RN</a>
+          <br> Usuário: <b>${sessionUser.username}</b>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <c:if test="${!empty sessionUser}">
+              <li class="active"><a><tag:img png="house" title="header.goHomeUrl" onclick="goHomeUrl()" onmouseover="hideLayer('localeEdit')"/> <br> Home</a></li>
+              <li id="blank">
+                <li id="dropbtn" onclick="myDropdownFunction()" class="dropbtn"><a><tag:img id="Systems" png="modulos" title="header.sistemas"/><br>Sistemas</a></li>
+                <div id="myDropdown" class="dropdown-content">
+                  <input type="text" placeholder="Procurar..." id="myInput" onkeyup="filterFunction()">
+                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=82">CANDELARIA</a>
+                    <a href="http://scadabr.caern.govrn:8080/ScadaBR/views.shtm?viewId=110">DUNAS</a>
+                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=82">SAN VALE</a>
+                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=85">NOVO CAMPO</a>
+                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=104"><f>FELIPE CAMARÃO</f></a>
+                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=106">LAGOA NOVA I</a>
+                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=107">LAGOA NOVA II</a>
+                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=81">PONTA NEGRA</a>
+                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=86">SATÉLITE</a>
+                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=84">PLANALTO</a>
+                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=112">JIQUI</a>
+                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=108">PIRANGI</a>
+                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=109">GUARAPES</a>
+                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=105">NOVA CIDADE</a>
+                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=111">DIX SEPT ROSADO</a>
+                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=111">BOOSTER GMS</a>
+                  </div>
+                </li>
+                <li><a href="reports.shtm" onclick="onClickHelp(this,'reportInstancesMenu')" > <tag:img id="Reports" png="report" title="header.reports"/> <br> Relatorios</a></li>
+                <li><a href="events.shtm" onclick="" > <tag:img id="Alarms" png="flag_white" title="header.alarms"/> <br> Alarmes </a></li>
+                <li><a href="maps.shtm"  > <tag:img id="Maps" png="maps" title="header.maps"/> <br> Mapa </a></li>
+                <li><a href="contact.shtm" ><tag:img id="Contact" png="email" title="header.contact"/> <br> Contato </a></li>
+                <li><a> <tag:img png="full" title="header.full" onclick="full()"/> <br> Full </a></li>
+                <li><a> <tag:img id="userMutedImg" onclick="MiscDwr.toggleUserMuted(setUserMuted)" onmouseover="hideLayer('localeEdit')"/> <br> Som </a></li>
+                <li><a href="logout.htm"><tag:img png="logout" title="header.logout" onmouseover="hideLayer('localeEdit')"/> <br> Sair</a></li>
+              </c:if>
+            </ul>
 
-<c:if test="${!simple}">
-  <table class="navHeader" width="100%" id="subHeader">
-    <tr>
-      <td style="cursor:default" >
-        <c:if test="${!empty sessionUser}">
-          <tag:menuItem href="watch_list.shtm" png="eye" key="header.watchlist"/>
-          <tag:menuItem href="views.shtm" png="icon_view" key="header.views"/>
-          <tag:menuItem href="events.shtm" png="flag_white" key="header.alarms"/>
-          <tag:menuItem href="reports.shtm" png="report" key="header.reports"/>
-                
-          <c:if test="${sessionUser.dataSourcePermission}">
-            <img src="images/menu_separator.png" class="separator"/>
-            <tag:menuItem href="event_handlers.shtm" png="cog" key="header.eventHandlers"/>
-            <tag:menuItem href="data_sources.shtm" png="icon_ds" key="header.dataSources"/>
-            <tag:menuItem href="scheduled_events.shtm" png="clock" key="header.scheduledEvents"/>
-            <tag:menuItem href="compound_events.shtm" png="multi_bell" key="header.compoundEvents"/>
-            <tag:menuItem href="point_links.shtm" png="link" key="header.pointLinks"/>
-            <tag:menuItem href="scripting.shtm" png="script_gear" key="header.scripts"/>
-          </c:if>
-          
-          <img src="images/menu_separator.png" class="separator"/>
-          <tag:menuItem href="users.shtm" png="user" key="header.users"/>
-          
-          <c:if test="${sessionUser.admin}">
-	        <tag:menuItem href="usersProfiles.shtm" png="user_ds" key="header.usersProfiles"/>
-	        <tag:menuItem href="estatisticas.shtm" png="icon_chart" key="header.estatisticas"/>
-	        <tag:menuItem href="funcoes_especiais.shtm" png="plugin" key="header.funcoes_especiais"/>
-	        <tag:menuItem href="pointHierarchySLTS" png="folder_brick" key="header.pointHierarchy"/>
-            <tag:menuItem href="mailing_lists.shtm" png="book" key="header.mailingLists"/>
-            <tag:menuItem href="publishers.shtm" png="transmit" key="header.publishers"/>
-            <tag:menuItem href="maintenance_events.shtm" png="hammer" key="header.maintenanceEvents"/>
-            <tag:menuItem href="system_settings.shtm" png="application_form" key="header.systemSettings"/>
-            <tag:menuItem href="emport.shtm" png="script_code" key="header.emport"/>
-            <tag:menuItem href="sql.shtm" png="script" key="header.sql"/>
-          </c:if>
-          
-          <img src="images/menu_separator.png" class="separator"/>
-          <tag:menuItem href="contato.shtm" png="email" key="header.contato"/>
-          <tag:menuItem href="logout.htm" png="control_stop_blue" key="header.logout"/>
-          <tag:menuItem href="help.shtm" png="help" key="header.help"/>
-        </c:if>
-        <c:if test="${empty sessionUser}">
-          <tag:menuItem href="login.htm" png="control_play_blue" key="header.login"/>
-        </c:if>
-        <div id="headerMenuDescription" class="labelDiv" style="position:absolute;display:none;"></div>
-      </td>
-      <td class="userDetails">
-        <c:if test="${!empty sessionUser}">
-            <span class="copyTitle"><fmt:message key="header.user"/>:</span>
-            <span class="userName"><b>${sessionUser.username}</b></span>
-        </c:if>
-      </td>
-      <td align="right">
-        <c:if test="${!empty sessionUser}">
-          <tag:img id="userMutedImg" onclick="MiscDwr.toggleUserMuted(setUserMuted)" onmouseover="hideLayer('localeEdit')"/>
-          <tag:img png="house" title="header.goHomeUrl" onclick="goHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
-          <tag:img png="house_link" title="header.setHomeUrl" onclick="setHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
-        </c:if>
-        <div style="display:inline;" class="ptr" onmouseover="showMenu('styleEdit', -40, 10);">
-          <tag:img png="theme" title="header.changeTheme"/>
-          <div id="styleEdit" style="visibility:hidden;left:0px;top:15px;" class="labelDiv" onmouseout="hideLayer(this)">
-            <a class="ptr" id="stylesheet1">Default ScadaBR Theme </a><br/>
-            <a class="ptr" id="stylesheet2">Modern ScadaBR Theme</a><br/>
-        </div>
-        </div>
-        <div style="display:inline;" class="ptr" onmouseover="showMenu('localeEdit', -40, 10);">
-          <tag:img png="world" title="header.changeLanguage"/>
-          <div id="localeEdit" style="visibility:hidden;left:0px;top:15px;" class="labelDiv" onmouseout="hideLayer(this)">
-            <c:forEach items="${availableLanguages}" var="lang">
-              <a class="ptr" onclick="setLocale('${lang.key}')">${lang.value}</a><br/>
-            </c:forEach>
-          </div>
-        </div>
-      </td>
-    </tr>
-  </table>
-</c:if>
+            <ul class="nav navbar-nav navbar-right">
+              <!-- <li class="active"><a href="./"><span class="sr-only">(current)</span></a></li> -->
 
-<div class="content" style="padding-top:10px;">
+              <c:if test="${!simple}">
+                <div align="right" width="30%" id="eventsRow" class="projectTitle" style="clear:right; padding:8px;	background: gray;">
+                  <a href="events.shtm">
+                    <span id="__header__alarmLevelDiv" style="display:none;">
+                      <img id="__header__alarmLevelImg" src="images/spacer.gif" alt="" border="0" title=""/>
+                      <span id="__header__alarmLevelText"></span>
+                    </span>
+                  </a>
+                </div>
+              </c:if>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </nav>
+
+
+      <c:if test="${!simple}">
+        <ul id="adminBar" class="semi-transparent">
+          <c:if test="${!empty sessionUser}">
+            <c:if test="${sessionUser.admin}">
+              <li><a href="users.shtm" ><tag:img id="Users" png="user" title="header.users"/> <br> Usuarios </a></li>
+              <li><a href="emport.shtm" ><tag:img id="Emport" png="script_code" title="header.emport"/> <br> Import </a></li>
+              <li><a href="watch_list.shtm" > <tag:img id="Whatchlist"  png="eye" title="header.watchlist"  /><br> Whatchlist </a></li>
+              <li><a href="event_handlers.shtm" ><tag:img id="event_handlers" png="cog" title="header.eventHandlers"/> <br> Event Handlers </a></li>
+              <li><a href="data_sources.shtm" ><tag:img id="data_sources" png="icon_ds" title="header.dataSources"/> <br> Data Sources </a></li>
+              <li><a href="chart.shtm" ><tag:img id="chart" png="chart" title="header.chart"/> <br> Graficos </a></li>
+              <li><a href="scheduled_events.shtm" ><tag:img id="scheduled_events" png="clock" title="header.scheduledEvents"/> <br> Eventos Programados </a></li>
+              <li><a href="compound_events.shtm" ><tag:img id="compound_events" png="multi_bell" title="header.compoundEvents"/> <br> Eventos Compostos </a></li>
+              <li><a href="point_links.shtm" ><tag:img id="point_links" png="link" title="header.pointLinks"/> <br> Point Links </a></li>
+              <li><a href="scripting.shtm" ><tag:img id="scripting" png="script_gear" title="header.scripts"/> <br> Scripts </a></li>
+              <li><a href="point_hierarchy.shtm" ><tag:img id="point_hierarchy" png="folder_brick" title="header.pointHierarchy"/> <br> Hierarquia </a></li>
+              <li><a href="mailing_lists.shtm" ><tag:img id="mailing_lists" png="book" title="header.mailingLists"/> <br>  Listas de Email </a></li>
+              <li><a href="publishers.shtm" ><tag:img id="publishers" png="transmit" title="header.publishers"/> <br> Publicadores </a></li>
+              <li><a href="maintenance_events.shtm" ><tag:img id="maintenance_events" png="hammer" title="header.maintenanceEvents"/> <br> Manutencao </a></li>
+              <li><a href="system_settings.shtm" ><tag:img id="system_settings" png="application_form" title="header.systemSettings"/> <br> Configuracoes </a></li>
+              <li><a href="sql.shtm" ><tag:img id="sql" png="script" title="header.sql"/> <br> SQL </a></li>
+            </c:if>
+              <%-- <div style="display:inline;" class="ptr" onmouseover="showMenu('localeEdit', -40, 10);">
+              <tag:img png="world" title="header.changeLanguage"/> --%>
+              <%-- <div id="localeEdit" style="visibility:hidden;left:0px;top:15px;" class="labelDiv" onmouseout="hideLayer(this)">
+                <c:forEach items="${availableLanguages}" var="lang">
+                  <a class="ptr" onclick="setLocale('${lang.key}')">${lang.value}</a><br/>
+                </c:forEach>
+              </div> --%>
+            </div>
+        </c:if>
+      </ul>
+    </c:if>
+  </header>
+
+<div class="content" style="padding-top:10px; padding-bottom: 50px;">
   <jsp:doBody/>
 </div>
+
 <div class="footer" style="text-align:center">
-    <span>&copy;2012-2018 Scada-LTS <fmt:message key="footer.rightsReserved"/><span>
+  <p colspan="2"  align="center"> &copy;2009-2011 Fundação Certi, MCA Sistemas, Unis Sistemas, Conetec. Todos os direitos reservados. <br> &copy;2018 Companhia de aguas e Esgotos do RN - CAERN. <fmt:message key="footer.rightsReserved"/></p>
 </div>
 <c:if test="${!empty onload}">
   <script type="text/javascript">dojo.addOnLoad(${onload});</script>

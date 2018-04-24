@@ -2,7 +2,7 @@
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -28,12 +28,11 @@
     </tr>
     <c:if test="${empty events}"><tr><td colspan="6"><b><fmt:message key="events.emptyList"/></b></td></tr></c:if>
     <c:forEach items="${events}" var="event" varStatus="status">
-      <tr class="row<c:if test="${status.index % 2 == 1}">Alt</c:if>">
+      <tr class="smRow<c:if test="${status.index % 2 == 1}">Alt</c:if>">
       	<c:if test="${!hideIdColumn}"><td align="center">${event.id}</td></c:if>
       	<c:if test="${!hideAlarmLevelColumn}"><td align="center"><tag:eventIcon event="${event}"/></td></c:if>
         <c:if test="${!hideTimestampColumn}"><td align="center">${sst:time(event.activeTimestamp)}</td></c:if>
-        <td onmouseover="this.style.whiteSpace='normal'" onmouseout="this.style.whiteSpace='nowrap'" style=" white-space: nowrap; max-width:100vh;">
-        <p style="margin:auto; overflow: hidden; text-overflow: ellipsis; font-weight: bold;"><sst:i18n message="${event.message}"/></p></td>
+        <td> <b><sst:i18n message="${event.message}"/></b></td>
         <c:if test="${!hideInactivityColumn}">
 	        <td>
 	          <c:choose>
@@ -48,7 +47,7 @@
 	          </c:choose>
 	        </td>
         </c:if>
-        <c:if test="${!hideAckColumn}"> <td> <tag:alarmAck event="${event}"/></td></c:if>  
+        <c:if test="${!hideAckColumn}"> <td> <tag:alarmAck event="${event}"/></td></c:if>
       </tr>
     </c:forEach>
   </table>

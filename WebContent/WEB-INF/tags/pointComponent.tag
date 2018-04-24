@@ -2,7 +2,7 @@
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -15,7 +15,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see http://www.gnu.org/licenses/.
-    
+
   Used only for non-compound view components.
 --%><%@include file="/WEB-INF/tags/decl.tagf"%><%--
 --%><%@tag body-content="empty"%><%--
@@ -36,10 +36,10 @@
               </div>
             </td></tr>
             <c:if test="${vc.settable}">
-              <tr id="c${vc.id}ChangeMin" ondblclick="mango.view.hideChange('c${vc.id}Change');"
-                      onclick="mango.view.showChange('c${vc.id}Change', 16, 0);"><td>
+              <tr id="c${vc.id}ChangeMin" onmouseout="mango.view.hideChange('c${vc.id}Change');"
+                      onmouseover="mango.view.showChange('c${vc.id}Change', 16, 0);"><td>
                 <img src="images/icon_edit.png" alt=""/>
-                <div id="c${vc.id}Change">
+                <div id="c${vc.id}Change" onmouseout="hideLayer(this);">
                   <tag:img png="hourglass" title="common.gettingData"/>
                 </div>
               </td></tr>
@@ -58,23 +58,33 @@
       <div style="position:absolute;left:-16px;top:0px;z-index:1;">
         <div id="c${vc.id}Warning" style="display:none;" onmouseover="showMenu('c${vc.id}Messages', 16, 0);"
                 onmouseout="hideLayer('c${vc.id}Messages');">
-          	  <tag:img png="warn" title="common.warning"/>
+          <tag:img png="warn" title="common.warning"/>
           <div id="c${vc.id}Messages" onmouseout="hideLayer(this);" class="controlContent"></div>
         </div>
         <div id="c${vc.id}Changing" style="display:none;"><tag:img png="icon_edit" title="common.settingValue"/></div>
       </div>
     </div>
   </c:when>
+
+
   <c:when test="${!vc.customComponent}">
-    <div style="${vc.style}">${vc.staticContent}</div>
+    <c:if test="${vc.id !=1}">
+      <div  id="c${vc.id}" style="${vc.style};">${vc.staticContent}</div>
+    </c:if>
+    <c:if test="${vc.id ==1}">
+      <div  id="c${vc.id}">${vc.staticContent}</div>
+    </c:if>
+
   </c:when>
+
+
   <c:when test="${vc.customComponent}">
     <div id="c${vc.id}" style="${vc.style}">
       <div id="c${vc.id}Content"><img src="images/icon_comp.png" alt=""/></div>
       <div style="position:absolute;left:-16px;top:0px;z-index:1;">
         <div id="c${vc.id}Warning" style="display:none;" onmouseover="showMenu('c${vc.id}Messages', 16, 0);"
                 onmouseout="hideLayer('c${vc.id}Messages');">
-          	  <tag:img png="warn" title="common.warning"/>
+          <tag:img png="warn" title="common.warning"/>
           <div id="c${vc.id}Messages" onmouseout="hideLayer(this);" class="controlContent"></div>
         </div>
         <div id="c${vc.id}Changing" style="display:none;"><tag:img png="icon_edit" title="common.settingValue"/></div>

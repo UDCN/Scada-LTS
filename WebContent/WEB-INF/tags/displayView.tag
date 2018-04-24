@@ -2,7 +2,7 @@
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -19,22 +19,18 @@
 --%><%@tag body-content="empty"%><%--
 --%><%@attribute name="view" type="com.serotonin.mango.view.View" required="true" rtexprvalue="true"%><%--
 --%><%@attribute name="emptyMessageKey" required="true"%>
+
 <div id="viewContent">
   <c:choose>
     <c:when test="${empty view}"><fmt:message key="${emptyMessageKey}"/></c:when>
-    <c:when test="${empty view.backgroundFilename}">
-      <img id="viewBackground" src="images/spacer.gif" alt="" width="${view.width}" height="${view.height}"/>
-    </c:when>
-    <c:otherwise>
-      <img id="viewBackground" src="${view.backgroundFilename}" alt=""/>
-    </c:otherwise>
+
   </c:choose>
-  
+
   <c:forEach items="${view.viewComponents}" var="vc">
     <!-- vc ${vc.id} -->
     <c:choose>
       <c:when test="${!vc.visible}"><!-- vc ${vc.id} not visible --></c:when>
-      
+
       <c:when test="${vc.defName == 'simpleCompound'}">
         <div id="c${vc.id}" style="position:absolute;left:${vc.x}px;top:${vc.y}px;"
                   onmouseover="vcOver('c${vc.id}', 5);" onmouseout="vcOut('c${vc.id}');">
@@ -53,7 +49,7 @@
           </div>
         </div>
       </c:when>
-      
+
       <c:when test="${vc.defName == 'imageChart'}">
         <div id="c${vc.id}" style="position:absolute;left:${vc.x}px;top:${vc.y}px;"
                   onmouseover="vcOver('c${vc.id}', 10);" onmouseout="vcOut('c${vc.id}');">
@@ -65,46 +61,7 @@
           </div>
         </div>
       </c:when>
-      
-       <c:when test="${vc.defName == 'enhancedImageChart'}">
-		<div id="c${vc.id}"
-			style="position:absolute;left:${vc.x}px;top:${vc.y}px;background-color:white;">
-			<tag:enhancedImageChartConfig componentId="${vc.id}"/>
-			<tag:enhancedImageChartPointConfig componentId="${vc.id}"/>
-			<tag:enhancedImageChartSeriesConfig vc="${vc}"/>
-			
-			<div id="c${vc.id}Graph" class="enhancedImageChart" onclick="jQuery('#c${vc.id}ConfigButtonDiv').toggle();"></div>
-			<div id="c${vc.id}LegendBox" class="enhancedImageChartLegend" onclick="jQuery('#c${vc.id}SeriesConfig').show()">
-				<div id="c${vc.id}Legend"></div>
-			</div>
-			<img id="c${vc.id}ExportImage" style="display: none;"/>
-			
-			
-			
-		</div>
-		<script type="text/javascript">
-			var pointProps = new Array();
-			<c:forEach var="childComponent" items="${vc.childComponents}">
-				<c:if test="${not empty childComponent.viewComponent.extendedName}">
-					pointProps.push({
-						pointName: "${childComponent.viewComponent.extendedName}",
-	        			alias: "${childComponent.viewComponent.alias}",
-	        			color: "${childComponent.viewComponent.color}",
-	        			strokeWidth: ${childComponent.viewComponent.strokeWidth},
-	        			lineType: "${childComponent.viewComponent.lineType}",
-	        			showPoints: ${childComponent.viewComponent.showPoints}
-					});
-				</c:if>
-			</c:forEach>
-			dygraphsCharts[${vc.id}] = new DygraphsChart(${view.id}, ${vc.id}, true, false);
-			dygraphsCharts[${vc.id}].updateOptions(${vc.width}, ${vc.height}, ${vc.durationType}, ${vc.durationPeriods},
-					"${vc.enhancedImageChartType}", pointProps);
-			dygraphsCharts[${vc.id}].initConfigControls();
-			
-			jQuery('#c${vc.id}ConfigButtonDiv').hide().css("position", "absolute");
-		</script>
-      </c:when>
-      
+
       <c:when test="${vc.compoundComponent}">
         <div id="c${vc.id}" style="position:absolute;left:${vc.x}px;top:${vc.y}px;"
                   onmouseover="vcOver('c${vc.id}', 5);" onmouseout="vcOut('c${vc.id}');">
@@ -118,7 +75,7 @@
                 </div>
               </td></tr>
               <c:if test="${vc.displayImageChart}">
-                <tr onmouseover="mango.view.showChart('${vc.id}', event, this);" 
+                <tr onmouseover="mango.view.showChart('${vc.id}', event, this);"
                         onmouseout="mango.view.hideChart('${vc.id}', event, this);"><td>
                   <img src="images/icon_chart.png" alt=""/>
                   <div id="c${vc.id}ChartLayer"></div>
@@ -132,7 +89,7 @@
           </c:forEach>
         </div>
       </c:when>
-      
+
       <c:otherwise><tag:pointComponent vc="${vc}"/></c:otherwise>
     </c:choose>
   </c:forEach>
