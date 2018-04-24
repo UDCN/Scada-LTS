@@ -43,7 +43,7 @@
   <!-- Style -->
   <link rel="icon" href="images/favicon.ico"/>
   <link rel="shortcut icon" href="images/favicon.ico"/>
-  <link id="pagestyle" href="assets/common_deprecated.css" type="text/css" rel="stylesheet"/>
+  <link id="pagestyle" href="assets/common.css" type="text/css" rel="stylesheet"/>
   <c:forTokens items="${css}" var="cssfile" delims=", ">
     <link href="resources/${cssfile}.css" type="text/css" rel="stylesheet"/>
   </c:forTokens>
@@ -183,7 +183,9 @@
           
           <c:if test="${sessionUser.admin}">
 	        <tag:menuItem href="usersProfiles.shtm" png="user_ds" key="header.usersProfiles"/>
-            <tag:menuItem href="pointHierarchySLTS" png="folder_brick" key="header.pointHierarchy"/>
+	        <tag:menuItem href="estatisticas.shtm" png="icon_chart" key="header.estatisticas"/>
+	        <tag:menuItem href="funcoes_especiais.shtm" png="plugin" key="header.funcoes_especiais"/>
+	        <tag:menuItem href="pointHierarchySLTS" png="folder_brick" key="header.pointHierarchy"/>
             <tag:menuItem href="mailing_lists.shtm" png="book" key="header.mailingLists"/>
             <tag:menuItem href="publishers.shtm" png="transmit" key="header.publishers"/>
             <tag:menuItem href="maintenance_events.shtm" png="hammer" key="header.maintenanceEvents"/>
@@ -193,6 +195,7 @@
           </c:if>
           
           <img src="images/menu_separator.png" class="separator"/>
+          <tag:menuItem href="contato.shtm" png="email" key="header.contato"/>
           <tag:menuItem href="logout.htm" png="control_stop_blue" key="header.logout"/>
           <tag:menuItem href="help.shtm" png="help" key="header.help"/>
         </c:if>
