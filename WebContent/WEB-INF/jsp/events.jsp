@@ -139,7 +139,7 @@
 //     });
   </script>
 
-  <div class="borderDiv col-md-12" style="width: 100%; margin-bottom: 20px;">
+  <div class="borderDiv" style="width: 100%; margin-bottom: 20px;">
     <div class="smallTitle titlePadding" style="float:left;">
       <tag:img png="flag_white" title="events.alarms"/>
       <fmt:message key="events.pending"/>
@@ -150,14 +150,14 @@
       <fmt:message key="events.silenceAll"/>
       <tag:img png="sound_mute" onclick="silenceAll()" title="events.silenceAll"/><br/>
     </div>
-    <div id="pendingAlarms" class="col-sm-12" style="text-align: center;"></div>
+    <div id="pendingAlarms" style="text-align: center;"></div>
     <div id="noAlarms" style="display:none;padding:6px;text-align:center;">
       <b><fmt:message key="events.emptyList"/></b>
     </div>
     <div id="hourglass" style="padding:6px;text-align:center;"><tag:img png="hourglass"/></div>
   </div>
 
-  <div class="borderDiv" style="clear:left;float:left;">
+  <div class="borderDiv" style="width: 100%;">
     <div class="smallTitle titlePadding"><fmt:message key="events.search"/></div>
     <div>
       <table>
@@ -216,8 +216,8 @@
 
 
         <tr>
-          <td colspan="2" align="center">
-            <input id="searchBtn" type="button" value="<fmt:message key="events.search.search"/>" onclick="newSearch()"/>
+          <td colspan="15" align="center">
+            <input style="width: 50px;" id="searchBtn" type="button" value="<fmt:message key="events.search.search"/>" onclick="newSearch()"/>
             <span id="searchMessage" class="formError"></span>
           </td>
         </tr>

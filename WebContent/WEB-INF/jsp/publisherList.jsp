@@ -2,7 +2,7 @@
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -25,11 +25,11 @@
             updatePublisherList(response.data.publishers);
         });
     }
-    
+
     function addPublisher() {
         window.location = "publisher_edit.shtm?typeId="+ $get("publisherTypes");
     }
-    
+
     function updatePublisherList(publishers) {
         dwr.util.removeAllRows("publisherList");
         dwr.util.addRows("publisherList", publishers,
@@ -67,7 +67,7 @@
             });
         display("noPublishers", publishers.length == 0);
     }
-    
+
     function togglePublisher(id) {
         var imgNode = $("pImg"+ id);
         if (!hasImageFader(imgNode)) {
@@ -77,8 +77,8 @@
             startImageFader(imgNode);
         }
     }
-    
-    
+
+
     function deletePublisher(id) {
         if (confirm("<fmt:message key="publisherList.deleteConfirm"/>")) {
             startImageFader("deleteImg"+ id);
@@ -89,14 +89,14 @@
             });
         }
     }
-    
+
     function updateStatusImg(imgNode, enabled) {
         stopImageFader(imgNode);
         setPublisherStatusImg(enabled, imgNode);
     }
   </script>
-  
-  <table cellspacing="0" cellpadding="0">
+
+  <table class="borderDiv" cellspacing="0" cellpadding="0" style="width: 99%;">
     <tr>
       <td>
         <tag:img png="transmit" title="publisherList.publishers"/>
@@ -108,10 +108,10 @@
         <tag:img png="transmit_add" title="common.add" onclick="addPublisher()"/>
       </td>
     </tr>
-    
+
     <tr>
       <td colspan="2">
-        <table cellspacing="1" cellpadding="0" border="0">
+        <table cellspacing="1" cellpadding="0" border="0" style="width: 100%">
           <tr class="rowHeader">
             <td><fmt:message key="publisherList.name"/></td>
             <td><fmt:message key="publisherList.type"/></td>

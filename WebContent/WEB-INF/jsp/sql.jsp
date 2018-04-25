@@ -2,7 +2,7 @@
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -24,28 +24,27 @@
         $("sqlString").focus();
     }
   </script>
-  
+
   <table class="subPageHeader" width="100%" cellspacing="0" cellpadding="0" border="0">
     <tr>
       <td>
         <form action="sql.shtm" method="post">
-          <table>
+          <table width="100%">
             <tr>
               <td colspan="2"><fmt:message key="sql.warning"/></td>
+              <td width="10%" >
+                <tag:help id="directQuerying"/>
+              </td>
             </tr>
             <spring:bind path="form.sqlString">
               <tr>
-                <td class="formLabelRequired">
-                  <fmt:message key="sql.sql"/>
-                  <tag:help id="directQuerying"/>
-                </td>
-                <td><textarea id="sqlString" name="sqlString" rows="8" cols="80">${status.value}</textarea></td>
+                <td ><textarea id="sqlString" name="sqlString" rows="8" cols="80">${status.value}</textarea></td>
               </tr>
               <tr>
                 <c:if test="${form.error != null}"><td colspan="2" class="formError">${form.error}</td></c:if>
               </tr>
             </spring:bind>
-            
+
             <tr>
               <td colspan="2" align="center">
                 <input type="submit" value="<fmt:message key="sql.query"/>" name="query"/>
@@ -56,7 +55,7 @@
           </table>
         </form>
         <br/>
-        
+
         <c:if test="${form.data != null}">
           <table cellspacing="1">
             <tr class="rowHeader">
@@ -64,7 +63,7 @@
                 <td>${rowHeader}</td>
               </c:forEach>
             </tr>
-            
+
             <c:forEach items="${form.data}" var="row">
               <tr class="row">
                 <c:forEach items="${row}" var="col">
@@ -74,11 +73,11 @@
             </c:forEach>
           </table>
         </c:if>
-        
+
         <c:if test="${form.updateResult > -1}">
           ${form.updateResult} <fmt:message key="sql.rowsUpdated"/>
         </c:if>
-        
+
         <br/>
       </td>
     </tr>

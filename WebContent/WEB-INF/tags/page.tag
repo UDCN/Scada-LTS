@@ -175,7 +175,7 @@
             <span class="icon-bar"></span>
           </button>
           <a class="navbar-brand" href="#" style="font-size: 18pt; font-family: Impact, Charcoal, sans-serif; color: black;">Supervisorio ScadaBR Natal/RN</a>
-          <br> Usuário: <b>${sessionUser.username}</b>
+          <c:if test="${!empty sessionUser}"> <br> Usuário: <b>${sessionUser.username}</b> </c:if>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
@@ -213,7 +213,8 @@
               </c:if>
             </ul>
 
-            <ul class="nav navbar-nav navbar-right">
+            <c:if test="${!empty sessionUser}">
+              <ul class="nav navbar-nav navbar-right">
               <!-- <li class="active"><a href="./"><span class="sr-only">(current)</span></a></li> -->
 
               <c:if test="${!simple}">
@@ -227,6 +228,7 @@
                 </div>
               </c:if>
             </ul>
+          </c:if>
           </div><!--/.nav-collapse -->
         </div><!--/.container-fluid -->
       </nav>

@@ -2,7 +2,7 @@
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -27,7 +27,7 @@
             }
         });
     }
-    
+
     function toggleDataSource(dataSourceId) {
         var imgNode = $("dsImg"+ dataSourceId);
         if (!hasImageFader(imgNode)) {
@@ -37,7 +37,7 @@
             startImageFader(imgNode);
         }
     }
-    
+
     function toggleDataPoint(dataPointId) {
         var imgNode = $("dpImg"+ dataPointId);
         if (!hasImageFader(imgNode)) {
@@ -47,7 +47,7 @@
             startImageFader(imgNode);
         }
     }
-    
+
     function updateStatusImg(imgNode, enabled, ds) {
         stopImageFader(imgNode);
         if (ds)
@@ -55,7 +55,7 @@
         else
             setDataPointStatusImg(enabled, imgNode);
     }
-    
+
     function deleteDataSource(dataSourceId) {
         if (confirm("<fmt:message key="dsList.dsDeleteConfirm"/>")) {
             startImageFader("deleteDataSourceImg"+ dataSourceId);
@@ -70,14 +70,14 @@
             });
         }
     }
-    
+
     function copyDataSource(fromDataSourceId) {
         startImageFader("copyDataSourceImg"+ fromDataSourceId);
         DataSourceListDwr.copyDataSource(fromDataSourceId, function(toDataSourceId) {
             window.location = "data_source_edit.shtm?dsid="+ toDataSourceId;
         });
     }
-    
+
     function deleteDataPoint(pointId) {
         if (confirm("<fmt:message key="dsList.pointDeleteConfirm"/>")) {
             DataSourceListDwr.deleteDataPoint(pointId, function(pointId) {
@@ -86,12 +86,12 @@
             });
         }
     }
-    
+
     function addDataSource() {
         window.location = "data_source_edit.shtm?typeId="+ $get("dataSourceTypes");
     }
   </script>
-  
+
   <table class="subPageHeader">
     <tr>
       <td>
@@ -104,14 +104,13 @@
         <tag:img png="icon_ds_add" title="common.add" onclick="addDataSource()"/>
       </td>
     </tr>
-    
-    
-    <tr>
-      <td colspan="2">
-        <table class="dataSourcesTable" >
+
+    <tr >
+      <td colspan="2" style="width: 100%;">
+        <table class="dataSourcesTable" style="width: 100%;">
           <tr>
-            <td colspan="2">
-              <table class="dataSourcesTable">
+            <td colspan="2" style="width: 100%;">
+              <table class="dataSourcesTable" style="width: 100%;">
                 <tr class="rowHeader">
                   <td><fmt:message key="dsList.name"/></td>
                   <td><fmt:message key="dsList.type"/></td>
@@ -121,7 +120,7 @@
                 </tr>
                 <c:set var="hideText"><fmt:message key="dsList.hide"/></c:set>
                 <c:set var="showText"><fmt:message key="dsList.show"/></c:set>
-                <c:forEach items="${data}" var="listParent"> 
+                <c:forEach items="${data}" var="listParent">
                     <tr class="row" id="dataSourceRow${listParent.parent.id}">
                     <td><b>${listParent.parent.name}</b></td>
                     <td><fmt:message key="${listParent.parent.type.key}"/></td>
@@ -142,13 +141,13 @@
                       <a href="data_source_edit.shtm?dsid=${listParent.parent.id}"><tag:img png="icon_ds_edit"
                               title="common.edit"/></a>
                       <tag:img png="arrow_out" title="dsList.show" onclick="togglePanelVisibility2(this, 'points${listParent.parent.id}', '${hideText}', '${showText}');"/>
-                      <tag:img png="icon_ds_delete" title="common.delete" id="deleteDataSourceImg${listParent.parent.id}" 
+                      <tag:img png="icon_ds_delete" title="common.delete" id="deleteDataSourceImg${listParent.parent.id}"
                               onclick="deleteDataSource(${listParent.parent.id})"/>
-                      <tag:img png="icon_ds_add" title="common.copy" id="copyDataSourceImg${listParent.parent.id}" 
+                      <tag:img png="icon_ds_add" title="common.copy" id="copyDataSourceImg${listParent.parent.id}"
                               onclick="copyDataSource(${listParent.parent.id})"/>
                     </td>
                   </tr>
-                  
+
                   <tr id="points${listParent.parent.id}" class="rowAlt2" style="display:none">
                     <td colspan="5" style="padding:0px 0px 0px 30px;background-color:#FFFFFF;">
                       <table cellspacing="1" cellpadding="0" border="0">
@@ -183,12 +182,12 @@
                       </table>
                     </td>
                   </tr>
-                </c:forEach> 
+                </c:forEach>
               </table>
             </td>
           </tr>
-          
-        </table>  
+
+        </table>
       </td>
     </tr>
   </table>

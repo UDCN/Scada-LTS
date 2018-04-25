@@ -2,7 +2,7 @@
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -23,12 +23,12 @@
         hide("nameMsg");
         hide("cacheWarningSizeMsg");
         hide("message");
-        
+
         savePublisherImpl($get("name"), $get("xid"), $get("enabled"), $get("cacheWarningSize"),
                 $get("changesOnly") == "true", $get("sendSnapshot"), $get("snapshotSendPeriods"),
                 $get("snapshotSendPeriodType"));
     }
-    
+
     function savePublisherCB(response) {
         if (response.hasMessages) {
             for (var i=0; i<response.messages.length; i++)
@@ -37,7 +37,7 @@
         else
             showMessage("message", "<fmt:message key="publisherEdit.saved"/>");
     }
-    
+
     function sendSnapshotChanged() {
         if ($get("sendSnapshot")) {
             setDisabled("snapshotSendPeriods", false);
@@ -48,13 +48,13 @@
             setDisabled("snapshotSendPeriodType", true);
         }
     }
-    
+
     function initPublisher() {
         sendSnapshotChanged();
     }
   </script>
-  
-  <table cellspacing="0" cellpadding="0" border="0">
+
+  <table cellspacing="0" cellpadding="0" border="0" width="100%">
     <tr>
       <td>
         <c:if test="${!empty publisherEvents}">
@@ -69,9 +69,9 @@
             </c:forEach>
           </table>
         </c:if>
-        
+
         <div id="message" class="formError" style="display:none;"></div>
-        
+
         <div class="borderDiv marR marB">
           <table>
             <tr>
@@ -80,7 +80,7 @@
                 <fmt:message key="publisherEdit.generalProperties"/> <tag:help id="generalPublisherProperties"/>
               </td>
             </tr>
-            
+
             <tr>
               <td class="formLabelRequired"><fmt:message key="publisherEdit.name"/></td>
               <td class="formField">
@@ -88,7 +88,7 @@
                 <div id="nameMsg" class="formError" style="display:none;"></div>
               </td>
             </tr>
-            
+
             <tr>
               <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
               <td class="formField">
@@ -96,12 +96,12 @@
                 <div id="xidMsg" class="formError" style="display:none;"></div>
               </td>
             </tr>
-            
+
             <tr>
               <td class="formLabelRequired"><fmt:message key="common.enabled"/></td>
               <td class="formField"><sst:checkbox id="enabled" selectedValue="${publisher.enabled}"/></td>
             </tr>
-            
+
             <tr>
               <td class="formLabelRequired"><fmt:message key="publisherEdit.cacheWarning"/></td>
               <td class="formField">
@@ -109,7 +109,7 @@
                 <div id="cacheWarningSizeMsg" class="formError" style="display:none;"></div>
               </td>
             </tr>
-            
+
             <tr>
               <td class="formLabelRequired"><fmt:message key="publisherEdit.updateEvent"/></td>
               <td class="formField">
@@ -119,13 +119,13 @@
                 </sst:select>
               </td>
             </tr>
-            
+
             <tr>
               <td class="formLabelRequired"><fmt:message key="publisherEdit.snapshot"/></td>
               <td class="formField"><sst:checkbox id="sendSnapshot" onclick="sendSnapshotChanged()"
                       selectedValue="${publisher.sendSnapshot}"/></td>
             </tr>
-            
+
             <tr>
               <td class="formLabelRequired"><fmt:message key="publisherEdit.snapshotPeriod"/></td>
               <td class="formField">
@@ -138,7 +138,7 @@
             </tr>
           </table>
         </div>
-        
+
         <div>
           <c:choose>
             <c:when test="${publisher.type.id == applicationScope['constants.PublisherVO.Types.HTTP_SENDER']}">
@@ -154,9 +154,9 @@
         </div>
       </td>
     </tr>
-    
+
     <tr><td>&nbsp;</td></tr>
-    
+
     <tr>
       <td align="center">
         <input type="button" value="<fmt:message key="common.save"/>" onclick="savePublisher()"/>
