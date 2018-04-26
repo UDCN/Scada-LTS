@@ -25,8 +25,6 @@
 	<script type="text/javascript" src="resources/chartist.min.js"></script>
 	<script type="text/javascript">	
 	
-	${selecionado}
-		
 		<c:if test="${selecionado[0] == '1'}">
 			//Gráfico de pizza de usuários admin x outros
 			function adminOutros() 
@@ -50,142 +48,105 @@
 				};
 				new Chartist.Pie('.ct-chart', data, options);
 	      	}
-			
-		</c:if>	
-	
-		<c:if test="${form.tipoGrafico == '2'}">
-			//Gráfico de barras de representação gráfica
-			function drawChartViews() 
-			{
-				var data = new google.visualization.DataTable();
-					data.addColumn('string','VIEWS');
-					data.addColumn('number', 'N Views');
-					data.addRows(${form.listaGrafico[0]});
-	
-					<c:forEach var = "i" begin = "0" end = "${form.listaGrafico[0]-1}" step="1">
-						data.setValue(<c:out value = "${i}"/>, 0, '<c:out value = "${form.listaGrafico[2*i+1]}"/>' );
-						data.setValue(<c:out value = "${i}"/>, 1, <c:out value = "${form.listaGrafico[2*i+2]}"/> );
-			        	
-			      	</c:forEach>
-					
-		        var options = {
-		          chart: {
-		            title: 'Representacao Grafica',
-		            subtitle: 'Numero de Representacoes graficas de cada usuario',
-		          }
-		        };
-		        var chart = new google.charts.Bar(document.getElementById('chart_div'));
-		        chart.draw(data, options);
-		      }	
 		</c:if>
 		
-		<c:if test="${form.tipoGrafico == '3'}">
-			//Gráfico de barra de Watch Lists e Datapoints por usuários
-			function drawChartViews() 
+		<c:if test="${selecionado[0] == '2'}">
+			function representacoesGraficas() 
 			{
-				var data = new google.visualization.DataTable();
-					data.addColumn('string','WATCHLISTS');
-					data.addColumn('number', 'N Watchlist');
-					data.addColumn('number', 'N DataPoints');
-					data.addRows(${form.listaGrafico[0]});
-	
-					<c:forEach var = "i" begin = "0" end ="${form.listaGrafico[0]-1}" step="1">
-						data.setValue(<c:out value = "${i}"/>, 0, '<c:out value = "${form.listaGrafico[3*i+1]}"/>' );
-						data.setValue(<c:out value = "${i}"/>, 1, <c:out value = "${form.listaGrafico[3*i+2]}"/> );
-						data.setValue(<c:out value = "${i}"/>, 2, <c:out value = "${form.listaGrafico[3*i+3]}"/> );
-			      	</c:forEach>
-					
-		        var options = {
-		          chart: {
-		            title: 'Representacao Grafica',
-		            subtitle: 'Numero de Watchlists e Datapoints de cada usuario',
-		          }
-		        };
-		        var chart = new google.charts.Bar(document.getElementById('chart_div'));
-		        chart.draw(data, options);
-	      }	
-		</c:if>
-		
-		
-		<c:if test="${form.tipoGrafico == '4'}">
-			//Gráfico de pizza de datasources habilitados x desabilitados
-			function drawChartPizza() 
-			{
+				var data = 
+				{
+				  labels: 
+				  [ 
+				  	<c:if test="${tamanhoGrafico[0] > 0}">
+				  		<c:forEach var="i" begin="0" end="${tamanhoGrafico[0]}">
+			            	'<c:out value = "${nomes[i]}"/>',
+			            </c:forEach>
+			        </c:if>
+			        
+			            '<c:out value = "${nomes[tamanhoGrafico[0]]}"/>'
+				  ] 
+					  ,
+				  series: 
+			      [
+				    [
+				    	<c:if test="${tamanhoGrafico[0] > 0}">
+				    		<c:forEach var="i" begin="0" end="${tamanhoGrafico[0]-1}">
+			          			<c:out value = "${quantidades[i]}"/>,
+			          	</c:forEach>
+			          	</c:if>
+			            	<c:out value = "${quantidades[tamanhoGrafico[0]]}"/>
+				    ]
+				  ]
+				};
 
-	    		//Create the data table.
-	    	    var data = new google.visualization.DataTable();
-		        data.addColumn('string', 'Topping');
-	        	data.addColumn('number', 'Slices');
-		    	data.addRows([ ['Habilitados (${form.listaGrafico[0]})', ${form.listaGrafico[0]}], 
-		    		['Desabilitados (${form.listaGrafico[1]})', ${form.listaGrafico[1]}] ]);
-	
-	        	//Set chart options
-	        	var options = {'title':'Quantidade de Data Sources Habilitados x Desabilitados',
-	                       'width':800,
-	                       'height':400};
-	
-	        	//Instantiate and draw our chart, passing in some options.
-	        	var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
-	        	chart.draw(data, options);
-	      	}
-		</c:if>	
+				var options = {
+				  seriesBarDistance: 1
+				};
+
+				new Chartist.Bar('.ct-chart', data, options);
+			}
+		</c:if>
 		
-		<c:if test="${form.tipoGrafico == '5'}">
-			//Gráfico de pizza de datapoints habilitados x desabilitados
-			function drawChartPizza() 
+		
+		<c:if test="${selecionado[0] == '3'}">
+		function watchListPontos() 
+		{
+			var data = 
 			{
-	
-	    		//Create the data table.
-	    	    var data = new google.visualization.DataTable();
-		        data.addColumn('string', 'Topping');
-	        	data.addColumn('number', 'Slices');
-		    	data.addRows([ ['Habilitados (${form.listaGrafico[0]})', ${form.listaGrafico[0]}], 
-		    		['Desabilitados (${form.listaGrafico[1]})', ${form.listaGrafico[1]}] ]);
-	
-	        	//Set chart options
-	        	var options = {'title':'Quantidade de Data Points Habilitados x Desabilitados',
-	                       'width':800,
-	                       'height':400};
-	
-	        	//Instantiate and draw our chart, passing in some options.
-	        	var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
-	        	chart.draw(data, options);
-	      	}
-		</c:if>	
-		
+			  labels: 
+			  [ 
+			  	<c:if test="${tamanhoGrafico[0] > 0}">
+			  		<c:forEach var="i" begin="0" end="${tamanhoGrafico[0]}">
+		            	'<c:out value = "${nomes[i]}"/>',
+		            </c:forEach>
+		        </c:if>
+		        
+		            '<c:out value = "${nomes[tamanhoGrafico[0]]}"/>'
+			  ] 
+				  ,
+			  series: 
+		      [
+			    [
+			    	<c:if test="${tamanhoGrafico[0] > 0}">
+			    		<c:forEach var="i" begin="0" end="${tamanhoGrafico[0]-1}">
+		          			<c:out value = "${quantidadesWL[i]}"/>,
+		          	</c:forEach>
+		          	</c:if>
+		            	<c:out value = "${quantidadesWL[tamanhoGrafico[0]]}"/>
+			    ],
+			    [
+			    	<c:if test="${tamanhoGrafico[0] > 0}">
+			    		<c:forEach var="i" begin="0" end="${tamanhoGrafico[0]-1}">
+		          			<c:out value = "${quantidadesPO[i]}"/>,
+		          	</c:forEach>
+		          	</c:if>
+		            	<c:out value = "${quantidadesPO[tamanhoGrafico[0]]}"/>
+			    ]
+			    
+			  ]
+			};
+
+			var options = {
+			  seriesBarDistance: 1
+			};
+
+			new Chartist.Bar('.ct-chart', data, options);
+		}
+	</c:if>
 		
 		
 			function init()
 			{
-				// Load the Visualization API and the corechart package.
-			      	// initialization code goes here
-			  	<c:if test="${selecionado[0] == '1'}">
+				<c:if test="${selecionado[0] == '1'}">
 			  		adminOutros();
 				</c:if>
-				
-				<c:if test="${form.tipoGrafico == '2'}">
-					google.charts.load('current', {'packages':['bar']});
-		    		google.charts.setOnLoadCallback(drawChartViews);	
-		    		drawChartViews();
+				<c:if test="${selecionado[0] == '2'}">
+					representacoesGraficas();
 				</c:if>
+				<c:if test="${selecionado[0] == '3'}">
+				watchListPontos();
+			</c:if>
 				
-				<c:if test="${form.tipoGrafico == '3'}">
-					google.charts.load('current', {'packages':['bar']});
-		    		google.charts.setOnLoadCallback(drawChartViews);	
-		    		drawChartViews();
-				</c:if>
-				
-				<c:if test="${form.tipoGrafico == '4'}">
-			  		google.charts.load('current', {'packages':['corechart']});
-			    	google.charts.setOnLoadCallback(drawChartPizza);	
-			  		drawChartPizza();
-				</c:if>
-				
-				<c:if test="${form.tipoGrafico == '5'}">
-			  		google.charts.load('current', {'packages':['corechart']});
-			    	google.charts.setOnLoadCallback(drawChartPizza);	
-			  		drawChartPizza();
-				</c:if>
 			}
 
 	</script>
@@ -235,14 +196,15 @@
 		</div>
 	</c:if>
 	
-	<c:if test="${tabela != null}">
+	<c:if test="${tabelaHeader != null}">
 		<fieldset>
 	       <table cellspacing="1">
 	         <tr class="rowHeader">
-	           <c:forEach var="i" begin="1" end="${tabela[0]}">
-	             <td><c:out value = "${tabela[i]}"/></td>
+	           <c:forEach var="i" begin="1" end="${tabelaHeader[0]}">
+	             <td><c:out value = "${tabelaHeader[i]}"/></td>
 	           </c:forEach>
 	         </tr>
+	         
 	         <c:forEach var="i" begin="0" end="${tamanhoTabela[0]}">
 	           <tr class="row">
 	           		<c:if test="${selecionado[0] == '1'}">
@@ -253,6 +215,8 @@
 	             	</c:if>
 	           </tr>
 	         </c:forEach>
+	         
+	         
 	       </table>
 	   	</fieldset> 
 	</c:if>
