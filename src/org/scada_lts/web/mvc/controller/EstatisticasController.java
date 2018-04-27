@@ -14,6 +14,9 @@ import com.serotonin.mango.view.View;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.scada_lts.dao.DataSourceDAO;
 import org.scada_lts.dao.ViewDAO;
 import org.scada_lts.dao.watchlist.WatchListDAO;
@@ -36,6 +39,7 @@ import com.serotonin.mango.vo.dataSource.modbus.ModbusIpDataSourceVO;
 import com.serotonin.mango.vo.dataSource.modbus.ModbusPointLocatorVO;
 import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.web.dwr.UsersDwr;
+import com.sun.corba.se.spi.activation.Repository;
 
 /*
  * RETORNA OS GRÁFICOS E TABELAS DO SISTEMA
@@ -49,7 +53,7 @@ import com.serotonin.mango.web.dwr.UsersDwr;
 @RequestMapping("/estatisticas.shtm") 
 public class EstatisticasController extends ParameterizableViewController
 {
-	//private static final Log LOG = LogFactory.getLog(EstatisticasController.class);
+	private static final Log LOG = LogFactory.getLog(EstatisticasController.class);
 	
 	@RequestMapping(method = RequestMethod.GET)
 	protected ModelAndView inicial(HttpServletRequest request)
@@ -83,6 +87,11 @@ public class EstatisticasController extends ParameterizableViewController
 			case "1": retornaUsuarios(resposta); break;
 			case "2": representacoesGraficas(resposta); break;
 			case "3": dataPointsWatchList(resposta); break;
+			case "4": dataSoucesEstados(resposta); break;
+			case "5": dataPointsEstados(resposta); break;
+			case "6": dataSourcesPadrao(resposta); break;
+			case "7": dataSoucePortaHost(resposta); break;
+			case "8": tabelaModem(resposta); break;
 		}
 		
 		retornaLista("selecionado", comando, resposta);
@@ -190,6 +199,7 @@ public class EstatisticasController extends ParameterizableViewController
 	 */
 	public void dataPointsWatchList(Map<String,List> resposta)
 	{
+		
 		//Lista todos os usuários
 		UserDao userDAO = new UserDao();
 		List<Integer> usuariosIds = new ArrayList<Integer>();
@@ -213,12 +223,9 @@ public class EstatisticasController extends ParameterizableViewController
 		{
 			int posicao = usuariosIds.indexOf(watchList.getUserId());
 			numWatchList.set(posicao, numWatchList.get(posicao) + 1);
+			
 			//Retorna a quantidade de pontos do WatchList
-			int pontos = 0;
-			for (DataPointVO point : watchList.getPointList())
-			{
-				pontos++;
-			}
+			int pontos = watchLists.getPointsWatchList(watchList.getId()).size();
 			numPoints.set(posicao, numPoints.get(posicao) + pontos);
 		}
 		
@@ -226,7 +233,7 @@ public class EstatisticasController extends ParameterizableViewController
 		List<String> nomes = new ArrayList<String>();
 		List<String> quantidadesWL = new ArrayList<String>();
 		List<String> quantidadesPO = new ArrayList<String>();
-		for (int i = 0; i<= usuariosIds.size()-1; i++)
+		for (int i = 0; i < usuariosIds.size(); i++)
 		{
 			if(numWatchList.get(i) > 0)
 			{
@@ -235,12 +242,377 @@ public class EstatisticasController extends ParameterizableViewController
 				quantidadesPO.add(Integer.toString(numPoints.get(i)));
 			}
 		}
+		
 		resposta.put("nomes", nomes);
 		resposta.put("quantidadesWL", quantidadesWL);
 		resposta.put("quantidadesPO", quantidadesPO);
 		retornaLista("tamanhoGrafico", Integer.toString(nomes.size()-1), resposta);
 		
 	}
+	
+	/*
+	 * RETORNA A QUANTIDADE DE DATASOURCES
+	 * HABILITADOS OU DESABILITADOS
+	 */
+	
+	public void dataSoucesEstados(Map<String,List> resposta)
+	{
+		
+		DataSourceDAO dataSources = new DataSourceDAO();
+		
+		int habilitado = 0;
+		int desabilitado = 0;
+		
+		for (DataSourceVO ds : dataSources.getDataSources())
+		{
+			if (ds.isEnabled())
+				habilitado++;
+			else
+				desabilitado++;
+		}
+		
+		retornaLista("habilitado", Integer.toString(habilitado), resposta);
+		retornaLista("desabilitado", Integer.toString(desabilitado), resposta);
+		
+	}
+	
+	/*
+	 * RETORNA A QUANTIDADE DE DATAPOINTS
+	 * HABILITADOS OU DESABILITADOS
+	 */
+	
+	public void dataPointsEstados(Map<String,List> resposta)
+	{
+		
+		DataSourceDAO dataSources = new DataSourceDAO();
+		List<DataPointVO> dataPoints = new ArrayList<DataPointVO>();
+		DataPointDao dataPointDao = new DataPointDao();
+		
+		int habilitado = 0;
+		int desabilitado = 0;
+		
+		for (DataSourceVO ds : dataSources.getDataSources())
+		{
+			dataPoints = dataPointDao.getDataPoints(ds.getId(), DataPointNameComparator.instance);
+			for (DataPointVO dataPoint : dataPoints)
+        	{
+        		if(dataPoint.isEnabled())
+            	{
+        			habilitado++;
+            	}
+            	else
+            	{
+            		desabilitado++;
+            	}
+            	
+        	}
+		}
+		
+		retornaLista("habilitado", Integer.toString(habilitado), resposta);
+		retornaLista("desabilitado", Integer.toString(desabilitado), resposta);
+		
+	}
+	
+	/*
+	 * INFORMAÇÕES DE DATA SOURCE (FORA DE PADRÃO)
+	 * RETORNA AS INFORMAÇÕES QUE ESTÃO FORA DO PADRÃO PRÉ-ESTABELECIDO
+	 * SOMENTE RETORNA SE FOR MODBUSIP E QUE ESTIVEREM TOTALMENTE FORA DO PADRÃO
+	 */
+	
+	public void dataSourcesPadrao(Map<String,List> resposta)
+	{
+		String MODBUS_IP = "dsEdit.modbusIp";
+		int MINUTES = 2;
+		int idCount = 1;
+		List<DataSourceVO<?>> dataS = Common.ctx.getRuntimeManager().getDataSources();
+		String[] medidasTempo = {"SECONDS", "MINUTES", "HOURS", "DAYS", "WEEKS",
+				"MONTHS", "YEARS", "MILLISECONDS"};
+		
+		
+		List<String> id = new ArrayList<String>();
+		List<String> Xid = new ArrayList<String>();
+		List<String> nome = new ArrayList<String>();
+		List<String> resultadoLst = new ArrayList<String>();
+		 
+		for (DataSourceVO<?> ds : dataS) 
+        {
+			String resultado = "";
+			if(ds.getType().getKey().equals(MODBUS_IP))
+			{
+				ModbusIpDataSourceVO dataSourceModbusIP = (ModbusIpDataSourceVO) Common
+						.ctx.getRuntimeManager().getDataSource(ds.getId());
+				
+				if(dataSourceModbusIP.getUpdatePeriodType() != MINUTES) 
+					resultado = resultado.concat("updatePeriodType: " + 
+										medidasTempo[dataSourceModbusIP.getUpdatePeriodType()-1] + "; ");
+				
+				if(!dataSourceModbusIP.getTransportType().getKey().equals("dsEdit.modbusIp.transportType.tcpKA"))
+					resultado = resultado.concat("transportType: " + 
+										dataSourceModbusIP.getTransportType().getKey().
+										replaceAll("dsEdit.modbusIp.transportType.", "").toUpperCase() + "; ");	
+				
+				if(dataSourceModbusIP.isContiguousBatches())
+					resultado = resultado.concat("contiguousBatches: " +
+										dataSourceModbusIP.isContiguousBatches() + "; ");
+				
+				if(dataSourceModbusIP.isCreateSlaveMonitorPoints())
+					resultado = resultado.concat("createSlaveMonitorPoints: " +
+										dataSourceModbusIP.isCreateSlaveMonitorPoints() + "; ");
+			
+				if(!dataSourceModbusIP.isEncapsulated())
+					resultado = resultado.concat("encapsulated: " +
+										dataSourceModbusIP.isEncapsulated() + "; ");
+
+				if(!dataSourceModbusIP.getHost().equals("10.18.0.243"))
+					resultado = resultado.concat("host: " +
+										dataSourceModbusIP.getHost() + "; ");
+				
+				if(dataSourceModbusIP.getMaxReadBitCount() != 2000)
+					resultado = resultado.concat("maxReadBitCount: " +
+										dataSourceModbusIP.getMaxReadBitCount() + "; ");
+				
+				if(dataSourceModbusIP.getMaxReadRegisterCount() != 125)
+					resultado = resultado.concat("maxReadRegisterCount: " +
+										dataSourceModbusIP.getMaxReadRegisterCount() + "; "); 
+				
+				if(dataSourceModbusIP.getMaxWriteRegisterCount() != 120)
+					resultado = resultado.concat("maxWriteRegisterCount: " +
+										dataSourceModbusIP.getMaxWriteRegisterCount() + "; "); 
+				
+				if(dataSourceModbusIP.isQuantize())
+					resultado = resultado.concat("quantize: " +
+										dataSourceModbusIP.isQuantize() + "; "); 
+				
+				if(dataSourceModbusIP.getRetries() != 3)
+					resultado = resultado.concat("retries: " +
+										dataSourceModbusIP.getRetries() + "; ");
+				
+				if(dataSourceModbusIP.getTimeout() != 1000)
+					resultado = resultado.concat("timeout: " +
+										dataSourceModbusIP.getTimeout() + "; ");
+				
+				if(dataSourceModbusIP.getUpdatePeriods() != 1000)
+					resultado = resultado.concat("updatePeriods: " +
+										dataSourceModbusIP.getUpdatePeriods() + "; ");
+				
+				if(!resultado.equals("")) 
+				{
+					id.add(Integer.toString(idCount));
+					Xid.add(dataSourceModbusIP.getXid());
+					nome.add(dataSourceModbusIP.getName());
+					resultadoLst.add(resultado);
+					idCount++;
+				}
+			}
+			
+        }
+		
+		List<String> tabelaHeader = new ArrayList<String>();
+		tabelaHeader.add("4");
+		tabelaHeader.add("");
+		tabelaHeader.add("XID");
+		tabelaHeader.add("NOME");
+		tabelaHeader.add("RESULTADO");
+		resposta.put("tabelaHeader", tabelaHeader);
+		
+		retornaLista("tamanhoTabela", Integer.toString(id.size()), resposta);
+		resposta.put("id", id);
+		resposta.put("xid", Xid);
+		resposta.put("nome", nome);
+		resposta.put("resultado", resultadoLst);
+		
+	}
+	
+	
+	/*
+	 * INFORMAÇÕES DE DATA SOURCE (HOST E PORTA)
+	 * RETORNA APENAS DE MODBUS IP
+	 */
+	
+	private void dataSoucePortaHost(Map<String,List> resposta)
+	{
+		String MODBUS_IP = "dsEdit.modbusIp";
+		int idCount = 1;
+		List<DataSourceVO<?>> dataS = Common.ctx.getRuntimeManager().getDataSources();
+		
+		List<String> id = new ArrayList<String>();
+		List<String> Xid = new ArrayList<String>();
+		List<String> nome = new ArrayList<String>();
+		List<String> host = new ArrayList<String>();
+		List<String> porta = new ArrayList<String>();
+		
+		for (DataSourceVO<?> ds : dataS) 
+        {
+			
+			if(ds.getType().getKey().equals(MODBUS_IP))
+			{
+				ModbusIpDataSourceVO dataSourceModbusIP = (ModbusIpDataSourceVO) Common
+						.ctx.getRuntimeManager().getDataSource(ds.getId());
+				
+					id.add(Integer.toString(idCount));
+					Xid.add(dataSourceModbusIP.getXid());
+					nome.add(dataSourceModbusIP.getName());
+					host.add(dataSourceModbusIP.getHost());
+					porta.add(Integer.toString(dataSourceModbusIP.getPort()));
+					idCount++;
+			}
+			
+        }
+		
+		List<String> tabelaHeader = new ArrayList<String>();
+		tabelaHeader.add("5");
+		tabelaHeader.add("");
+		tabelaHeader.add("XID");
+		tabelaHeader.add("NOME");
+		tabelaHeader.add("HOST");
+		tabelaHeader.add("PORTA");
+		resposta.put("tabelaHeader", tabelaHeader);
+		
+		retornaLista("tamanhoTabela", Integer.toString(id.size()), resposta);
+		resposta.put("id", id);
+		resposta.put("xid", Xid);
+		resposta.put("nome", nome);
+		resposta.put("host", host);
+		resposta.put("porta", porta);
+            	
+	}
+	
+	
+	/*
+	 * INFORMAÇÕES DE DATA POINT DOS MODEMS
+	 * RETORNA OS OFFSETS
+	 * RETORNA APENAS O MODBUSIP
+	 */
+	
+	private void tabelaModem(Map<String,List> resposta)
+	{
+		String MODBUS_IP = "dsEdit.modbusIp";
+		List<DataSourceVO<?>> dataS = Common.ctx.getRuntimeManager().getDataSources();
+		
+		DataPointDao dataPointDao = new DataPointDao();
+		List<DataPointVO> dataPoints = new ArrayList<DataPointVO>();
+		
+		List<List<String>> data = new ArrayList<List<String>>();
+		
+		List<String> row;
+		
+		int countId = 1;
+		
+        for (DataSourceVO<?> ds : dataS) 
+        {
+        	if(ds.getType().getKey().equals(MODBUS_IP))
+			{
+        		row = new ArrayList<String>(Collections.nCopies(15, ""));
+        		
+        		row.set(0,Integer.toString(countId));
+        		row.set(1,ds.getXid());
+        		row.set(2,ds.getName());
+        		
+        		dataPoints = dataPointDao.getDataPoints(ds.getId(), DataPointNameComparator.instance);
+        		
+        		for (DataPointVO dataPoint : dataPoints)
+        		{
+        			ModbusPointLocatorVO dataPointModbusIP = (ModbusPointLocatorVO) 
+        					dataPoint.getPointLocator();    			
+        			
+        			if(dataPointModbusIP.getOffset() == 64101)
+        			{
+        				if(dataPointModbusIP.getBit() == 0) row.set(3, dataPoint.getName());
+        				if(dataPointModbusIP.getBit() == 1) row.set(4, dataPoint.getName());
+        				if(dataPointModbusIP.getBit() == 2) row.set(5, dataPoint.getName());
+        				if(dataPointModbusIP.getBit() == 3) row.set(6, dataPoint.getName());
+        				if(dataPointModbusIP.getBit() == 4) row.set(7, dataPoint.getName());
+        				if(dataPointModbusIP.getBit() == 5) row.set(8, dataPoint.getName());
+        				if(dataPointModbusIP.getBit() == 6) row.set(9, dataPoint.getName());
+        				if(dataPointModbusIP.getBit() == 7) row.set(10, dataPoint.getName());
+        			}
+        			if(dataPointModbusIP.getOffset() == 64103) row.set(11, dataPoint.getName());
+        			if(dataPointModbusIP.getOffset() == 64104) row.set(12, dataPoint.getName());
+        			if(dataPointModbusIP.getOffset() == 64105) row.set(13, dataPoint.getName());
+        			if(dataPointModbusIP.getOffset() == 64106) row.set(14, dataPoint.getName());
+        		}
+        		data.add(row);
+			}
+        }
+        
+        
+        List<String> id = new ArrayList<String>();
+		List<String> xid = new ArrayList<String>();
+		List<String> nome = new ArrayList<String>();
+		List<String> B0 = new ArrayList<String>();
+		List<String> B1 = new ArrayList<String>();
+		List<String> B2 = new ArrayList<String>();
+		List<String> B3 = new ArrayList<String>();
+		List<String> B4 = new ArrayList<String>();
+		List<String> B5 = new ArrayList<String>();
+		List<String> B6 = new ArrayList<String>();
+		List<String> B7 = new ArrayList<String>();
+		List<String> B03 = new ArrayList<String>();
+		List<String> B04 = new ArrayList<String>();
+		List<String> B05 = new ArrayList<String>();
+		List<String> B06 = new ArrayList<String>();
+		
+        
+        //Transformando para listas com elementos
+        for (List<String> lista : data)
+        {
+        	id.add(lista.get(0));
+        	xid.add(lista.get(1));
+        	nome.add(lista.get(2));
+        	B0.add(lista.get(3));
+        	B1.add(lista.get(4));
+        	B2.add(lista.get(5));
+        	B3.add(lista.get(6));
+        	B4.add(lista.get(7));
+        	B5.add(lista.get(8));
+        	B6.add(lista.get(9));
+        	B7.add(lista.get(10));
+        	B03.add(lista.get(11));
+        	B04.add(lista.get(12));
+        	B05.add(lista.get(13));
+        	B06.add(lista.get(14));
+        }
+        
+        List<String> tabelaHeader = new ArrayList<String>();
+        tabelaHeader.add("15");
+        tabelaHeader.add("");
+        tabelaHeader.add("XID");
+        tabelaHeader.add("NOME - DATASOURCE");
+        tabelaHeader.add("64101/0");
+        tabelaHeader.add("64101/1");
+        tabelaHeader.add("64101/2");
+        tabelaHeader.add("64101/3");
+        tabelaHeader.add("64101/4");
+        tabelaHeader.add("64101/5");
+        tabelaHeader.add("64101/6");
+        tabelaHeader.add("64101/7");
+        tabelaHeader.add("64103");
+        tabelaHeader.add("64104");
+        tabelaHeader.add("64105");
+        tabelaHeader.add("64106");
+        
+        retornaLista("tamanhoTabela", Integer.toString(id.size()), resposta);
+        
+        resposta.put("id", id);
+        resposta.put("xid", xid);
+        resposta.put("nome", nome);
+        resposta.put("B0", B0);
+        resposta.put("B1", B1);
+        resposta.put("B2", B2);
+        resposta.put("B3", B3);
+        resposta.put("B4", B4);
+        resposta.put("B5", B5);
+        resposta.put("B6", B6);
+        resposta.put("B7", B7);
+        resposta.put("B03", B03);
+        resposta.put("B04", B04);
+        resposta.put("B05", B05);
+        resposta.put("B06", B06);
+        
+	}
+	
+	
+	
 	
 	/*Função necessária para adicionar quando é somente uma string
 	* Uma vez que a reposta só aceita List 
