@@ -22,7 +22,73 @@
 <tag:page onload="init">
 <c:if test="${selecionado != null}">
 	<link rel="stylesheet" href="resources/chartist.css">
+	
+	<style>
+       .ct-chart {
+           position: relative;
+       }
+       .ct-legend {
+       	   position: relative;
+           z-index: 10;
+           list-style: none;
+           text-align: center;
+       }
+       .ct-legend li {
+           position: relative;
+           padding-left: 23px;
+           margin-right: 10px;
+           margin-bottom: 3px;
+           cursor: pointer;
+           display: inline-block;
+       }
+       .ct-legend li:before {
+           width: 12px;
+           height: 12px;
+           position: absolute;
+           left: 0;
+           content: '';
+           border: 3px solid transparent;
+           border-radius: 2px;
+       }
+       .ct-legend li.inactive:before {
+           background: transparent;
+       }
+       .ct-legend.ct-legend-inside {
+           position: absolute;
+           top: 0;
+           right: 0;
+       }
+       .ct-legend.ct-legend-inside li{
+           display: block;
+           margin: 0;
+       }
+       .ct-legend .ct-series-0:before {
+           background-color: #0B486B;
+           border-color: #0B486B;
+       }
+       .ct-legend .ct-series-1:before {
+           background-color: #69D2E7;
+           border-color: #69D2E7;
+       }
+       .ct-legend .ct-series-2:before {
+           background-color: #f4c63d;
+           border-color: #f4c63d;
+       }
+       .ct-legend .ct-series-3:before {
+           background-color: #d17905;
+           border-color: #d17905;
+       }
+       .ct-legend .ct-series-4:before {
+           background-color: #453d3f;
+           border-color: #453d3f;
+       }
+       
+      
+
+    </style>
+
 	<script type="text/javascript" src="resources/chartist.min.js"></script>
+	<script type="text/javascript" src="resources/chartist-plugin-legend.js"></script>
 	<script type="text/javascript">	
 	
 		<c:if test="${selecionado[0] == '1'}">
@@ -32,20 +98,22 @@
 
 				var sum = function(a, b) { return a + b };
 
-				var data = {
-				  labels: ['Admin', 'Outros'],
+				var data = 
+				{
+				  <c:set var="adminPor" value="${(adminNum[0] / (adminNum[0] + outrosNum[0])) * 100}"/>
+				  <c:set var="outrosPor" value="${(outrosNum[0] / (adminNum[0] + outrosNum[0])) * 100}"/>
+
+				  labels: ['Admin (${adminNum[0]} - <fmt:formatNumber value="${adminPor}" minFractionDigits="0" maxFractionDigits="2"/>%)', 
+				  		   'Outros (${outrosNum[0]} - <fmt:formatNumber value="${outrosPor}" minFractionDigits="0" maxFractionDigits="2"/>%)'],
 				  series: [${adminNum[0]},${outrosNum[0]}]
 				};
 
-				var options = {
-				  labelInterpolationFnc: function(value) {
-				    var posicao = data.labels.indexOf(value);
-				    var valor = data.series[posicao]
-				    var valorPor = Math.round(valor / data.series.reduce(sum) * 100) + '%';
-				    return value + ' (' + valorPor + ' / ' + valor + ')'
-				  }
-				  
+				var options = 
+				{
+					showLabel: false,
+					plugins: [ Chartist.plugins.legend() ]
 				};
+
 				new Chartist.Pie('.ct-chart', data, options);
 	      	}
 		</c:if>
@@ -80,7 +148,7 @@
 				};
 
 				var options = {
-				  seriesBarDistance: 1
+				  seriesBarDistance: 10
 				};
 
 				new Chartist.Bar('.ct-chart', data, options);
@@ -89,6 +157,8 @@
 		
 		
 		<c:if test="${selecionado[0] == '3'}">
+
+		
 		function watchListPontos() 
 		{
 			var data = 
@@ -96,7 +166,7 @@
 			  labels: 
 			  [ 
 			  	<c:if test="${tamanhoGrafico[0] > 0}">
-			  		<c:forEach var="i" begin="0" end="${tamanhoGrafico[0]}">
+			  		<c:forEach var="i" begin="0" end="${tamanhoGrafico[0] - 1}">
 		            	'<c:out value = "${nomes[i]}"/>',
 		            </c:forEach>
 		        </c:if>
@@ -106,14 +176,18 @@
 				  ,
 			  series: 
 		      [
+			    {"name" : "Watch Lists", "data" : 
 			    [
+			    
 			    	<c:if test="${tamanhoGrafico[0] > 0}">
 			    		<c:forEach var="i" begin="0" end="${tamanhoGrafico[0]-1}">
 		          			<c:out value = "${quantidadesWL[i]}"/>,
 		          	</c:forEach>
 		          	</c:if>
 		            	<c:out value = "${quantidadesWL[tamanhoGrafico[0]]}"/>
-			    ],
+			    ]},
+
+			    {"name" : "Data Points", "data" : 
 			    [
 			    	<c:if test="${tamanhoGrafico[0] > 0}">
 			    		<c:forEach var="i" begin="0" end="${tamanhoGrafico[0]-1}">
@@ -121,17 +195,67 @@
 		          	</c:forEach>
 		          	</c:if>
 		            	<c:out value = "${quantidadesPO[tamanhoGrafico[0]]}"/>
-			    ]
+			    ]}
 			    
 			  ]
 			};
 
 			var options = {
-			  seriesBarDistance: 1
+			  seriesBarDistance: 10,
+			  plugins: [ Chartist.plugins.legend() ]
 			};
 
 			new Chartist.Bar('.ct-chart', data, options);
 		}
+		</c:if>
+		
+		
+		<c:if test="${selecionado[0] == '4'}">
+			//Gráfico de pizza dos estados de DataSources
+			function dataSourcesEstados() 
+			{
+	
+				<c:set var="habPor" value="${(habilitado[0] / (habilitado[0] + desabilitado[0])) * 100}"/>
+				<c:set var="desPor" value="${(desabilitado[0] / (habilitado[0] + desabilitado[0])) * 100}"/>
+	
+				var data = {
+				  labels: ['Habilitados (${habilitado[0]} - <fmt:formatNumber value="${habPor}" minFractionDigits="0" maxFractionDigits="2"/>%)', 
+				  		   'Desabilitados (${desabilitado[0]} - <fmt:formatNumber value="${desPor}" minFractionDigits="0" maxFractionDigits="2"/>%)'],
+				  series: [${habilitado[0]},${desabilitado[0]}]
+				};
+	
+				var options = 
+				{
+					showLabel: false,
+					plugins: [ Chartist.plugins.legend() ]
+				};
+
+				new Chartist.Pie('.ct-chart', data, options);
+	      	}
+		</c:if>
+		
+		<c:if test="${selecionado[0] == '5'}">
+		//Gráfico de pizza dos estados de DataPoints
+		function dataPointsEstados() 
+		{
+
+				<c:set var="habPor" value="${(habilitado[0] / (habilitado[0] + desabilitado[0])) * 100}"/>
+				<c:set var="desPor" value="${(desabilitado[0] / (habilitado[0] + desabilitado[0])) * 100}"/>
+	
+				var data = {
+				  labels: ['Habilitados (${habilitado[0]} - <fmt:formatNumber value="${habPor}" minFractionDigits="0" maxFractionDigits="2"/>%)', 
+				  		   'Desabilitados (${desabilitado[0]} - <fmt:formatNumber value="${desPor}" minFractionDigits="0" maxFractionDigits="2"/>%)'],
+				  series: [${habilitado[0]},${desabilitado[0]}]
+				};
+	
+				var options = 
+				{
+					showLabel: false,
+					plugins: [ Chartist.plugins.legend() ]
+				};
+
+				new Chartist.Pie('.ct-chart', data, options);
+      	}
 	</c:if>
 		
 		
@@ -144,9 +268,14 @@
 					representacoesGraficas();
 				</c:if>
 				<c:if test="${selecionado[0] == '3'}">
-				watchListPontos();
-			</c:if>
-				
+					watchListPontos();
+				</c:if>
+				<c:if test="${selecionado[0] == '4'}">
+					dataSourcesEstados();
+				</c:if>
+				<c:if test="${selecionado[0] == '5'}">
+					dataPointsEstados();
+				</c:if>
 			}
 
 	</script>
@@ -190,7 +319,7 @@
 		${erro}
 	</c:if>
 	
-	<c:if test="${selecionado != null}">
+	<c:if test="${tamanhoGrafico != null}">
 		<div class="borderDiv" style="width: 100%">
 			<div id="ct-chart" class="ct-chart" style="width: 800px; height: 400px;" ></div>
 		</div>
@@ -205,7 +334,7 @@
 	           </c:forEach>
 	         </tr>
 	         
-	         <c:forEach var="i" begin="0" end="${tamanhoTabela[0]}">
+	         <c:forEach var="i" begin="0" end="${tamanhoTabela[0] - 1}">
 	           <tr class="row">
 	           		<c:if test="${selecionado[0] == '1'}">
 	             		<td><c:out value = "${username[i]}"/></td>
@@ -213,6 +342,40 @@
 	             		<td><c:out value = "${email[i]}"/></td>
 	             		<td><c:out value = "${admin[i]}"/></td>
 	             	</c:if>
+	             	
+	             	<c:if test="${selecionado[0] == '6'}">
+	             		<td><c:out value = "${id[i]}"/></td>
+	             		<td><c:out value = "${xid[i]}"/></td>
+	             		<td><c:out value = "${nome[i]}"/></td>
+	             		<td><c:out value = "${resultado[i]}"/></td>
+	             	</c:if>
+	             	
+	             	<c:if test="${selecionado[0] == '7'}">
+	             		<td><c:out value = "${id[i]}"/></td>
+	             		<td><c:out value = "${xid[i]}"/></td>
+	             		<td><c:out value = "${nome[i]}"/></td>
+	             		<td><c:out value = "${host[i]}"/></td>
+	             		<td><c:out value = "${porta[i]}"/></td>
+	             	</c:if>
+	             	
+	             	<c:if test="${selecionado[0] == '8'}">
+	             		<td><c:out value = "${id[i]}"/></td>
+	             		<td><c:out value = "${xid[i]}"/></td>
+	             		<td><c:out value = "${nome[i]}"/></td>
+	             		<td><c:out value = "${B0[i]}"/></td>
+	             		<td><c:out value = "${B1[i]}"/></td>
+	             		<td><c:out value = "${B2[i]}"/></td>
+	             		<td><c:out value = "${B3[i]}"/></td>
+	             		<td><c:out value = "${B4[i]}"/></td>
+	             		<td><c:out value = "${B5[i]}"/></td>
+	             		<td><c:out value = "${B6[i]}"/></td>
+	             		<td><c:out value = "${B7[i]}"/></td>
+	             		<td><c:out value = "${B03[i]}"/></td>
+	             		<td><c:out value = "${B04[i]}"/></td>
+	             		<td><c:out value = "${B05[i]}"/></td>
+	             		<td><c:out value = "${B06[i]}"/></td>
+	             	</c:if>
+	             	
 	           </tr>
 	         </c:forEach>
 	         
