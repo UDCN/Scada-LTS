@@ -376,6 +376,35 @@
 	             		<td><c:out value = "${B06[i]}"/></td>
 	             	</c:if>
 	             	
+	             	<c:if test="${selecionado[0] == '9'}">
+	             		<td><c:out value = "${id[i]}"/></td>
+	             		<td><c:out value = "${nome[i]}"/></td>
+	             		<td><c:out value = "${B1[i]}"/></td>
+	             		<td><c:out value = "${B2[i]}"/></td>
+	             		<td><c:out value = "${B4[i]}"/></td>
+	             		<td><c:out value = "${B5[i]}"/></td>
+	             		<td><c:out value = "${B6[i]}"/></td>
+	             		<td><c:out value = "${B7[i]}"/></td>
+	             		<td><c:out value = "${B8[i]}"/></td>
+	             		<td><c:out value = "${B9[i]}"/></td>
+	             		<td><c:out value = "${B10[i]}"/></td>
+	             		<td><c:out value = "${B11[i]}"/></td>
+	             		<td><c:out value = "${B54[i]}"/></td>
+	             		<td><c:out value = "${B88[i]}"/></td>
+	             		<td><c:out value = "${B100[i]}"/></td>
+	             		<td><c:out value = "${B101[i]}"/></td>
+	             	</c:if>
+	             	
+	             	<c:if test="${selecionado[0] == '10'}">
+	             	
+	             		<td>
+	             			<a href='#' onClick="MyWindow=window.open('lista_erro.shtm?id=<c:out value = "${id[i]}" />','MyWindow',width=600,height=300);return false;"> <c:out value = "${xid[i]}" /> </a> 
+	             		</td>
+	             		<td><c:out value = "${nome[i]}"/></td>
+	             		<td><c:out value = "${erros[i]}"/></td>
+	             	</c:if>
+	             	
+	             	
 	           </tr>
 	         </c:forEach>
 	         
