@@ -29,7 +29,7 @@
 		<h2>XID: ${xid[0]} - NOME: ${nome[0]}</h2> 
 
 
-		 <table cellspacing="1">
+		 <table width="300px" border="1px" bordercolor="#FFFFFF">
 	         <tr>
 	           <c:forEach var="i" begin="1" end="${tabelaHeader[0]}">
 	             <th><c:out value = "${tabelaHeader[i]}"/></th>
