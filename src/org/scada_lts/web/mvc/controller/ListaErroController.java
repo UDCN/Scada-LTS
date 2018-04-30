@@ -46,8 +46,21 @@ public class ListaErroController extends ParameterizableViewController
 			
 			for(EventInstance evento : eventos)
 			{
+				/*
+				 * TRATA MENSAGEM
+				 * FOI NECESSÁRIO TROCAR '[' E ']' POR '/'
+				 * PARA PODER REALIZAR O REPLACE
+				 */
+				
+				String mensagemT = evento.getMessage().serialize();
+				mensagemT = mensagemT.replace("[", "/");
+        		String[] corta_mensagem = mensagemT.split("/");
+        		mensagemT = corta_mensagem[1].replace("]", "/");
+        		String[] corta_mensagem1 = mensagemT.split("/");
+        		corta_mensagem1[0] = corta_mensagem1[0].replace("|", " ");
+        		
 				id.add(Integer.toString(evento.getId()));
-				mensagem.add(evento.getMessage().getKey());
+				mensagem.add(corta_mensagem1[0]);
 			}
 			
 			List<String> tabelaHeader = new ArrayList<String>();
