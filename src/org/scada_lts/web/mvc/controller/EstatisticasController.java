@@ -14,11 +14,9 @@ import com.serotonin.mango.view.View;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.scada_lts.dao.DataSourceDAO;
 import org.scada_lts.dao.ViewDAO;
+import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.watchlist.WatchListDAO;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,20 +25,17 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 import org.springframework.web.util.WebUtils;
 
-import com.serotonin.db.spring.ConnectionCallbackVoid;
 import com.serotonin.mango.Common;
-import com.serotonin.mango.db.DatabaseAccess;
 import com.serotonin.mango.db.dao.DataPointDao;
+import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.db.dao.UserDao;
+import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.DataPointNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.vo.dataSource.modbus.ModbusIpDataSourceVO;
 import com.serotonin.mango.vo.dataSource.modbus.ModbusPointLocatorVO;
 import com.serotonin.mango.vo.permission.Permissions;
-import com.serotonin.mango.web.dwr.UsersDwr;
-import com.sun.corba.se.spi.activation.Repository;
-
 /*
  * RETORNA OS GRÁFICOS E TABELAS DO SISTEMA
  * ---------------------------------------
@@ -53,8 +48,7 @@ import com.sun.corba.se.spi.activation.Repository;
 @RequestMapping("/estatisticas.shtm") 
 public class EstatisticasController extends ParameterizableViewController
 {
-	private static final Log LOG = LogFactory.getLog(EstatisticasController.class);
-	
+
 	@RequestMapping(method = RequestMethod.GET)
 	protected ModelAndView inicial(HttpServletRequest request)
 			throws Exception 
@@ -92,6 +86,8 @@ public class EstatisticasController extends ParameterizableViewController
 			case "6": dataSourcesPadrao(resposta); break;
 			case "7": dataSoucePortaHost(resposta); break;
 			case "8": tabelaModem(resposta); break;
+			case "9": tabelaModbus(resposta); break;
+			case "10": contaErroDataSource(resposta); break;
 		}
 		
 		retornaLista("selecionado", comando, resposta);
@@ -591,6 +587,8 @@ public class EstatisticasController extends ParameterizableViewController
         tabelaHeader.add("64105");
         tabelaHeader.add("64106");
         
+        resposta.put("tabelaHeader", tabelaHeader);
+        
         retornaLista("tamanhoTabela", Integer.toString(id.size()), resposta);
         
         resposta.put("id", id);
@@ -611,6 +609,232 @@ public class EstatisticasController extends ParameterizableViewController
         
 	}
 	
+	
+	/*
+	 * INFORMAÇÕES DE DATA POINT DOS MODEMS
+	 * RETORNA OS OFFSETS
+	 * RETORNA APENAS DO MODBUSIP
+	 */
+	
+	private void tabelaModbus(Map<String,List> resposta)
+	{
+		String MODBUS_IP = "dsEdit.modbusIp";
+		List<DataSourceVO<?>> dataS = Common.ctx.getRuntimeManager().getDataSources();
+		
+		DataPointDao dataPointDao = new DataPointDao();
+		List<DataPointVO> dataPoints = new ArrayList<DataPointVO>();
+		
+		List<List<String>> data = new ArrayList<List<String>>();
+		List<String> row;
+		
+		int countId = 1;
+		
+        for (DataSourceVO<?> ds : dataS) 
+        {
+        	if(ds.getType().getKey().equals(MODBUS_IP))
+			{
+        		row = new ArrayList<String>(Collections.nCopies(16, ""));
+        		
+        		row.set(0,Integer.toString(countId));
+        		row.set(1,ds.getName());
+        		
+        		dataPoints = dataPointDao.getDataPoints(ds.getId(), DataPointNameComparator.instance);
+        		
+        		for (DataPointVO dataPoint : dataPoints)
+        		{
+        			ModbusPointLocatorVO dataPointModbusIP = (ModbusPointLocatorVO) 
+        					dataPoint.getPointLocator();    			
+        			
+        			
+        			if(dataPointModbusIP.getSlaveId() == 1) row.set(2, dataPoint.getName().
+        						concat(", " + row.get(2).toString()));
+                    if(dataPointModbusIP.getSlaveId() == 2) row.set(3, dataPoint.getName().
+                    			concat(", " + row.get(3).toString()));
+                    if(dataPointModbusIP.getSlaveId() == 4) row.set(4, dataPoint.getName().
+                    			concat(", " + row.get(4).toString()));
+                    if(dataPointModbusIP.getSlaveId() == 5) row.set(5, dataPoint.getName().
+                    			concat(", " + row.get(5).toString()));
+                    if(dataPointModbusIP.getSlaveId() == 6) row.set(6, dataPoint.getName().
+                    			concat(", " + row.get(6).toString()));
+                    if(dataPointModbusIP.getSlaveId() == 7) row.set(7, dataPoint.getName().
+                    			concat(", " + row.get(7).toString()));
+                    if(dataPointModbusIP.getSlaveId() == 8) row.set(8, dataPoint.getName().
+                    			concat(", " + row.get(8).toString()));
+                    if(dataPointModbusIP.getSlaveId() == 9) row.set(9, dataPoint.getName().
+                    			concat(", " + row.get(9).toString()));
+                    if(dataPointModbusIP.getSlaveId() == 10) row.set(10, dataPoint.getName().
+                    			concat(", " + row.get(10).toString()));
+                    if(dataPointModbusIP.getSlaveId() == 11) row.set(11, dataPoint.getName().
+                    			concat(", " + row.get(11).toString()));
+                    if(dataPointModbusIP.getSlaveId() == 54) row.set(12, dataPoint.getName().
+                    			concat(", " + row.get(12).toString()));
+                    if(dataPointModbusIP.getSlaveId() == 88) row.set(13, dataPoint.getName().
+                    			concat(", " + row.get(13).toString()));
+                    if(dataPointModbusIP.getSlaveId() == 100) row.set(14, dataPoint.getName().
+                    			concat(", " + row.get(14).toString()));
+                    if(dataPointModbusIP.getSlaveId() == 101) row.set(15, dataPoint.getName().
+                    			concat(", " + row.get(15).toString()));
+        				
+        				
+        		}
+        		data.add(row);
+        		countId++;
+			}
+        }
+        
+        
+        List<String> id = new ArrayList<String>();
+		List<String> nome = new ArrayList<String>();
+		List<String> B1 = new ArrayList<String>();
+		List<String> B2 = new ArrayList<String>();
+		List<String> B4 = new ArrayList<String>();
+		List<String> B5 = new ArrayList<String>();
+		List<String> B6 = new ArrayList<String>();
+		List<String> B7 = new ArrayList<String>();
+		List<String> B8 = new ArrayList<String>();
+		List<String> B9 = new ArrayList<String>();
+		List<String> B10 = new ArrayList<String>();
+		List<String> B11 = new ArrayList<String>();
+		List<String> B54 = new ArrayList<String>();
+		List<String> B88 = new ArrayList<String>();
+		List<String> B100 = new ArrayList<String>();
+		List<String> B101 = new ArrayList<String>();
+		
+        
+        //Transformando para listas com elementos
+        for (List<String> lista : data)
+        {
+        	id.add(lista.get(0));
+        	nome.add(lista.get(1));
+        	B1.add(lista.get(2));
+        	B2.add(lista.get(3));
+        	B4.add(lista.get(4));
+        	B5.add(lista.get(5));
+        	B6.add(lista.get(6));
+        	B7.add(lista.get(7));
+        	B8.add(lista.get(8));
+        	B9.add(lista.get(9));
+        	B10.add(lista.get(10));
+        	B11.add(lista.get(11));
+        	B54.add(lista.get(12));
+        	B88.add(lista.get(13));
+        	B100.add(lista.get(14));
+        	B101.add(lista.get(15));
+        }
+        
+        
+        List<String> tabelaHeader = new ArrayList<String>();
+        tabelaHeader.add("16");
+        tabelaHeader.add("ID");
+        tabelaHeader.add("NOME - DATASOURCE");
+        tabelaHeader.add("1");
+        tabelaHeader.add("2");
+        tabelaHeader.add("4");
+        tabelaHeader.add("5");
+        tabelaHeader.add("6");
+        tabelaHeader.add("7");
+        tabelaHeader.add("8");
+        tabelaHeader.add("9");
+        tabelaHeader.add("10");
+        tabelaHeader.add("11");
+        tabelaHeader.add("54");
+        tabelaHeader.add("88");
+        tabelaHeader.add("100");
+        tabelaHeader.add("101");
+        
+        resposta.put("tabelaHeader", tabelaHeader);
+        
+        retornaLista("tamanhoTabela", Integer.toString(id.size()), resposta);
+        
+        resposta.put("id", id);
+        resposta.put("nome", nome);
+        resposta.put("B1", B1);
+        resposta.put("B2", B2);
+        resposta.put("B4", B4);
+        resposta.put("B5", B5);
+        resposta.put("B6", B6);
+        resposta.put("B7", B7);
+        resposta.put("B8", B8);
+        resposta.put("B9", B9);
+        resposta.put("B10", B10);
+        resposta.put("B11", B11);
+        resposta.put("B54", B54);
+        resposta.put("B88", B88);
+        resposta.put("B100", B100);
+        resposta.put("B101", B101);
+		
+	}
+	
+	public void contaErroDataSource (Map<String,List> resposta)
+	{
+		DataSourceDao dataSourceDao = new DataSourceDao();
+		
+		//List<DataSourceVO<?>> dataS = Common.ctx.getRuntimeManager().getDataSources();
+		
+		List<DataSourceVO<?>> dataS = dataSourceDao.getDataSources();
+		
+		List<List<String>> data = new ArrayList<List<String>>();
+		List<String> row;
+		EventDAO eventDao = new EventDAO();
+		
+		for (DataSourceVO<?> ds : dataS) 
+        {
+			row = new ArrayList<String>();
+			
+			//Type 3 é DataSource; O TypeRef=1 é o ID do DS
+			List<EventInstance> eventos = eventDao.filtered("typeId=? AND typeRef1=?", 
+					new Object[]{3, ds.getId()}, 0);
+			int tamanho = eventos.size(); 
+					
+			if (tamanho > 0)
+			{
+				row.add(Integer.toString(ds.getId()));
+				row.add(ds.getName());
+				row.add(Integer.toString(tamanho));
+				row.add(ds.getXid());
+				data.add(row);
+			}
+			
+        }
+		
+		data.sort(new Comparator<List<String>>()
+		{
+			@Override
+			public int compare(List<String> o1, List<String> o2) {
+				return -o1.get(2).compareTo(o2.get(2));
+			}
+		});
+		
+		List<String> nome = new ArrayList<String>();
+		List<String> id = new ArrayList<String>();
+		List<String> numErros = new ArrayList<String>();
+		List<String> xid = new ArrayList<String>();
+		
+		//Transformando para listas com elementos
+        for (List<String> lista : data)
+        {
+        	id.add(lista.get(0));
+        	nome.add(lista.get(1));
+        	numErros.add(lista.get(2));
+        	xid.add(lista.get(3));
+        }
+		
+
+        List<String> tabelaHeader = new ArrayList<String>();
+        tabelaHeader.add("3");
+        tabelaHeader.add("XID");
+        tabelaHeader.add("NOME");
+        tabelaHeader.add("NÚMERO DE ERROS");
+        
+        resposta.put("tabelaHeader", tabelaHeader);
+        
+        retornaLista("tamanhoTabela", Integer.toString(nome.size()), resposta);
+        
+        resposta.put("id", id);
+        resposta.put("nome", nome);
+        resposta.put("erros", numErros);
+        resposta.put("xid", xid);
+	}
 	
 	
 	
