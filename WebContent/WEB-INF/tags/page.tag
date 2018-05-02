@@ -206,7 +206,7 @@
                 <li><a href="reports.shtm" onclick="onClickHelp(this,'reportInstancesMenu')" > <tag:img id="Reports" png="report" title="header.reports"/> <br> Relatorios</a></li>
                 <li><a href="events.shtm" onclick="" > <tag:img id="Alarms" png="flag_white" title="header.alarms"/> <br> Alarmes </a></li>
                 <li><a href="maps.shtm"  > <tag:img id="Maps" png="maps" title="header.maps"/> <br> Mapa </a></li>
-                <li><a href="contact.shtm" ><tag:img id="Contact" png="email" title="header.contact"/> <br> Contato </a></li>
+                <li><a href="contato.shtm" ><tag:img id="Contact" png="email" title="header.contato"/> <br> Contato </a></li>
                 <li><a> <tag:img png="full" title="header.full" onclick="full()"/> <br> Full </a></li>
                 <li><a> <tag:img id="userMutedImg" onclick="MiscDwr.toggleUserMuted(setUserMuted)" onmouseover="hideLayer('localeEdit')"/> <br> Som </a></li>
                 <li><a href="logout.htm"><tag:img png="logout" title="header.logout" onmouseover="hideLayer('localeEdit')"/> <br> Sair</a></li>
