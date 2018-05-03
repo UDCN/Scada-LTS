@@ -335,7 +335,7 @@
 	         </tr>
 	         
 	         <c:forEach var="i" begin="0" end="${tamanhoTabela[0] - 1}">
-	           <tr class="row">
+	           <tr class="smRow">
 	           		<c:if test="${selecionado[0] == '1'}">
 	             		<td><c:out value = "${username[i]}"/></td>
 	             		<td><c:out value = "${telefone[i]}"/></td>

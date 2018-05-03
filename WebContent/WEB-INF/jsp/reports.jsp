@@ -273,7 +273,7 @@
                 {
                     rowCreator: function(options) {
                         var tr = document.createElement("tr");
-                        tr.className = "row"+ (options.rowIndex % 2 == 0 ? "" : "Alt");
+                        tr.className = "smRow"+ (options.rowIndex % 2 == 0 ? "" : "Alt");
                         return tr;
                     },
                     cellCreator: function(options) {
@@ -519,8 +519,8 @@
           <td><fmt:message key="reports.doNotPurge"/></td>
           <td></td>
         </tr>
-        <tr id="hourglass" class="row"><td colspan="8" align="center"><tag:img png="hourglass" title="reports.loading"/></td></tr>
-        <tr id="noReportInstances" class="row" style="display:none;"><td colspan="8"><fmt:message key="reports.noInstances"/></td></tr>
+        <tr id="hourglass" class="smRow"><td colspan="8" align="center"><tag:img png="hourglass" title="reports.loading"/></td></tr>
+        <tr id="noReportInstances" class="smRow" style="display:none;"><td colspan="8"><fmt:message key="reports.noInstances"/></td></tr>
         <tbody id="reportInstancesList"></tbody>
       </table>
     </div>
