@@ -47,6 +47,7 @@ import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.dataSource.meta.MetaDataSourceRT;
+import com.serotonin.mango.rt.dataSource.modbus.ModbusIpDataSource;
 import com.serotonin.mango.rt.event.SimpleEventDetector;
 import com.serotonin.mango.rt.event.compound.CompoundEventDetectorRT;
 import com.serotonin.mango.rt.event.detectors.PointEventDetectorRT;
@@ -131,7 +132,7 @@ public class RuntimeManager {
 				if (safe) {
 					config.setEnabled(false);
 					dataSourceDao.saveDataSource(config);
-				} else if (initializeDataSource(config))
+				} else if (initializeDataSource(config, true))
 					pollingRound.add(config);
 			}
 		}
@@ -304,6 +305,11 @@ public class RuntimeManager {
 	}
 
 	private boolean initializeDataSource(DataSourceVO<?> vo) {
+		return initializeDataSource(vo, false);
+	}
+	
+	@SuppressWarnings("deprecation")
+	private boolean initializeDataSource(DataSourceVO<?> vo, boolean scriptInicializacao) {
 		synchronized (runningDataSources) {
 			// If the data source is already running, just quit.
 			if (isDataSourceRunning(vo.getId()))
@@ -315,22 +321,71 @@ public class RuntimeManager {
 			// Create and initialize the runtime version of the data source.
 			DataSourceRT dataSource = vo.createDataSourceRT();
 			dataSource.initialize();
+			
+			//Verifica se está habilitada a variável de verificar conexao
+			boolean aguardaConectarVar = true; 
+					//Common.getEnvironmentProfile().getBoolean("abilit.enableAguardaConexao", false);
+			
+			//Testa a conexão, caso a variável esteja conectada
+			boolean conectado = true;
+			if(aguardaConectarVar && scriptInicializacao)
+				conectado = aguardaConectar(vo, dataSource);
+			
+			//Se está conectado, coloca na lista
+			if(conectado)
+			{
+				// Add it to the list of running data sources.
+				runningDataSources.add(dataSource);
 
-			// Add it to the list of running data sources.
-			runningDataSources.add(dataSource);
+				// Add the enabled points to the data source.
+				List<DataPointVO> dataSourcePoints = new DataPointDao()
+						.getDataPoints(vo.getId(), null);
+				for (DataPointVO dataPoint : dataSourcePoints) {
+					if (dataPoint.isEnabled())
+						startDataPoint(dataPoint);
+				}
 
-			// Add the enabled points to the data source.
-			List<DataPointVO> dataSourcePoints = new DataPointDao()
-					.getDataPoints(vo.getId(), null);
-			for (DataPointVO dataPoint : dataSourcePoints) {
-				if (dataPoint.isEnabled())
-					startDataPoint(dataPoint);
+				LOG.info("Data source '" + vo.getName() + "' initialized");
 			}
-
-			LOG.info("Data source '" + vo.getName() + "' initialized");
-
+			
 			return true;
 		}
+	}
+	
+	private boolean aguardaConectar(DataSourceVO<?> vo, DataSourceRT dataSource)
+	{
+		int tentativas = 0;
+		for(tentativas = 0; tentativas < 4; tentativas++)
+		{
+			//Se não conectou
+			if(!dataSource.getConnected())
+			{
+				//Escreve no Log
+				LOG.info(vo.getName() + " - NÃO CONECTADO");
+				try {
+				  //Delay progressivo a cada tentativa	
+				  //this.wait(tentativas  * 997L);
+					this.wait( Integer.toUnsignedLong( (tentativas + 1) * 997 ));
+				} catch (InterruptedException e) {
+					LOG.info(e.toString());
+				}
+			}
+			//Se conseguiu a conexão, sai do loop
+			else
+				break;
+		}
+		
+		//Se as tentativas excederam 3, desabilita o DS e retorna o erro de habilitar
+		if (tentativas >= 3)
+		{
+			LOG.info(vo.getName() + " - ERRO AO HABILITAR");
+			vo.setEnabled(false);
+			DataSourceDao dataSourceDao = new DataSourceDao();
+			dataSourceDao.saveDataSource(vo);
+			return false;
+		}
+			
+		return true;
 	}
 
 	private void startDataSourcePolling(DataSourceVO<?> vo) {
