@@ -18,6 +18,10 @@
  */
 package com.serotonin.mango.rt;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,6 +31,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.SerializationData;
+import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.util.Assert;
 
 import com.serotonin.ShouldNeverHappenException;
@@ -71,7 +79,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 
 public class RuntimeManager {
 	private static final Log LOG = LogFactory.getLog(RuntimeManager.class);
-
+	
 	private final List<DataSourceRT> runningDataSources = new CopyOnWriteArrayList<DataSourceRT>();
 
 	/**
@@ -308,6 +316,10 @@ public class RuntimeManager {
 		return initializeDataSource(vo, false);
 	}
 	
+	/*
+	 * A variável scriptInicilizacao indica que o método de incialização
+	 * verificará o status da variável antes de retornar true 
+	 */
 	@SuppressWarnings("deprecation")
 	private boolean initializeDataSource(DataSourceVO<?> vo, boolean scriptInicializacao) {
 		synchronized (runningDataSources) {
@@ -324,7 +336,8 @@ public class RuntimeManager {
 			
 			//Verifica se está habilitada a variável de verificar conexao
 			boolean aguardaConectarVar = true; 
-					//Common.getEnvironmentProfile().getBoolean("abilit.enableAguardaConexao", false);
+			aguardaConectarVar = 
+				Common.getEnvironmentProfile().getBoolean("abilit.enableAguardaConexao", false);
 			
 			//Testa a conexão, caso a variável esteja conectada
 			boolean conectado = true;
@@ -363,16 +376,19 @@ public class RuntimeManager {
 				//Escreve no Log
 				LOG.info(vo.getName() + " - NÃO CONECTADO");
 				try {
-				  //Delay progressivo a cada tentativa	
-				  //this.wait(tentativas  * 997L);
-					this.wait( Integer.toUnsignedLong( (tentativas + 1) * 997 ));
+	    			//Delay progressivo a cada tentativa	
+     				this.wait( Integer.toUnsignedLong( (tentativas + 1) * 499 ));
 				} catch (InterruptedException e) {
 					LOG.info(e.toString());
 				}
 			}
 			//Se conseguiu a conexão, sai do loop
 			else
+			{
+				LOG.info(vo.getName() + " - CONECTADO");
 				break;
+			}
+				
 		}
 		
 		//Se as tentativas excederam 3, desabilita o DS e retorna o erro de habilitar
@@ -382,9 +398,31 @@ public class RuntimeManager {
 			vo.setEnabled(false);
 			DataSourceDao dataSourceDao = new DataSourceDao();
 			dataSourceDao.saveDataSource(vo);
+			
+			//Retira o data source do RT
+			dataSource.terminate();
+			
+			//Insere o DataSource a tabela desativado
+			try
+			{
+				DAO.getInstance().getJdbcTemp().update("INSERT INTO desativados (xid) VALUES (?)", 
+					new Object[] {vo.getXid()});
+			}catch (Exception e){
+				LOG.info("Erro ao inserir Data Source.");
+			}
+			
+			
 			return false;
 		}
-			
+		
+		//Retira o DataSource dos pontos que foram desativados
+		try {
+			DAO.getInstance().getJdbcTemp().update("DELETE FROM desativados WHERE xid=?", 
+				new Object[] {vo.getXid()});
+		}catch (Exception e){
+			LOG.info("Erro ao deletar Data Source da base de dados.");
+		}
+		
 		return true;
 	}
 
