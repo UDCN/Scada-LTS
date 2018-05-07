@@ -185,7 +185,7 @@ public class ModbusIpDataSource extends ModbusDataSource {
 	@Override
 	public boolean getConnected()
 	{
-		return modbusMaster.isConnected();
+		return modbusMaster.isInitialized();
 	}
 
 }
