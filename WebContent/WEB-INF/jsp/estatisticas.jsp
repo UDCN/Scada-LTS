@@ -24,6 +24,19 @@
 	<link rel="stylesheet" href="resources/chartist.css">
 	
 	<style>
+		.tim 
+		{
+		    border: 0;
+		    padding: 0;
+		    display: inline;
+		    background: none;
+		    text-decoration: underline;
+		    color: blue;
+		}
+		/*.btnlink:hover {
+		    cursor: pointer;
+		}*/
+		
        .ct-chart {
            position: relative;
        }
@@ -311,12 +324,13 @@
 					<input type="radio" name="tipo" value="8" <c:if test="${selecionado[0] == '8'}"> checked </c:if> > Cadastro Modem<br>
 					<input type="radio" name="tipo" value="9" <c:if test="${selecionado[0] == '9'}"> checked </c:if> > Cadastro Modbus<br>
 					<input type="radio" name="tipo" value="10" <c:if test="${selecionado[0] == '10'}"> checked </c:if> > Quantidade de erros por Data Source<br>
+					<input type="radio" name="tipo" value="11" <c:if test="${selecionado[0] == '11'}"> checked </c:if> > Data Sources não habilitados<br>
 					<input type="submit" value="Gerar" name="gerar">
 		</form>
 	</div>
 	
 	<c:if test="${erro != null}">
-		${erro}
+		<font color="red">${erro[0]}</font>
 	</c:if>
 	
 	<c:if test="${tamanhoGrafico != null}">
@@ -404,6 +418,20 @@
 	             		<td><c:out value = "${erros[i]}"/></td>
 	             	</c:if>
 	             	
+	             	<c:if test="${selecionado[0] == '11'}">
+	             	
+	             		<td><c:out value = "${xid[i]}"/></td>
+	             		<td><c:out value = "${nome[i]}"/></td>
+	             		
+	             		<td>
+		             		<form action="estatisticas.shtm" method="POST">
+							    <input type="hidden" name="gerar" value="1" />
+							    <input type="hidden" name="tipo" value="11" />
+							    <input type="hidden" name="habilitar" value="${xid[i]}" />
+							    <button class="tim">Habilitar</button>
+							</form>
+						</td>
+	             	</c:if>
 	             	
 	           </tr>
 	         </c:forEach>

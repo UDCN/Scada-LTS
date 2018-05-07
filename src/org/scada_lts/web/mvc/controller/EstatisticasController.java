@@ -1,5 +1,7 @@
 package org.scada_lts.web.mvc.controller;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,11 +16,17 @@ import com.serotonin.mango.view.View;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.DataSourceDAO;
+import org.scada_lts.dao.SerializationData;
 import org.scada_lts.dao.ViewDAO;
 import org.scada_lts.dao.event.EventDAO;
 import org.scada_lts.dao.watchlist.WatchListDAO;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -29,6 +37,8 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.db.dao.DataSourceDao;
 import com.serotonin.mango.db.dao.UserDao;
+import com.serotonin.mango.rt.RuntimeManager;
+import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.event.EventInstance;
 import com.serotonin.mango.vo.DataPointNameComparator;
 import com.serotonin.mango.vo.DataPointVO;
@@ -44,11 +54,23 @@ import com.serotonin.mango.vo.permission.Permissions;
  * [1...] - CONTER OS NOMES DO HEADERS
  */
 
+import br.org.scadabr.vo.scripting.ScriptVO;
+
 @Controller
 @RequestMapping("/estatisticas.shtm") 
 public class EstatisticasController extends ParameterizableViewController
 {
-
+	//RowMapper
+	private class EstatisticaRowMapper implements RowMapper<String> {
+		public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+			String dados;
+            dados = rs.getString("xid");
+			return dados;
+		}
+	}
+	
+	private static final Log LOG = LogFactory.getLog(EstatisticasController.class);
+	
 	@RequestMapping(method = RequestMethod.GET)
 	protected ModelAndView inicial(HttpServletRequest request)
 			throws Exception 
@@ -68,13 +90,14 @@ public class EstatisticasController extends ParameterizableViewController
 		
 		if (WebUtils.hasSubmitParameter(request, "gerar"))
 		{
-			executaComando(request.getParameter("tipo"), resposta);
+			executaComando(request.getParameter("tipo"), resposta, request);
 		}
 		
 		return new ModelAndView("estatisticas", resposta);
 	}
 	
-	private void executaComando (String comando, Map<String,List> resposta)
+	private void executaComando (String comando, Map<String,List> resposta, 
+			HttpServletRequest request)
 	{
 		switch(comando)
 		{
@@ -88,6 +111,7 @@ public class EstatisticasController extends ParameterizableViewController
 			case "8": tabelaModem(resposta); break;
 			case "9": tabelaModbus(resposta); break;
 			case "10": contaErroDataSource(resposta); break;
+			case "11": dataSourcesDesabitilados(resposta, request); break;
 		}
 		
 		retornaLista("selecionado", comando, resposta);
@@ -142,6 +166,8 @@ public class EstatisticasController extends ParameterizableViewController
 		resposta.put("admin", admin);
 		retornaLista("adminNum", Integer.toString(adminNum), resposta);
 		retornaLista("outrosNum", Integer.toString(outrosNum), resposta);
+		
+		retornaLista("tamanhoGrafico", Integer.toString(1), resposta);
 	}
 	
 	/*
@@ -269,7 +295,7 @@ public class EstatisticasController extends ParameterizableViewController
 		
 		retornaLista("habilitado", Integer.toString(habilitado), resposta);
 		retornaLista("desabilitado", Integer.toString(desabilitado), resposta);
-		
+		retornaLista("tamanhoGrafico", Integer.toString(1), resposta);
 	}
 	
 	/*
@@ -306,7 +332,7 @@ public class EstatisticasController extends ParameterizableViewController
 		
 		retornaLista("habilitado", Integer.toString(habilitado), resposta);
 		retornaLista("desabilitado", Integer.toString(desabilitado), resposta);
-		
+		retornaLista("tamanhoGrafico", Integer.toString(1), resposta);
 	}
 	
 	/*
@@ -837,6 +863,124 @@ public class EstatisticasController extends ParameterizableViewController
 	}
 	
 	
+	/*
+	 * Lista os Data Sources que não foram habilitados na inicialização
+	 */
+	public void dataSourcesDesabitilados(Map<String,List> resposta, HttpServletRequest request)
+	{
+		
+		if (WebUtils.hasSubmitParameter(request, "habilitar"))
+		{
+			iniciaDS(request.getParameter("habilitar"), resposta);
+		}
+		
+		List<String> xids;
+		xids = (List<String>) DAO.getInstance().getJdbcTemp().query("SELECT * FROM desativados", 
+				new Object [] {}, new EstatisticaRowMapper());
+		
+		List<String> nome = new ArrayList<String>();
+		
+		DataSourceDao dataSourceDao = new DataSourceDao();
+		for(String xid : xids)
+		{
+			DataSourceVO<?> ds;
+			ds = dataSourceDao.getDataSource(xid);
+			nome.add(ds.getName());
+		}
+		
+		List<String> tabelaHeader = new ArrayList<String>();
+        tabelaHeader.add("3");
+        tabelaHeader.add("XID");
+        tabelaHeader.add("NOME");
+        tabelaHeader.add("LINK");
+        
+        resposta.put("tabelaHeader", tabelaHeader);
+        
+        retornaLista("tamanhoTabela", Integer.toString(nome.size()), resposta);
+        
+        resposta.put("xid", xids);
+        resposta.put("nome", nome);
+		
+	}
+	
+	
+	/* ----------------------------------------------------------------------------------------- */
+	
+	
+	synchronized public void iniciaDS(String xid, Map<String,List> resposta)
+	{
+		
+		RuntimeManager runtimeManager = Common.ctx.getRuntimeManager();
+		DataSourceVO<?> ds = new DataSourceDao().getDataSource(xid);
+		LOG.info(ds.getName());
+		if (ds != null) 
+		{
+			Permissions.ensureDataSourcePermission(Common.getUser(), ds
+					.getId());
+			ds.setEnabled(true);
+			runtimeManager.saveDataSource(ds);
+			
+			//Assert.isTrue(ds.isEnabled());
+			//Cria o data source RT
+			DataSourceRT dataSourceRT = ds.createDataSourceRT();
+			
+			dataSourceRT.initialize();
+			
+			//Verifica se inicializou
+			int tentativas = 0;
+			for(tentativas = 0; tentativas < 4; tentativas++)
+			{
+				//Se não conectou
+				if(!dataSourceRT.getConnected())
+				{
+					//Escreve no Log
+					try {
+						//Delay progressivo a cada tentativa
+						Thread.currentThread();
+						Thread.sleep(Integer.toUnsignedLong( (tentativas + 1) * 499 ));
+	     				//this.wait( Integer.toUnsignedLong( (tentativas + 1) * 499 ));
+					} catch (InterruptedException e) {
+					}
+				}
+				//Se conseguiu a conexão, sai do loop
+				else
+				{
+					break;
+				}
+					
+			}
+			//Se as tentativas excederam 3, desabilita o DS e retorna o erro de habilitar
+			if (tentativas >= 3)
+			{
+				ds.setEnabled(false);
+				runtimeManager.saveDataSource(ds);
+				
+				//Retira o data source do RT
+				dataSourceRT.terminate();
+				
+				//Insere o DataSource a tabela desativado
+				try
+				{
+					DAO.getInstance().getJdbcTemp().update("INSERT INTO desativados (xid) VALUES (?)", 
+							new Object[] {ds.getXid()});
+				}catch(Exception e) {
+					retornaLista("erro", "Erro ao habilitar Data Point.", resposta);
+				}
+						
+				
+				return;
+			}
+			
+			
+			//Se conseguiu conectar
+			
+			//Retira o DataSource dos pontos que foram desativados
+			DAO.getInstance().getJdbcTemp().update("DELETE FROM desativados WHERE xid=?", 
+					new Object[] {ds.getXid()});
+			//Adiciona o Data Source na RT
+			dataSourceRT.beginPolling();
+		}
+	}
 	
 	/*Função necessária para adicionar quando é somente uma string
 	* Uma vez que a reposta só aceita List 
