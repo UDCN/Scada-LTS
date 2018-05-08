@@ -180,7 +180,7 @@
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <c:if test="${!empty sessionUser}">
-              <li class="active"><a><tag:img png="house" title="header.goHomeUrl" onclick="goHomeUrl()" onmouseover="hideLayer('localeEdit')"/> <br> Home</a></li>
+              <li><a><tag:img png="house" title="header.goHomeUrl" onclick="goHomeUrl()" onmouseover="hideLayer('localeEdit')"/> <br> Home</a></li>
               <li id="blank">
                 <li id="dropbtn" onclick="myDropdownFunction()" class="dropbtn"><a><tag:img id="Systems" png="modulos" title="header.sistemas"/><br>Sistemas</a></li>
                 <div id="myDropdown" class="dropdown-content">
@@ -205,7 +205,7 @@
                 </li>
                 <li><a href="reports.shtm" onclick="onClickHelp(this,'reportInstancesMenu')" > <tag:img id="Reports" png="report" title="header.reports"/> <br> Relatorios</a></li>
                 <li><a href="events.shtm" onclick="" > <tag:img id="Alarms" png="flag_white" title="header.alarms"/> <br> Alarmes </a></li>
-                <li><a href="maps.shtm"  > <tag:img id="Maps" png="maps" title="header.maps"/> <br> Mapa </a></li>
+                <li><a href="views.shtm?viewId=16"  > <tag:img id="Maps" png="maps" title="header.maps"/> <br> Mapa </a></li>
                 <li><a href="contato.shtm" ><tag:img id="Contact" png="email" title="header.contato"/> <br> Contato </a></li>
                 <li><a> <tag:img png="full" title="header.full" onclick="full()"/> <br> Full </a></li>
                 <li><a> <tag:img id="userMutedImg" onclick="MiscDwr.toggleUserMuted(setUserMuted)" onmouseover="hideLayer('localeEdit')"/> <br> Som </a></li>
