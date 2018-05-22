@@ -24,6 +24,136 @@
   <script type="text/javascript" src="resources/wz_jsgraphics.js"></script>
   <script type="text/javascript" src="resources/shortcut.js"></script>
   <script type="text/javascript" src="resources/customClientScripts/customView.js"></script>
+  <script>
+  var MyIcon
+  function placeAsImpeller(evt)
+  {
+      if(iconG.childNodes.length==1)
+      iconG.removeChild(iconG.lastChild)
+      var myIcon=evt.target.cloneNode(true)
+      myIcon.setAttribute("x",187)
+      myIcon.setAttribute("y",223)
+      myIcon.setAttribute("font-size",123)
+      myIcon.removeAttribute("onclick")
+      myIcon.setAttribute("dy",+myIcon.getAttribute("font-size")/2-4)
+      myIcon.setAttribute("text-anchor","middle")
+      myIcon.setAttribute("id","myIcon")
+      iconG.appendChild(myIcon)
+      MyIcon=SVG.adopt(myIcon)
+      if(MySpeed)
+          MyIcon.animate(MySpeed,"-").rotate(360).loop(true)
+  }
+
+  function replaceIcon()
+  {
+      var myIcon=document.getElementById("myIcon").cloneNode(true)
+
+      MyIcon.remove()
+
+      myIcon.setAttribute("x",187)
+      myIcon.setAttribute("y",223)
+      myIcon.setAttribute("font-size",123)
+      myIcon.removeAttribute("onclick")
+      myIcon.setAttribute("dy",+myIcon.getAttribute("font-size")/2-4)
+      myIcon.setAttribute("text-anchor","middle")
+      myIcon.setAttribute("id","myIcon")
+
+      iconG.appendChild(myIcon)
+      MyIcon=SVG.adopt(myIcon)
+  }
+
+  var MySpeed
+  function speedSelected(myValue)
+  {
+      if(speedSelect.selectedIndex!=0)
+      {
+          MySpeed=+speedSelect.options[speedSelect.selectedIndex].value
+
+          if(MyIcon)
+          {
+              replaceIcon()
+              MyIcon.animate(MySpeed,"-").rotate(360).loop(true) //---loop(continuous)---
+          }
+      }
+  }
+
+
+  var Unicodes=["2720","2722","2723","2724","2725","2726","2727","2729","272D","272E","272F","2731","2732","2733","2735","2736","2737","2738","273A","273B","273C","273D","273E","2742","2743","2744","2745","2746","2747","2748","2749","274A","274B","279B","27A2","27A3","27A4","27B3","27B5","27B8","27BA","27BB","27BC","25C6","25C7","25C8","21BB","21DC","21DD","290F","2915","2933","2B27","2BCC","2BCD","2BCE","2BCF","2BD0"]
+      //---random color---
+  	function rcolor()
+  	{
+  		var letters = '0123456789ABCDEF'.split('');
+  		var color = '#';
+  		for (var i = 0; i < 6; i++ )
+  		{
+  			color += letters[Math.round(Math.random() * 15)];
+  		}
+  		return color;
+  	}
+
+  	function randomPoints(elems,svgWidth,svgHeight,elemSize)
+  	{
+  		//--return format:[ [x,y],[x,y],,, ]
+  		//---Generate  random points---
+  		function times(n, fn)
+  		{
+  			var a = [], i;
+  			for (i = 0; i < n; i++) {
+  			a.push(fn(i));
+  			}
+  			return a;
+  		}
+  		var width=svgWidth-2*elemSize
+  		var height=svgHeight-2*elemSize
+
+  		return 	RandomPnts = times(elems, function() { return [Math.floor(width * Math.random()) + elemSize, Math.floor(height * Math.random()) + elemSize] });
+  	}
+
+    // var randPoints=randomPoints(Unicodes.length,400,400,40)
+
+  //---onload---
+  function buildUnicodeTable()
+  {
+      var fontSize = 30
+      var strokeFactor = .02
+      var strokeWidth = strokeFactor*fontSize
+
+      var svg = d3.select("#sizerSVG")
+      for(var k = 0; k<Unicodes.length; k++)
+      {
+          var unicode = Unicodes[k]
+
+          var code = parseInt(unicode, 16)
+          var icon = svg.append("text")
+          .attr("id", "icon_"+unicode)
+          .attr("font-size", fontSize)
+          .attr("font-family", "Arial Unicode MS")
+          .attr("stroke-width", strokeWidth)
+          .attr("fill", rcolor())
+          .attr("stroke", "black")
+          .text(String.fromCharCode(code))
+
+          var sizeMe = document.getElementById("icon_"+unicode)
+          var bb = sizeMe.getBBox()
+          var centerX = bb.x+.5*bb.width
+          var centerY = bb.y+.5*bb.height
+
+          icon.attr("centerX", centerX)
+          icon.attr("centerY", centerY)
+
+          var row = unicodeTable.insertRow(k)
+          var svgCell = row.insertCell(0)
+          svgCell.style.width = "30px"
+          svgCell.style.height = "30px"
+          svgCell.style.overflow = "hidden"
+
+          svgCell.innerHTML = '<svg  width=30 height=30 overflow="hidden" xmlns="http://www.w3.org/2000/svg"  ><text cursor="default" pointer-events="visible" onclick=placeAsImpeller(evt) font-size="'+fontSize+'" font-family="Arial Unicode MS" stroke-width="'+strokeWidth+'" fill="'+rcolor()+'" stroke="black" unicode="'+unicode+'" x="'+(-bb.x)+'" y="'+(-bb.y)+'">'+String.fromCharCode(code)+'</text></svg>'
+
+          var unicodeCell = row.insertCell(1)
+          unicodeCell.innerHTML = unicode
+      }
+  }
+  </script>
   <link
 	href="resources/app/bower_components/sweetalert2/dist/sweetalert2.min.css"
 	rel="stylesheet" type="text/css">

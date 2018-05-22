@@ -68,13 +68,15 @@
 
 
   <c:when test="${!vc.customComponent}">
-    <c:if test="${vc.id !=1}">
+  <div  id="c${vc.id}" style="${vc.style};">${vc.staticContent}</div>
+  
+    <%-- <c:if test="${vc.id !=1}">
       <div  id="c${vc.id}" style="${vc.style};">${vc.staticContent}</div>
     </c:if>
     <c:if test="${vc.id ==1}">
       <div  id="c${vc.id}">${vc.staticContent}</div>
     </c:if>
-
+ --%>
   </c:when>
 
 

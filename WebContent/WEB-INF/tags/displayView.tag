@@ -20,11 +20,17 @@
 --%><%@attribute name="view" type="com.serotonin.mango.view.View" required="true" rtexprvalue="true"%><%--
 --%><%@attribute name="emptyMessageKey" required="true"%>
 
-<div id="viewContent">
-  <c:choose>
-    <c:when test="${empty view}"><fmt:message key="${emptyMessageKey}"/></c:when>
 
-  </c:choose>
+<div id="viewContent">
+	<c:choose>
+		<c:when test="${empty view}"><fmt:message key="${emptyMessageKey}"/></c:when>
+			<c:when test="${empty view.backgroundFilename}">
+			   <img id="viewBackground" src="images/spacer.gif" alt="" width="${view.width}" height="${view.height}"/>
+			 </c:when>
+		<c:otherwise>
+			    <img id="" src="${view.backgroundFilename}" alt=""/>
+		</c:otherwise>
+	 </c:choose>
 
   <c:forEach items="${view.viewComponents}" var="vc">
     <!-- vc ${vc.id} -->
@@ -94,3 +100,4 @@
     </c:choose>
   </c:forEach>
 </div>
+

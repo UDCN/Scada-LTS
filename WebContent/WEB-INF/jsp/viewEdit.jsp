@@ -469,22 +469,22 @@
 
       </tr>
     </table>
+    
+    <div>
+    		
+    </div>
 
     <table width="100%" cellspacing="0" cellpadding="0">
       <tr>
         <td>
-          <table cellspacing="0" cellpadding="0">
-            <tr>
-              <td colspan="3">
-                <div id="viewContent" class="borderDiv" style="left:0px;top:0px;float:left;
-                        padding-right:1px;padding-bottom:1px;">
+          
+                <div id="viewContent" class="borderDiv" >
                   <c:choose>
                     <c:when test="${empty form.view.backgroundFilename}">
-                      <img id="viewBackground" src="images/spacer.gif" alt="" width="740" height="500"
-                              style="top:1px;left:1px;"/>
+                      <img id="viewBackground" src="images/spacer.gif" alt="" width="${view.width}" height="${view.height}"/>
                     </c:when>
                     <c:otherwise>
-                      <img id="viewBackground" src="${form.view.backgroundFilename}" alt=""
+                      <img id="" src="${form.view.backgroundFilename}" alt=""
                               style="top:1px;left:1px;"/>
                     </c:otherwise>
                   </c:choose>
@@ -494,23 +494,15 @@
                   <%@ include file="/WEB-INF/jsp/include/graphicRendererEditor.jsp" %>
                   <%@ include file="/WEB-INF/jsp/include/compoundEditor.jsp" %>
                   <%@ include file="/WEB-INF/jsp/include/customEditor.jsp" %>
-                </div>
-              </td>
-            </tr>
-
-            <tr><td colspan="3">&nbsp;</td></tr>
-
-            <tr>
-              <td colspan="2" align="center">
-                <input type="submit" name="save" value="<fmt:message key="common.save"/>" onclick="window.onbeforeunload = null;"/>
+                </div
+          
+          <div align="center" style="text-align: center;">
+          		<input type="submit" name="save" value="<fmt:message key="common.save"/>" onclick="window.onbeforeunload = null;"/>
                 <input type="submit" name="cancel" value="<fmt:message key="common.cancel"/>"/>
                 <label style="margin-left:15px;"><fmt:message key="viewEdit.viewDelete"/></label>
                 <input id="deleteCheckbox" type="checkbox" onclick="deleteConfirm()" style="padding-top:10px; vertical-align: middle;"/>
 				<input id="deleteButton" type="submit" name="delete" onclick="window.onbeforeunload = null; return confirm('<fmt:message key="common.confirmDelete"/>')" value="<fmt:message key="viewEdit.viewDeleteConfirm"/>" style="visibility:hidden; margin-left:15px;"/>
-              </td>
-              <td></td>
-            </tr>
-          </table>
+          </div>
 
           <div id="pointTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
