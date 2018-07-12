@@ -18,6 +18,10 @@
  */
 package com.serotonin.mango.rt;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,6 +31,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.SerializationData;
+import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.util.Assert;
 
 import com.serotonin.ShouldNeverHappenException;
@@ -47,6 +55,7 @@ import com.serotonin.mango.rt.dataImage.SetPointSource;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.dataSource.DataSourceRT;
 import com.serotonin.mango.rt.dataSource.meta.MetaDataSourceRT;
+import com.serotonin.mango.rt.dataSource.modbus.ModbusIpDataSource;
 import com.serotonin.mango.rt.event.SimpleEventDetector;
 import com.serotonin.mango.rt.event.compound.CompoundEventDetectorRT;
 import com.serotonin.mango.rt.event.detectors.PointEventDetectorRT;
@@ -70,7 +79,7 @@ import com.serotonin.web.i18n.LocalizableMessage;
 
 public class RuntimeManager {
 	private static final Log LOG = LogFactory.getLog(RuntimeManager.class);
-
+	
 	private final List<DataSourceRT> runningDataSources = new CopyOnWriteArrayList<DataSourceRT>();
 
 	/**
@@ -131,7 +140,7 @@ public class RuntimeManager {
 				if (safe) {
 					config.setEnabled(false);
 					dataSourceDao.saveDataSource(config);
-				} else if (initializeDataSource(config))
+				} else if (initializeDataSource(config, true))
 					pollingRound.add(config);
 			}
 		}
@@ -304,6 +313,15 @@ public class RuntimeManager {
 	}
 
 	private boolean initializeDataSource(DataSourceVO<?> vo) {
+		return initializeDataSource(vo, false);
+	}
+	
+	/*
+	 * A variável scriptInicilizacao indica que o método de incialização
+	 * verificará o status da variável antes de retornar true 
+	 */
+	@SuppressWarnings("deprecation")
+	private boolean initializeDataSource(DataSourceVO<?> vo, boolean scriptInicializacao) {
 		synchronized (runningDataSources) {
 			// If the data source is already running, just quit.
 			if (isDataSourceRunning(vo.getId()))
@@ -315,22 +333,97 @@ public class RuntimeManager {
 			// Create and initialize the runtime version of the data source.
 			DataSourceRT dataSource = vo.createDataSourceRT();
 			dataSource.initialize();
+			
+			//Verifica se está habilitada a variável de verificar conexao
+			boolean aguardaConectarVar = true; 
+			aguardaConectarVar = 
+				Common.getEnvironmentProfile().getBoolean("abilit.enableAguardaConexao", false);
+			
+			//Testa a conexão, caso a variável esteja conectada
+			boolean conectado = true;
+			if(aguardaConectarVar && scriptInicializacao)
+				conectado = aguardaConectar(vo, dataSource);
+			
+			//Se está conectado, coloca na lista
+			if(conectado)
+			{
+				// Add it to the list of running data sources.
+				runningDataSources.add(dataSource);
 
-			// Add it to the list of running data sources.
-			runningDataSources.add(dataSource);
+				// Add the enabled points to the data source.
+				List<DataPointVO> dataSourcePoints = new DataPointDao()
+						.getDataPoints(vo.getId(), null);
+				for (DataPointVO dataPoint : dataSourcePoints) {
+					if (dataPoint.isEnabled())
+						startDataPoint(dataPoint);
+				}
 
-			// Add the enabled points to the data source.
-			List<DataPointVO> dataSourcePoints = new DataPointDao()
-					.getDataPoints(vo.getId(), null);
-			for (DataPointVO dataPoint : dataSourcePoints) {
-				if (dataPoint.isEnabled())
-					startDataPoint(dataPoint);
+				LOG.info("Data source '" + vo.getName() + "' initialized");
 			}
-
-			LOG.info("Data source '" + vo.getName() + "' initialized");
-
+			
 			return true;
 		}
+	}
+	
+	private boolean aguardaConectar(DataSourceVO<?> vo, DataSourceRT dataSource)
+	{
+		int tentativas = 0;
+		for(tentativas = 0; tentativas < 4; tentativas++)
+		{
+			//Se não conectou
+			if(!dataSource.getConnected())
+			{
+				//Escreve no Log
+				LOG.info(vo.getName() + " - NÃO CONECTADO");
+				try {
+	    			//Delay progressivo a cada tentativa	
+     				this.wait( Integer.toUnsignedLong( (tentativas + 1) * 499 ));
+				} catch (InterruptedException e) {
+					LOG.info(e.toString());
+				}
+			}
+			//Se conseguiu a conexão, sai do loop
+			else
+			{
+				LOG.info(vo.getName() + " - CONECTADO");
+				break;
+			}
+				
+		}
+		
+		//Se as tentativas excederam 3, desabilita o DS e retorna o erro de habilitar
+		if (tentativas >= 3)
+		{
+			LOG.info(vo.getName() + " - ERRO AO HABILITAR");
+			vo.setEnabled(false);
+			DataSourceDao dataSourceDao = new DataSourceDao();
+			dataSourceDao.saveDataSource(vo);
+			
+			//Retira o data source do RT
+			dataSource.terminate();
+			
+			//Insere o DataSource a tabela desativado
+			try
+			{
+				DAO.getInstance().getJdbcTemp().update("INSERT INTO desativados (xid) VALUES (?)", 
+					new Object[] {vo.getXid()});
+			}catch (Exception e){
+				LOG.info("Erro ao inserir Data Source.");
+			}
+			
+			
+			return false;
+		}
+		
+		//Retira o DataSource dos pontos que foram desativados
+		try {
+			DAO.getInstance().getJdbcTemp().update("DELETE FROM desativados WHERE xid=?", 
+				new Object[] {vo.getXid()});
+		}catch (Exception e){
+			LOG.info("Erro ao deletar Data Source da base de dados.");
+		}
+		
+		return true;
 	}
 
 	private void startDataSourcePolling(DataSourceVO<?> vo) {
@@ -530,39 +623,40 @@ public class RuntimeManager {
 	}
 
 	public long purgeDataPointValues() {
-		/*
+
 		PointValueDao pointValueDao = new PointValueDao();
 		long count = pointValueDao.deleteAllPointData();
 		pointValueDao.compressTables();
 		for (Integer id : dataPoints.keySet())
 			updateDataPointValuesRT(id);
-		return count;*/
+		return count;
 		//TODO not allow the deletion of data should be switched to a new database
-		return 0;
+		//return 0;
 	}
 
 	public long purgeDataPointValues(int dataPointId, int periodType,
 			int periodCount) {
 		long before = DateUtils.minus(System.currentTimeMillis(), periodType,
 				periodCount);
-		return purgeDataPointValues(dataPointId, before);
+		long result = purgeDataPointValues(dataPointId, before);
+		return result;
 	}
 
 	public long purgeDataPointValues(int dataPointId) {
-		/*long count = new PointValueDao().deletePointValues(dataPointId);
+		long count = new PointValueDao().deletePointValues(dataPointId);
 		updateDataPointValuesRT(dataPointId);
-		return count;*/
+		return count;
 		//TODO not allow the deletion of data should be switched to a new database
-		return 0;
+		//return 0;
 	}
 
 	public long purgeDataPointValues(int dataPointId, long before) {
-		/*long count = new PointValueDao().deletePointValuesBefore(dataPointId,
+		long count = new PointValueDao().deletePointValuesBefore(dataPointId,
 				before);
 		if (count > 0)
 			updateDataPointValuesRT(dataPointId);
-		return count;*/
-		return 0;
+		return count;
+		//return 0;
 	}
 
 	private void updateDataPointValuesRT(int dataPointId) {

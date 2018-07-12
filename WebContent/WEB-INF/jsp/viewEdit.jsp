@@ -2,7 +2,7 @@
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -21,7 +21,7 @@
 
 <tag:page dwr="ViewDwr" onload="doOnload"
 	js="view,dygraph-combined,dygraph-extra,dygraphsSplineUtils,dygraphsCharts"
-	css="jQuery/plugins/chosen/chosen,jQuery/plugins/jpicker/css/jPicker-1.1.6.min,jQuery/plugins/jquery-ui/css/south-street/jquery-ui-1.10.3.custom.min" 
+	css="jQuery/plugins/chosen/chosen,jQuery/plugins/jpicker/css/jPicker-1.1.6.min,jQuery/plugins/jquery-ui/css/south-street/jquery-ui-1.10.3.custom.min"
 	jqplugins="chosen/chosen.jquery.min,jpicker/jpicker-1.1.6.min,jquery-ui/js/jquery-ui-1.10.3.custom.min" >
   <script type="text/javascript" src="resources/wz_jsgraphics.js"></script>
   <script type="text/javascript" src="resources/customClientScripts/customView.js"></script>
@@ -29,14 +29,14 @@
 
     mango.view.initEditView();
     mango.share.dwr = ViewDwr;
-    
+
     function doOnload() {
         hide("sharedUsersDiv");
         <c:forEach items="${form.view.viewComponents}" var="vc">
           <c:set var="compContent"><sst:convert obj="${vc}"/></c:set>
           createViewComponent(${mango:escapeScripts(compContent)}, false);
         </c:forEach>
-        
+
         ViewDwr.editInit(function(result) {
             mango.share.users = result.shareUsers;
             mango.share.writeSharedUsers(result.viewUsers);
@@ -45,26 +45,26 @@
             compoundEditor.setPointList(result.pointList);
             MiscDwr.notifyLongPoll(mango.longPoll.pollSessionId);
         });
-        
+
         if(document.getElementById("viewBackground").src.includes("spacer.gif")){
         	var viewSize = document.getElementById("view.resolution").value;
         	resizeViewBackgroundToResolution(viewSize);
         } else {
         	document.getElementById("view.resolution").style.visibility = 'hidden';
         	document.getElementById("sizeLabel").style.visibility = 'hidden';
-        }    
+        }
     }
-    
+
     function addViewComponent() {
         ViewDwr.addComponent($get("componentList"), function(viewComponent) {
             createViewComponent(viewComponent, true);
             MiscDwr.notifyLongPoll(mango.longPoll.pollSessionId);
         });
     }
-    
+
     function createViewComponent(viewComponent, center) {
         var content;
-        
+
         if (viewComponent.pointComponent)
             content = $("pointTemplate").cloneNode(true);
         else if (viewComponent.defName == 'imageChart')
@@ -77,9 +77,9 @@
         	content = $("customTemplate").cloneNode(true);
         else
             content = $("htmlTemplate").cloneNode(true);
-        
+
         configureComponentContent(content, viewComponent, $("viewContent"), center);
-        
+
         if (viewComponent.defName == 'simpleCompound') {
             childContent = $("compoundChildTemplate").cloneNode(true);
             configureComponentContent(childContent, viewComponent.leadComponent, $("c"+ viewComponent.id +"Content"),
@@ -93,7 +93,7 @@
         else if (viewComponent.compoundComponent) {
             // Compound components only have their static content set at page load.
             $set(content.id +"Content", viewComponent.staticContent);
-            
+
             // Add the child components.
             var childContent;
             for (var i=0; i<viewComponent.childComponents.length; i++) {
@@ -102,27 +102,27 @@
                         $("c"+ viewComponent.id +"ChildComponents"), false);
             }
         }
-        
+
         addDnD(content.id);
-        
+
         if (center)
             updateViewComponentLocation(content.id);
     }
-    
+
     function configureComponentContent(content, viewComponent, parent, center) {
         content.id = "c"+ viewComponent.id;
         content.viewComponentId = viewComponent.id;
         updateNodeIds(content, viewComponent.id);
         parent.appendChild(content);
-        
-        if (viewComponent.defName == "html" || viewComponent.defName == "link" 
+
+        if (viewComponent.defName == "html" || viewComponent.defName == "link"
             || viewComponent.defName == "scriptButton" || viewComponent.defName == "flex"
             	|| viewComponent.defName == "chartComparator")
             // HTML components only get updated at page load and editing.
             updateHtmlComponentContent(content.id, viewComponent.content);
-        
+
         show(content);
-        
+
         if (center) {
             // Calculate the location for the new point. For now just put it in the center.
             var bkgd = $("viewBackground");
@@ -137,7 +137,7 @@
         }
 
     }
-    
+
     function updateNodeIds(elem, id) {
         var i;
         for (i=0; i<elem.attributes.length; i++) {
@@ -149,29 +149,29 @@
                 updateNodeIds(elem.childNodes[i], id);
         }
     }
-    
+
     function updateHtmlComponentContent(id, content) {
         if (!content || content == "")
             $set(id +"Content", '<img src="images/html.png" alt=""/>');
         else
             $set(id +"Content", content);
     }
-    
+
     function openStaticEditor(viewComponentId) {
         closeEditors();
         staticEditor.open(viewComponentId);
     }
-    
+
     function openSettingsEditor(cid) {
         closeEditors();
         settingsEditor.open(cid);
     }
-    
+
     function openGraphicRendererEditor(cid) {
-        closeEditors(); 
+        closeEditors();
         graphicRendererEditor.open(cid);
     }
-    
+
     function openCompoundEditor(cid) {
         closeEditors();
         compoundEditor.open(cid);
@@ -181,66 +181,87 @@
         closeEditors();
         customEditor.open(cid);
     }
-    
+
     function positionEditor(compId, editorId) {
         // Position and display the renderer editor.
         var pDim = getNodeBounds($("c"+ compId));
         var editDiv = $(editorId);
-        editDiv.style.left = (pDim.x + pDim.w + 20) +"px";
-        editDiv.style.top = (pDim.y + 10) +"px";
+        var eWidth = jQuery("#" + editorId).outerWidth(true);
+        var scrollL = document.documentElement.scrollLeft;
+        if (pDim.x < (screen.width - eWidth - pDim.w + scrollL - 10)) {
+            editDiv.style.left = (pDim.x + pDim.w + 5) +"px";
+            editDiv.style.top = (pDim.y) +"px";
+        } else {
+            editDiv.style.left = (pDim.x - eWidth - 5) + "px";
+            editDiv.style.top = (pDim.y) +"px";
+        }
+
     }
-    
+
+    function positionCustomEditor(compId, editorId) {
+        // Position and display the renderer editor.
+        var pDim = getNodeBounds($("c"+ compId));
+        var editDiv = $(editorId);
+        var eWidth = jQuery("#" + editorId).outerWidth(true);
+        var scrollL = document.documentElement.scrollLeft;
+        editDiv.style.left = (pDim.x) +"px";
+        editDiv.style.top = (pDim.y + pDim.h) +"px";
+    }
+
     function closeEditors() {
         settingsEditor.close();
         graphicRendererEditor.close();
         staticEditor.close();
         compoundEditor.close();
+        customEditor.close();
     }
-    
+
     function updateViewComponentLocation(divId) {
         var div = $(divId);
         var lt = div.style.left;
         var tp = div.style.top;
-        
+
         // Remove the 'px's from the positions.
         lt = lt.substring(0, lt.length-2);
         tp = tp.substring(0, tp.length-2);
-        
+
         // Save the new location.
         ViewDwr.setViewComponentLocation(div.viewComponentId, lt, tp);
     }
-    
+
     function addDnD(divId) {
         var div = $(divId);
         var dragSource = new dojo.dnd.HtmlDragMoveSource(div);
         dragSource.constrainTo($("viewBackground"));
-        
+
         // Save the drag source in the div in case it gets deleted. See below.
         div.dragSource = dragSource;
         // Also, create a function to call on drag end to update the point view's location.
         div.onDragEnd = function() {updateViewComponentLocation(divId);};
-        
+
         dojo.event.connect(dragSource, "onDragEnd", div.onDragEnd);
     }
-    
+
     function deleteViewComponent(viewComponentId) {
         closeEditors();
-        ViewDwr.deleteViewComponent(viewComponentId);
-        
-        var div = $("c"+ viewComponentId);
-        
-        // Unregister the drag source from the DnD manager.
-        div.dragSource.unregister();
-        // Disconnect the event handling for drag ends on this guy.
-        $("viewContent").removeChild(div);
+        if(confirm('<fmt:message key="common.confirmDelete"/>')) {
+            ViewDwr.deleteViewComponent(viewComponentId);
+
+            var div = $("c"+ viewComponentId);
+
+            // Unregister the drag source from the DnD manager.
+            div.dragSource.unregister();
+            // Disconnect the event handling for drag ends on this guy.
+            $("viewContent").removeChild(div);
+        }
     }
-    
+
     function getViewComponentId(node) {
         while (!(node.viewComponentId))
             node = node.parentNode;
         return node.viewComponentId;
     }
-    
+
     function iconizeClicked() {
         ViewDwr.getViewComponentIds(function(ids) {
             var i, comp, content;
@@ -260,7 +281,7 @@
                     comp = $("c"+ ids[i]);
                     content = $("c"+ ids[i] +"Content");
                     if (comp.savedState)
-                        mango.view.setContent(comp.savedState);                
+                        mango.view.setContent(comp.savedState);
                     else if (comp.savedContent)
                         content.innerHTML = comp.savedContent;
                     else
@@ -278,12 +299,12 @@
 
 		if(width > currentWidth) {
 			$("viewBackground").width = parseInt(width,10) + 30;
-		} 
+		}
 		if(height > currentHeight) {
 			$("viewBackground").height = parseInt(height,10) + 30;
 		}
 	}
-	
+
 	function resizeViewBackgroundToResolution(size) {
 		if(document.getElementById("viewBackground").src.includes("spacer.gif")){
 			switch(size) {
@@ -313,11 +334,11 @@
 			}
         } else {
         	document.getElementById("view.resolution").style.visibility = 'hidden';
-        	document.getElementById("sizeLabel").style.visibility = 'hidden';        	
+        	document.getElementById("sizeLabel").style.visibility = 'hidden';
         }
-		
+
 	}
-	
+
 	function deleteConfirm(){
 		if(document.getElementById("deleteCheckbox").checked) {
 			document.getElementById("deleteButton").style.visibility = 'visible';
@@ -326,14 +347,19 @@
 				document.getElementById("deleteButton").style.visibility = 'hidden';
 			}, 3000);
 		} else {
-			document.getElementById("deleteButton").style.visibility = 'hidden'; 
+			document.getElementById("deleteButton").style.visibility = 'hidden';
 		}
 	}
-	
-	
+
+    window.onbeforeunload = confirmExit;
+    function confirmExit(){
+        return false;
+    }
+
+
   </script>
-  
-  <form name="view" action="" modelAttribute="form" method="post" enctype="multipart/form-data">
+
+  <form name="view" class="view-edit-form" style="margin-bottom: 40px;" action="" modelAttribute="form" method="post" enctype="multipart/form-data">
     <table>
       <tr>
         <td valign="top">
@@ -346,7 +372,7 @@
                   <tag:help id="editingGraphicalViews"/>
                 </td>
               </tr>
-              
+
               <spring:bind path="form.view.name">
                 <tr>
                   <td class="formLabelRequired" width="150"><fmt:message key="viewEdit.name"/></td>
@@ -356,9 +382,9 @@
                   <td class="formError">${status.errorMessage}</td>
                 </tr>
               </spring:bind>
-              
-              
-              
+
+
+
               <spring:bind path="form.view.xid">
                 <tr>
                   <td class="formLabelRequired" width="150"><fmt:message key="common.xid"/></td>
@@ -379,17 +405,17 @@
               </spring:bind>
               <tr>
                 <td colspan="2" align="center">
-                  <input type="submit" name="upload" value="<fmt:message key="viewEdit.upload"/>"/>
-                  <input type="submit" name="clearImage" value="<fmt:message key="viewEdit.clearImage"/>"/>
+                  <input type="submit" name="upload" value="<fmt:message key="viewEdit.upload"/>" onclick="window.onbeforeunload = null;"/>
+                  <input type="submit" name="clearImage" value="<fmt:message key="viewEdit.clearImage"/>" onclick="window.onbeforeunload = null;"/>
                 </td>
                 <td></td>
               </tr>
-              
+
               <spring:bind path="form.view.anonymousAccess">
                 <tr>
                   <td class="formLabelRequired" width="150"><fmt:message key="viewEdit.anonymous"/></td>
                   <td class="formField" width="250">
-                    <sst:select name="view.anonymousAccess" value="${status.value}"> 
+                    <sst:select name="view.anonymousAccess" value="${status.value}">
                       <sst:option value="<%= Integer.toString(ShareUser.ACCESS_NONE) %>"><fmt:message key="common.access.none"/></sst:option>
                       <sst:option value="<%= Integer.toString(ShareUser.ACCESS_READ) %>"><fmt:message key="common.access.read"/></sst:option>
                       <sst:option value="<%= Integer.toString(ShareUser.ACCESS_SET) %>"><fmt:message key="common.access.set"/></sst:option>
@@ -398,12 +424,12 @@
                   <td class="formError">${status.errorMessage}</td>
                 </tr>
               </spring:bind>
-              
+
               <spring:bind path="form.view.resolution">
                 <tr>
                   <td id="sizeLabel" class="formLabelRequired" width="150"><fmt:message key="viedEdit.viewSize" /></td>
                   <td class="formField" width="250">
-                    <sst:select id="view.resolution" name="view.resolution" value="${status.value}" onchange="resizeViewBackgroundToResolution(this.options[this.selectedIndex].value)"> 
+                    <sst:select id="view.resolution" name="view.resolution" value="${status.value}" onchange="resizeViewBackgroundToResolution(this.options[this.selectedIndex].value)">
                       <sst:option value="<%= Integer.toString(0) %>"> 640x480</sst:option>
                       <sst:option value="<%= Integer.toString(1) %>"> 800x600</sst:option>
                       <sst:option value="<%= Integer.toString(2) %>"> 1024x768</sst:option>
@@ -414,11 +440,11 @@
                   <td class="formError">${status.errorMessage}</td>
                 </tr>
               </spring:bind>
-              
+
             </table>
           </div>
         </td>
-        	
+
         <td valign="top">
           <div class="borderDiv" id="sharedUsersDiv">
             <tag:sharedUsers doxId="viewSharing" noUsersKey="share.noViewUsers"/>
@@ -426,7 +452,7 @@
         </td>
       </tr>
     </table>
-    
+
     <table>
       <tr>
         <td>
@@ -435,57 +461,49 @@
           <tag:img png="plugin_add" title="viewEdit.addViewComponent" onclick="addViewComponent()"/>
         </td>
         <td style="width:30px;"></td>
-       
+
         <td>
           <input type="checkbox" id="iconifyCB" onclick="iconizeClicked();"/>
           <label for="iconifyCB"><fmt:message key="viewEdit.iconify"/></label>
         </td>
-        
+
       </tr>
     </table>
     
+    <div>
+    		
+    </div>
+
     <table width="100%" cellspacing="0" cellpadding="0">
       <tr>
         <td>
-          <table cellspacing="0" cellpadding="0">
-            <tr>
-              <td colspan="3">
-                <div id="viewContent" class="borderDiv" style="left:0px;top:0px;float:left;
-                        padding-right:1px;padding-bottom:1px;">
+          
+                <div id="viewContent" class="borderDiv" >
                   <c:choose>
                     <c:when test="${empty form.view.backgroundFilename}">
-                      <img id="viewBackground" src="images/spacer.gif" alt="" width="740" height="500"
-                              style="top:1px;left:1px;"/>
+                      <img id="viewBackground" src="images/spacer.gif" alt="" width="${view.width}" height="${view.height}"/>
                     </c:when>
                     <c:otherwise>
-                      <img id="viewBackground" src="${form.view.backgroundFilename}" alt=""
+                      <img id="" src="${form.view.backgroundFilename}" alt=""
                               style="top:1px;left:1px;"/>
                     </c:otherwise>
                   </c:choose>
-                  
+
                   <%@ include file="/WEB-INF/jsp/include/staticEditor.jsp" %>
                   <%@ include file="/WEB-INF/jsp/include/settingsEditor.jsp" %>
                   <%@ include file="/WEB-INF/jsp/include/graphicRendererEditor.jsp" %>
                   <%@ include file="/WEB-INF/jsp/include/compoundEditor.jsp" %>
                   <%@ include file="/WEB-INF/jsp/include/customEditor.jsp" %>
-                </div>
-              </td>
-            </tr>
-            
-            <tr><td colspan="3">&nbsp;</td></tr>
-            
-            <tr>
-              <td colspan="2" align="center">
-                <input type="submit" name="save" value="<fmt:message key="common.save"/>"/>
+                </div
+          
+          <div align="center" style="text-align: center;">
+          		<input type="submit" name="save" value="<fmt:message key="common.save"/>" onclick="window.onbeforeunload = null;"/>
                 <input type="submit" name="cancel" value="<fmt:message key="common.cancel"/>"/>
                 <label style="margin-left:15px;"><fmt:message key="viewEdit.viewDelete"/></label>
                 <input id="deleteCheckbox" type="checkbox" onclick="deleteConfirm()" style="padding-top:10px; vertical-align: middle;"/>
-				<input id="deleteButton" type="submit" name="delete" onclick="return confirm('<fmt:message key="common.confirmDelete"/>')" value="<fmt:message key="viewEdit.viewDeleteConfirm"/>" style="visibility:hidden; margin-left:15px;"/>
-              </td>
-              <td></td>
-            </tr>
-          </table>
-        
+				<input id="deleteButton" type="submit" name="delete" onclick="window.onbeforeunload = null; return confirm('<fmt:message key="common.confirmDelete"/>')" value="<fmt:message key="viewEdit.viewDeleteConfirm"/>" style="visibility:hidden; margin-left:15px;"/>
+          </div>
+
           <div id="pointTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
@@ -518,7 +536,7 @@
               </div>
             </div>
           </div>
-          
+
           <div id="htmlTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
@@ -532,8 +550,8 @@
               </table>
             </div>
           </div>
-          
-          
+
+
           <div id="imageChartTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
@@ -547,7 +565,7 @@
               </table>
             </div>
           </div>
-            
+
           <div id="enhancedImageChartTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
@@ -566,7 +584,7 @@
               </table>
             </div>
           </div>
-          
+
           <div id="compoundTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">
@@ -588,14 +606,14 @@
                         title="viewEdit.deletePointView"/></td></tr>
               </table>
             </div>
-            
+
             <div id="c_TEMPLATE_ChildComponents"></div>
           </div>
-          
+
           <div id="compoundChildTemplate" style="position:absolute;left:0px;top:0px;display:none;">
             <div id="c_TEMPLATE_Content"><img src="images/icon_comp.png" alt=""/></div>
           </div>
-          
+
           <div id="customTemplate" onmouseover="showLayer('c'+ getViewComponentId(this) +'Controls');"
                   onmouseout="hideLayer('c'+ getViewComponentId(this) +'Controls');"
                   style="position:absolute;left:0px;top:0px;display:none;">

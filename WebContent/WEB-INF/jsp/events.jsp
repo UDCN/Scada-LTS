@@ -2,7 +2,7 @@
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -24,6 +24,7 @@
   <%@ include file="/WEB-INF/jsp/include/userComment.jsp" %>
   <link rel="stylesheet" href="resources/jquery.ui.all.css">
   <link rel="stylesheet" href="resources/demos.css">
+
   <script type="text/javascript" src="resources/jquery.js"></script>
   <script type="text/javascript" src="resources/jquery_ui.js"></script>
   <script type="text/javascript" src="resources/jquery.ui.datepicker.js"></script>
@@ -36,18 +37,18 @@
     mango.longPoll.pollRequest.pendingAlarms = true;
 //     dojo.requireLocalization("dojo.i18n.calendar", "gregorian", null, "de,en,es,fi,fr,ROOT,hu,it,ja,ko,nl,pt,pt-br,sv,zh,zh-cn,zh-hk,zh-tw");
 //     dojo.requireLocalization("dojo.i18n.calendar", "gregorianExtras", null, "ROOT,ja,zh");
-  
+
   	jQuery.noConflict();
-  	
+
   	jQuery.datepicker.setDefaults(jQuery.datepicker.regional['pt-BR']);
-  	
+
   	jQuery(function() {
 		jQuery('#datePicker').datepicker();
 	});
-  	
+
     function updatePendingAlarmsContent(content) {
         hide("hourglass");
-        
+
         $set("pendingAlarms", content);
         if (content) {
             show("ackAllDiv");
@@ -58,7 +59,7 @@
             show("noAlarms");
         }
     }
-    
+
     function doSearchOld() {
     	setDisabled("searchBtn", true);
     	   $set("searchMessage", "<fmt:message key="events.search.searching"/>");
@@ -69,7 +70,7 @@
     		            $set("searchMessage", results.data.resultCount);
     		        });
     		    }
-    
+
     function doSearch(page, date) {
         setDisabled("searchBtn", true);
         $set("searchMessage", "<fmt:message key="events.search.searching"/>");
@@ -91,7 +92,7 @@
     }
 
     var dptimeout = null;
-    
+
     function expireDatePicker() {
         dptimeout = setTimeout(function() { dojo.widget.byId("datePicker").hide(); }, 500);
     }
@@ -116,12 +117,12 @@
 //         console.log(x);
 //         x.setDate(x.today);
 		time = new Date($("datePicker"));
-		
-		
+
+
 //         doSearch(0,time.getTime());
 		doSearchOld();
     }
-    
+
     function silenceAll() {
     	MiscDwr.silenceAll(function(result) {
     		var silenced = result.data.silenced;
@@ -137,8 +138,8 @@
 //         dojo.event.connect(x,'onValueChanged','jumpToDateClicked');
 //     });
   </script>
-  
-  <div class="borderDiv marB" style="float:left;">
+
+  <div class="borderDiv" style="width: 100%; margin-bottom: 20px;">
     <div class="smallTitle titlePadding" style="float:left;">
       <tag:img png="flag_white" title="events.alarms"/>
       <fmt:message key="events.pending"/>
@@ -149,14 +150,14 @@
       <fmt:message key="events.silenceAll"/>
       <tag:img png="sound_mute" onclick="silenceAll()" title="events.silenceAll"/><br/>
     </div>
-    <div id="pendingAlarms" style="clear:both;"></div>
+    <div id="pendingAlarms" style="text-align: center;"></div>
     <div id="noAlarms" style="display:none;padding:6px;text-align:center;">
       <b><fmt:message key="events.emptyList"/></b>
     </div>
     <div id="hourglass" style="padding:6px;text-align:center;"><tag:img png="hourglass"/></div>
   </div>
-  
-  <div class="borderDiv" style="clear:left;float:left;">
+
+  <div class="borderDiv" style="width: 100%;">
     <div class="smallTitle titlePadding"><fmt:message key="events.search"/></div>
     <div>
       <table>
@@ -199,7 +200,7 @@
           <td class="formLabel"><fmt:message key="events.search.keywords"/></td>
           <td class="formField"><input id="keywords" type="text"/></td>
         </tr>
-        
+
 <!--         <tr> -->
 <!--         	<td> -->
 <!--         		<div id="datePickerDiv" style="position:relative; top:0px; left:0px;" onmouseover="cancelDatePickerExpiry()" onmouseout="expireDatePicker()"> -->
@@ -212,24 +213,24 @@
           <td class="formLabel"><fmt:message key="events.search.maxResults"/></td>
           <td class="formField"><input id="maxResults" type="text"/></td>
         </tr>
-		
-        
+
+
         <tr>
-          <td colspan="2" align="center">
-            <input id="searchBtn" type="button" value="<fmt:message key="events.search.search"/>" onclick="newSearch()"/>
+          <td colspan="15" align="center">
+            <input style="width: 50px;" id="searchBtn" type="button" value="<fmt:message key="events.search.search"/>" onclick="newSearch()"/>
             <span id="searchMessage" class="formError"></span>
           </td>
         </tr>
-        
-        
-        
+
+
+
       </table>
     </div>
     <div id="searchResults"></div>
   </div>
-  
+
 <!--   <div id="datePickerDiv" style="position:relative; top:0px; left:0px;" onmouseover="cancelDatePickerExpiry()" onmouseout="expireDatePicker()"> -->
 <%--     <div widgetId="datePicker" dojoType="datepicker" dayWidth="narrow" lang="${lang}"></div> --%>
 <!--   </div> -->
-  
+
 </tag:page>

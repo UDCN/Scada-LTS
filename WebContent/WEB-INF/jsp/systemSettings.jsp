@@ -2,7 +2,7 @@
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -23,11 +23,12 @@
 <%@page import="com.serotonin.mango.util.freemarker.MangoEmailContent"%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
 
+
 <tag:page dwr="SystemSettingsDwr" onload="init">
   <script type="text/javascript">
     var systemEventAlarmLevels = new Array();
     var auditEventAlarmLevels = new Array();
-    
+
     function init() {
         SystemSettingsDwr.getSettings(function(settings) {
             $set("<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_HOST %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_HOST %>"/>);
@@ -40,7 +41,7 @@
             $set("<c:out value="<%= SystemSettingsDAO.EMAIL_TLS %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EMAIL_TLS %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.EMAIL_CONTENT_TYPE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EMAIL_CONTENT_TYPE %>"/>);
             smtpAuthChange();
-            
+
             var alarmFunctions = [
                 function(et) { return et.description; },
                 function(et) {
@@ -68,14 +69,14 @@
                     systemEventAlarmLevels);
             setEventTypeData("auditEventAlarmLevelsList", settings.auditEventTypes, alarmFunctions, alarmOptions,
                     auditEventAlarmLevels);
-            
+
             $set("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_USE_PROXY %>"/>", settings.<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_USE_PROXY %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_SERVER %>"/>", settings.<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_SERVER %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PORT %>"/>", settings.<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PORT %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME %>"/>", settings.<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD %>"/>", settings.<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD %>"/>);
             httpUseProxyChange();
-            
+
             $set("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIODS %>"/>", settings.<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIODS %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.REPORT_PURGE_PERIOD_TYPE %>"/>);
@@ -84,33 +85,33 @@
 
             $set("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>", settings.<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIOD_TYPE %>"/>);
             $set("<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>", settings.<c:out value="<%= SystemSettingsDAO.FUTURE_DATE_LIMIT_PERIODS %>"/>);
-            
+
             $set("<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>", settings.<c:out value="<%= SystemSettingsDAO.INSTANCE_DESCRIPTION %>"/>);
-            
+
             var sel = $("<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>");
             <c:forEach items="${availableLanguages}" var="lang">
               sel.options[sel.options.length] = new Option("${lang.value}", "${lang.key}");
             </c:forEach>
             $set(sel, settings.<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>);
         });
-    
+
     	SystemSettingsDwr.checkTypeDB(function(msg){
-        	
+
         	if (msg == "derby") {
         		document.getElementById('radioDerby').checked = true;
 			}
-        	
+
         	if (msg == "mysql") {
         		document.getElementById('radioMysql').checked = true;
 			}
         });
-    
-    
+
+
     }
-    
+
     function setEventTypeData(listId, eventTypes, alarmFunctions, alarmOptions, alarmLevelsList) {
         dwr.util.addRows(listId, eventTypes, alarmFunctions, alarmOptions);
-        
+
         var eventType, etid;
         for (var i=0; i<eventTypes.length; i++) {
             eventType = eventTypes[i];
@@ -120,7 +121,7 @@
             alarmLevelsList[alarmLevelsList.length] = { i1: eventType.typeRef1, i2: eventType.alarmLevel };
         }
     }
-    
+
     function dbSizeUpdate() {
         $set("databaseSize", "<fmt:message key="systemSettings.retrieving"/>");
         $set("filedataSize", "-");
@@ -135,7 +136,7 @@
             $set("totalSize", data.totalSize);
             $set("historyCount", data.historyCount);
             show("refreshImg");
-            
+
             var cnt = "";
             for (var i=0; i<data.topPoints.length; i++) {
                 cnt += "<a href='data_point_details.shtm?dpid="+ data.topPoints[i].pointId +"'>"+
@@ -147,7 +148,7 @@
             $set("eventCount", data.eventCount);
         });
     }
-    
+
     function saveEmailSettings() {
         SystemSettingsDwr.saveEmailSettings(
             $get("<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_HOST %>"/>"),
@@ -166,7 +167,7 @@
         setUserMessage("emailMessage");
         startImageFader("saveEmailSettingsImg");
     }
-    
+
     function sendTestEmail() {
         SystemSettingsDwr.sendTestEmail(
                 $get("<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_HOST %>"/>"),
@@ -188,7 +189,7 @@
         setUserMessage("emailMessage");
         startImageFader("sendTestEmailImg");
     }
-    
+
     function updateAlarmLevel(eventTypeId, eventId, alarmLevel) {
         setAlarmLevelImg(alarmLevel, "alarmLevelImg"+ eventTypeId +"-"+ eventId);
         var list;
@@ -198,7 +199,7 @@
             list = auditEventAlarmLevels;
         getElement(list, eventId, "i1")["i2"] = alarmLevel;
     }
-    
+
     function saveSystemEventAlarmLevels() {
         SystemSettingsDwr.saveSystemEventAlarmLevels(systemEventAlarmLevels, function() {
                 stopImageFader("saveSystemEventAlarmLevelsImg");
@@ -207,7 +208,7 @@
         setUserMessage("systemEventAlarmLevelsMessage");
         startImageFader("saveSystemEventAlarmLevelsImg");
     }
-    
+
     function saveAuditEventAlarmLevels() {
         SystemSettingsDwr.saveAuditEventAlarmLevels(auditEventAlarmLevels, function() {
                 stopImageFader("saveAuditEventAlarmLevelsImg");
@@ -216,13 +217,13 @@
         setUserMessage("auditEventAlarmLevelsMessage");
         startImageFader("saveAuditEventAlarmLevelsImg");
     }
-    
+
     function smtpAuthChange() {
         var auth = $("<c:out value="<%= SystemSettingsDAO.EMAIL_AUTHORIZATION %>"/>").checked;
         setDisabled($("<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_USERNAME %>"/>"), !auth);
         setDisabled($("<c:out value="<%= SystemSettingsDAO.EMAIL_SMTP_PASSWORD %>"/>"), !auth);
     }
-    
+
     function saveHttpSettings() {
         SystemSettingsDwr.saveHttpSettings(
                 $get("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_USE_PROXY %>"/>"),
@@ -237,7 +238,7 @@
         setUserMessage("httpMessage");
         startImageFader("saveHttpSettingsImg");
     }
-    
+
     function httpUseProxyChange() {
         var proxy = $("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_USE_PROXY %>"/>").checked;
         setDisabled($("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_SERVER %>"/>"), !proxy);
@@ -245,7 +246,7 @@
         setDisabled($("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_USERNAME %>"/>"), !proxy);
         setDisabled($("<c:out value="<%= SystemSettingsDAO.HTTP_CLIENT_PROXY_PASSWORD %>"/>"), !proxy);
     }
-    
+
     function saveMiscSettings() {
         SystemSettingsDwr.saveMiscSettings(
                 $get("<c:out value="<%= SystemSettingsDAO.EVENT_PURGE_PERIOD_TYPE %>"/>"),
@@ -263,14 +264,14 @@
         setUserMessage("miscMessage");
         startImageFader("saveMiscSettingsImg");
     }
-    
+
     function setUserMessage(type, msg) {
         if (msg)
             $set(type, msg);
         else
             $set(type, "");
     }
-    
+
     function saveInfoSettings() {
         SystemSettingsDwr.saveInfoSettings("0",
                 //$get("<c:out value="<%= SystemSettingsDAO.NEW_VERSION_NOTIFICATION_LEVEL %>"/>"),
@@ -282,7 +283,7 @@
         setUserMessage("infoMessage");
         startImageFader("saveInfoSettingsImg");
     }
-    
+
     function newVersionCheck() {
         SystemSettingsDwr.newVersionCheck($get("<c:out value="<%= SystemSettingsDAO.NEW_VERSION_NOTIFICATION_LEVEL %>"/>"),
                 function(result) {
@@ -292,7 +293,7 @@
                 }
         );
     }
-    
+
     function purgeNow() {
         SystemSettingsDwr.purgeNow(function() {
             stopImageFader("purgeNowImg");
@@ -300,7 +301,7 @@
         });
         startImageFader("purgeNowImg");
     }
-    
+
     function saveLangSettings() {
         SystemSettingsDwr.saveLanguageSettings($get("<c:out value="<%= SystemSettingsDAO.LANGUAGE %>"/>"), function() {
             stopImageFader("saveLangSettingsImg");
@@ -309,7 +310,7 @@
         setUserMessage("langMessage");
         startImageFader("saveLangSettingsImg");
     }
-    
+
     function checkPurgeAllData() {
         if (confirm("<fmt:message key="systemSettings.purgeDataConfirm"/>")) {
             setUserMessage("miscMessage", "<fmt:message key="systemSettings.purgeDataInProgress"/>");
@@ -319,71 +320,103 @@
             });
         }
     }
-    
+
     function saveConfigDB() {
-		verifyTypeDB();    	
+		verifyTypeDB();
     }
 
     function verifyTypeDB(){
     	SystemSettingsDwr.checkTypeDB(function(msg){
     		if (msg == "derby") {
-    			
+
     			if(document.getElementById('radioDerby').checked) {
     			}
-    			
+
     			if(document.getElementById('radioMysql').checked) {
     				useMysqlDB();
     			}
-    			
+
     		}
 
     		if (msg == "mysql"){
-    			
+
     			if(document.getElementById('radioDerby').checked) {
     				useDerbyDB();
     			}
-    			
+
     			if(document.getElementById('radioMysql').checked) {
     			}
-    			
+
     		}
 
     		if (msg == "mssql") {
     		}
-    		
-    	});	
+
+    	});
     }
-    
+
     function useDerbyDB() {
     	SystemSettingsDwr.useDerbyDB();
 		SystemSettingsDwr.getAppServer(function(msg){
     		alert("<fmt:message key="systemSettings.reServer"/>" + " - " + msg);
 		});
-		
+
     }
-    
+
     function useMysqlDB() {
     	SystemSettingsDwr.useMysqlDB();
     	SystemSettingsDwr.getAppServer(function(msg){
     		alert("<fmt:message key="systemSettings.reServer"/>" + " - " + msg);
 		});
     }
-    
+
     function useMssqlDB() {
     	SystemSettingsDwr.useMssqlDB();
     	SystemSettingsDwr.getAppServer(function(msg){
     		alert("<fmt:message key="systemSettings.reServer"/>" + " - " + msg);
 		});
     }
-    
+
     function dbBackup() {
     	alert("Not implemented !");
     }
-    
-    
-    
+
+    function refreshImages() {
+
+        var pathArray = location.href.split( '/' );
+        var protocol = pathArray[0];
+        var host = pathArray[2];
+        var appScada = pathArray[3];
+        var myLocation;
+        if (!myLocation) {
+     	   myLocation = protocol + "//" + host + "/" + appScada + "/";
+        }
+
+        jQuery.ajax({
+            type: 'GET',
+            dataType: 'text',
+            url:myLocation+"/api/resources/imagesRefresh",
+            success: function(msg){
+                alert("Success: the resource images has been refreshed");
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert("Problem when refreshing assets:"+errorThrown.message);
+            }
+        });
+
+    }
+
+
+
   </script>
-  
+
+  <style media="screen">
+    .footer{
+      position: fixed;
+      bottom: 0px;
+    }
+  </style>
+
   <div class="borderDiv marB marR" style="float:left">
     <table width="100%">
       <tr>
@@ -401,7 +434,7 @@
         <td class="formLabelRequired"><fmt:message key="systemSettings.version"/></td>
         <td class="formField"><c:out value="<%= Common.getVersion() %>"/></td>
       </tr>
-      <%-- 
+      <%--
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.notify"/></td>
         <td class="formField" valign="top">
@@ -451,7 +484,7 @@
       </tr>
     </table>
   </div>
-  
+
   <div class="borderDiv marB marR" style="float:left">
     <table width="100%">
       <tr>
@@ -472,7 +505,7 @@
       </tr>
     </table>
   </div>
-  
+
   <div class="borderDiv marB marR" style="float:left">
     <table width="100%">
       <tr>
@@ -493,7 +526,7 @@
       </tr>
     </table>
   </div>
-  
+
   <div class="borderDiv marB marR" style="float:left">
     <table width="100%">
       <tr>
@@ -506,6 +539,7 @@
         </td>
       </tr>
     </table>
+
     <table>
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.systemLanguage"/></td>
@@ -518,7 +552,6 @@
       </tr>
     </table>
   </div>
-  
   <div class="borderDiv marB marR" style="clear:left;float:left">
     <table width="100%">
       <tr>
@@ -577,13 +610,13 @@
           </select>
         </td>
       </tr>
-      
+
       <tr>
         <td colspan="2" id="emailMessage" class="formError"></td>
       </tr>
     </table>
   </div>
-  
+
   <div class="borderDiv marB marR" style="float:left">
     <table width="100%">
       <tr>
@@ -625,7 +658,7 @@
       </tr>
     </table>
   </div>
-  
+
   <div class="borderDiv marB marR" style="float:left">
     <table width="100%">
       <tr>
@@ -692,7 +725,7 @@
       </tr>
     </table>
   </div>
-  
+
    <div class="borderDiv marB marR" style="float:left">
     <table align="center" "100%">
       <tr>
@@ -705,7 +738,7 @@
         </td>
       </tr>
       </table>
-      
+
       <table align="center">
       <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.dbConfiguration.Derby"/></td>
@@ -713,7 +746,7 @@
           <input id="radioDerby" name="db" type="radio"/>
         </td>
       </tr>
-      
+
        <tr>
         <td class="formLabelRequired"><fmt:message key="systemSettings.dbConfiguration.Mysql"/></td>
         <td class="formField">
@@ -727,28 +760,31 @@
           <input id="radioMssql" name="db" type="radio" disabled/>
         </td>
       </tr>
-       
+
        <tr>
         <td colspan="2" align="center">
           <input type="button" value="<fmt:message key="systemSettings.dbBackup"/>" onclick="dbBackup()"/>
         </td>
       </tr>
-   --%>   
+   --%>
       <tr>
         <td colspan="2" id="httpMessage" class="formError"></td>
       </tr>
     </table>
   </div>
-  <div class="borderDiv marB marR" style="clear:left;float:left">
-    <table>
-    <tr>
-      <td>ScadaLTS: #Major.#Minor.#Release.#Build </td>
-    </tr>
-    </table>
+  <div class="borderDiv marB marR" style="float:left">
+       <table width="100%">
+          <tr>
+             <td>
+               <span class="smallTitle">Cache images</span>
+             </td>
+          </tr>
+          <tr>
+             <td>
+               <button onClick="refreshImages()">Refresh</button>
+             </td>
+          </tr>
+       </table>
   </div>
-  <div class="" style="float:left; color:white">
-  #branchName
-  </div>
-  
-  
+
 </tag:page>

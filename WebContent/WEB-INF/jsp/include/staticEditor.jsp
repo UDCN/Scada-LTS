@@ -17,7 +17,7 @@
     along with this program.  If not, see http://www.gnu.org/licenses/.
 --%>
 <%@ include file="/WEB-INF/jsp/include/tech.jsp" %>
-<div id="staticEditorPopup" style="display:none;left:0px;top:0px;" class="windowDiv">
+<div id="staticEditorPopup" style="display:none;left:0px;top:0px;" class="borderDiv">
   <table cellpadding="0" cellspacing="0"><tr><td>
     <table width="100%">
       <tr>
@@ -183,8 +183,9 @@
 		            show("staticEditorPopup");
 
 				}
+                    positionEditor(compId, "staticEditorPopup");
+
             });
-            positionEditor(compId, "staticEditorPopup");
         };
         
         this.close = function() {

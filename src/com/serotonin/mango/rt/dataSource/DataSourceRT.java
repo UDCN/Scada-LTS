@@ -180,6 +180,11 @@ abstract public class DataSourceRT implements ILifecycle {
     public void initialize() {
         // no op
     }
+    
+    public boolean getConnected() {
+    	// no op
+    	return true;
+    }
 
     public void terminate() {
         // Remove any outstanding events.

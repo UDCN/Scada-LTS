@@ -18,6 +18,7 @@
  */
 package com.serotonin.mango.rt.dataSource.meta;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.serotonin.mango.rt.dataImage.IDataPoint;
@@ -92,5 +93,55 @@ public class NumericPointWrapper extends AbstractPointWrapper {
         List<PointValueTime> values = point.getPointValuesBetween(from, to);
         AnalogStatistics stats = new AnalogStatistics(start, values, from, to);
         return stats;
+    }
+    
+    public double media(int num_pontos) 
+    {
+        double total = 0;
+        //Retorna os numeros de pontos (num_pontos)
+    	List<PointValueTime> list_var = point.getLatestPointValues(num_pontos);
+        int i = 0;
+        //Realiza o somatório dos valores dos pontos
+        for (PointValueTime objeto : list_var)
+        {
+          total += objeto.getDoubleValue();
+          i++;
+        }
+        
+        if(i < num_pontos) total = (list_var.get(0).getDoubleValue())*num_pontos;
+        //Realizar o cálculo da média
+        return total/num_pontos;
+        
+    }
+    
+    public double mediana(int num_pontos) 
+    {
+    	//Lista os pontos (num_pontos) e pega seus valores em Double
+    	List<PointValueTime> list_var = point.getLatestPointValues(num_pontos);
+        double[] array_var = new double[num_pontos];
+        int i = 0;
+        for (PointValueTime objeto : list_var)
+        {
+          array_var[i] = objeto.getDoubleValue();
+          i++;
+        }
+        
+        //Organiza o array, do maior para o menos
+        Arrays.sort(array_var);
+        
+        //Realiza a operação da mediana
+        double valor = 0;
+        if(num_pontos%2 == 0)
+        {
+        	valor = (array_var[Math.round(num_pontos/2)] + array_var[Math.round(num_pontos/2) + 1]) / 2;
+        }
+        else
+        {
+        	valor = array_var[Math.round(num_pontos/2)];
+        }
+        
+        //Verifica se existe a quantidade de pontos para análise
+        if(i < num_pontos) valor = (list_var.get(0).getDoubleValue());
+        return valor;
     }
 }

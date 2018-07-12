@@ -179,6 +179,13 @@ public class ModbusIpDataSource extends ModbusDataSource {
 							configuration.getTransportType() == TransportType.TCP_KEEP_ALIVE);
 
 		super.initialize(modbusMaster);
+		
+	}
+	
+	@Override
+	public boolean getConnected()
+	{
+		return modbusMaster.isInitialized();
 	}
 
 }

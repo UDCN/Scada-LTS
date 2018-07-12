@@ -2,7 +2,7 @@
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -35,7 +35,7 @@
         <c:when test="${page == numberOfPages-1}">${numberOfPages}</c:when>
         <c:otherwise><a href="#" onclick="doSearch(${numberOfPages-1});return false;">${numberOfPages}</a></c:otherwise>
       </c:choose>
-      
+
       <c:choose>
         <c:when test="${page <= 0}">&lt;</c:when>
         <c:otherwise><a href="#" onclick="doSearch(${page-1});return false;">&lt;</a></c:otherwise>
@@ -54,8 +54,8 @@
     </div>
   </c:if>
   <div style="clear:both;"></div>
-  
-  <table cellspacing="1" cellpadding="0" border="0">
+
+  <table style="width: 100%;" cellspacing="1" cellpadding="0" border="0">
     <tr class="rowHeader">
       <td><fmt:message key="events.id"/></td>
       <td><fmt:message key="common.alarmLevel"/></td>
@@ -67,12 +67,12 @@
     </tr>
     <c:if test="${empty events}"><tr><td colspan="6"><b><fmt:message key="events.emptyList"/></b></td></tr></c:if>
     <c:forEach items="${events}" var="event" varStatus="status">
-      <tr class="row<c:if test="${status.index % 2 == 1}">Alt</c:if>">
+      <tr class="smRow<c:if test="${status.index % 2 == 1}">Alt</c:if>">
         <td align="center">${event.id}</td>
         <td align="center"><tag:eventIcon event="${event}"/></td>
         <td>${sst:time(event.activeTimestamp)}</td>
         <td>
-          <table cellspacing="0" cellpadding="0" width="100%">
+          <table style="width: 100%;" cellspacing="0" cellpadding="0" width="100%">
             <tr>
               <td colspan="2"><b><sst:i18n message="${event.message}"/></b></td>
               <td align="right">

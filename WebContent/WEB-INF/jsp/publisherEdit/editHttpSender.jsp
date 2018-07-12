@@ -2,7 +2,7 @@
     Mango - Open Source M2M - http://mango.serotoninsoftware.com
     Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
     @author Matthew Lohbihler
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -21,63 +21,63 @@
 <script type="text/javascript">
   var staticHeaderList = new Array();
   var staticParameterList = new Array();
-  var allPoints = new Array();  
-  var selectedPoints = new Array();  
-  
+  var allPoints = new Array();
+  var selectedPoints = new Array();
+
   function init() {
       PublisherEditDwr.initSender(initCB);
   }
   dojo.addOnLoad(init);
-  
+
   function initCB(response) {
       var i;
       var list = response.data.allPoints;
       for (var i=0; i<list.length; i++)
           allPoints[allPoints.length] = {
                   id: list[i].id, name: list[i].extendedName, enabled: list[i].enabled, type: list[i].dataTypeMessage};
-          
+
       list = response.data.publisher.staticHeaders;
       for (i=0; i<list.length; i++)
           staticHeaderList[staticHeaderList.length] = {key: list[i].key, value: list[i].value};
       refreshStaticHeaderList();
-      
+
       list = response.data.publisher.staticParameters;
       for (i=0; i<list.length; i++)
           staticParameterList[staticParameterList.length] = {key: list[i].key, value: list[i].value};
       refreshStaticParameterList();
-      
+
       list = response.data.publisher.points;
       for (i=0; i<list.length; i++)
           addToSelectedArray(list[i].dataPointId, list[i].parameterName, list[i].includeTimestamp);
       refreshSelectedPoints();
   }
-  
+
   function addStaticHeader() {
       var key = $get("sheaderKey");
       var value = $get("sheaderValue");
-      
+
       if (!key || key.trim().length == 0) {
           alert("<fmt:message key="publisherEdit.httpSender.keyRequired"/>");
           return;
       }
-      
+
       for (var i=0; i<staticHeaderList.length; i++) {
           if (staticHeaderList[i].key == key) {
               alert("<fmt:message key="publisherEdit.httpSender.keyExists"/>: '"+ key +"'");
               return;
           }
       }
-      
+
       staticHeaderList[staticHeaderList.length] = {key: key, value: value};
       staticHeaderList.sort();
       refreshStaticHeaderList();
   }
-  
+
   function removeStaticHeader(index) {
       staticHeaderList.splice(index, 1);
       refreshStaticHeaderList();
   }
-  
+
   function refreshStaticHeaderList() {
       dwr.util.removeAllRows("staticHeaderList");
       if (staticHeaderList.length == 0)
@@ -93,33 +93,33 @@
                   ], null);
       }
   }
-  
+
   function addStaticParameter() {
       var key = $get("sparamKey");
       var value = $get("sparamValue");
-      
+
       if (!key || key.trim().length == 0) {
           alert("<fmt:message key="publisherEdit.httpSender.keyRequired"/>");
           return;
       }
-      
+
       for (var i=0; i<staticParameterList.length; i++) {
           if (staticParameterList[i].key == key) {
               alert("<fmt:message key="publisherEdit.httpSender.keyExists"/>: '"+ key +"'");
               return;
           }
       }
-      
+
       staticParameterList[staticParameterList.length] = {key: key, value: value};
       staticParameterList.sort();
       refreshStaticParameterList();
   }
-  
+
   function removeStaticParameter(index) {
       staticParameterList.splice(index, 1);
       refreshStaticParameterList();
   }
-  
+
   function refreshStaticParameterList() {
       dwr.util.removeAllRows("staticParameterList");
       if (staticParameterList.length == 0)
@@ -135,19 +135,19 @@
                   ], null);
       }
   }
-  
+
   function selectPoint() {
       var pointId = $get("availablePoints");
       addToSelectedArray(pointId, null, true);
       refreshSelectedPoints();
   }
-  
+
   function addToSelectedArray(pointId, parameterName, includeTimestamp) {
       var data = getElement(allPoints, pointId);
-      
+
       if (parameterName == null)
           parameterName = data.name;
-      
+
       if (data) {
           // Missing names imply that the point was deleted, so ignore.
           selectedPoints[selectedPoints.length] = {
@@ -160,12 +160,12 @@
           };
       }
   }
-  
+
   function removeFromSelectedPoints(pointId) {
       removeElement(selectedPoints, pointId);
       refreshSelectedPoints();
   }
-  
+
   function refreshSelectedPoints() {
       dwr.util.removeAllRows("selectedPoints");
       if (selectedPoints.length == 0)
@@ -185,7 +185,7 @@
                           return "<input type='checkbox' "+ (data.includeTimestamp ? "checked='checked' " : "") +
                                   "onclick='updateIncludeTimestamp("+ data.id +", this.checked)'/>";
                   },
-                  function(data) { 
+                  function(data) {
                           return "<img src='images/bullet_delete.png' class='ptr' "+
                                   "onclick='removeFromSelectedPoints("+ data.id +")'/>";
                   }
@@ -201,12 +201,12 @@
                       if (options.cellNum == 1 || options.cellNum == 4)
                           td.align = "center";
                       return td;
-                  } 
+                  }
               });
       }
       refreshAvailablePoints();
   }
-  
+
   function refreshAvailablePoints() {
       dwr.util.removeAllOptions("availablePoints");
       var availPoints = new Array();
@@ -218,37 +218,37 @@
                   break;
               }
           }
-          
+
           if (!found)
               availPoints[availPoints.length] = allPoints[i];
       }
       dwr.util.addOptions("availablePoints", availPoints, "id", "name");
   }
-  
+
   function updateParameterName(pointId, parameterName) {
       updateElement(selectedPoints, pointId, "parameterName", parameterName);
   }
-  
+
   function updateIncludeTimestamp(pointId, includeTimestamp) {
       updateElement(selectedPoints, pointId, "includeTimestamp", includeTimestamp);
   }
-  
+
   function savePublisherImpl(name, xid, enabled, cacheWarningSize, changesOnly, sendSnapshot, snapshotSendPeriods,
           snapshotSendPeriodType) {
       // Clear messages.
       hide("urlMsg");
       hide("pointsMsg");
-      
+
       var points = new Array();
       for (var i=0; i<selectedPoints.length; i++)
           points[points.length] = {dataPointId: selectedPoints[i].id, parameterName: selectedPoints[i].parameterName,
                   includeTimestamp: selectedPoints[i].includeTimestamp};
-      
-      PublisherEditDwr.saveHttpSender(name, xid, enabled, points, $get("url"), $get("usePost") == "true", 
+
+      PublisherEditDwr.saveHttpSender(name, xid, enabled, points, $get("url"), $get("usePost") == "true",
     		  staticHeaderList, staticParameterList, cacheWarningSize, changesOnly, $get("raiseResultWarning"),
     		  $get("dateFormat"), sendSnapshot, snapshotSendPeriods, snapshotSendPeriodType, savePublisherCB);
   }
-  
+
   function httpSendTest() {
       showMessage("httpSendTestMessage", "<fmt:message key="publisherEdit.httpSender.sending"/>");
       showMessage("httpSendTestData");
@@ -256,20 +256,20 @@
       PublisherEditDwr.httpSenderTest($get("url"), $get("usePost") == "true", staticHeaderList, staticParameterList,
     		  httpSendTestCB);
   }
-  
+
   function httpSendTestButtons(sending) {
       setDisabled("httpSendTestBtn", sending);
       setDisabled("httpSendTestCancelBtn", !sending);
   }
-  
+
   function httpSendTestCB() {
       setTimeout(httpSendTestUpdate, 2000);
   }
-  
+
   function httpSendTestUpdate() {
       PublisherEditDwr.httpSenderTestUpdate(httpSendTestUpdateCB);
   }
-  
+
   function httpSendTestUpdateCB(result) {
       if (result || result == "") {
           showMessage("httpSendTestMessage");
@@ -282,18 +282,18 @@
       else
           httpSendTestCB();
   }
-  
+
   function httpSendTestCancel() {
       PublisherEditDwr.cancelTestingUtility(httpSendTestCancelCB);
   }
-  
+
   function httpSendTestCancelCB() {
       httpSendTestButtons(false);
       showMessage("httpSendTestMessage", "<fmt:message key="common.cancelled"/>");
   }
 </script>
 
-<table cellpadding="0" cellspacing="0">
+<table cellpadding="0" cellspacing="0" width="100%">
   <tr>
     <td valign="top">
       <div class="borderDiv marR marB">
@@ -301,7 +301,7 @@
           <tr>
             <td colspan="2" class="smallTitle"><fmt:message key="publisherEdit.httpSender.props"/> <tag:help id="httpSenderPublishing"/></td>
           </tr>
-          
+
           <tr>
             <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.method"/></td>
             <td class="formField">
@@ -311,7 +311,7 @@
               </sst:select>
             </td>
           </tr>
-          
+
           <tr>
             <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.url"/></td>
             <td class="formField">
@@ -319,7 +319,7 @@
               <div id="urlMsg" class="formError" style="display:none;"></div>
             </td>
           </tr>
-          
+
           <tr>
             <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.staticHeaders"/></td>
             <td class="formField">
@@ -332,7 +332,7 @@
               </table>
             </td>
           </tr>
-          
+
           <tr>
             <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.staticParams"/></td>
             <td class="formField">
@@ -345,13 +345,13 @@
               </table>
             </td>
           </tr>
-          
+
           <tr>
             <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.raiseResultWarning"/></td>
             <td class="formField"><sst:checkbox id="raiseResultWarning"
                     selectedValue="${publisher.raiseResultWarning}"/></td>
           </tr>
-          
+
           <tr>
             <td class="formLabelRequired"><fmt:message key="publisherEdit.httpSender.dateFormat"/></td>
             <td class="formField">
@@ -365,7 +365,7 @@
         </table>
       </div>
     </td>
-    
+
     <td valign="top">
       <div class="borderDiv marB">
         <table>
@@ -384,7 +384,7 @@
   </tr>
 </table>
 
-<table cellpadding="0" cellspacing="0"><tr><td>
+<table cellpadding="0" cellspacing="0" width="100%"><tr><td>
   <div class="borderDiv">
     <table width="100%">
       <tr>
@@ -395,7 +395,7 @@
         </td>
       </tr>
     </table>
-    
+
     <table cellspacing="1" cellpadding="0">
       <tr class="rowHeader">
         <td><fmt:message key="publisherEdit.point.name"/></td>
