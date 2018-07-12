@@ -23,6 +23,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,16 +40,22 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.tomcat.jni.Time;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 import org.springframework.beans.propertyeditors.LocaleEditor;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
+import com.serotonin.bacnet4j.type.primitive.Date;
+import com.serotonin.db.spring.ConnectionCallbackVoid;
 import com.serotonin.io.StreamUtils;
 import com.serotonin.mango.Common;
+import com.serotonin.mango.db.DatabaseAccess;
 import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.db.dao.MailingListDao;
+
+import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.EventManager;
@@ -115,24 +125,46 @@ public class MiscDwr extends BaseDwr {
 		return response;
 	}
 
-	public int acknowledgeEvent(int eventId) {
+	public int acknowledgeEvent(int eventId) 
+	{
 		User user = Common.getUser();
-		if (user != null) {
-			new EventDao().ackEvent(eventId, System.currentTimeMillis(),
-					user.getId(), 0);
-			resetLastAlarmLevelChange();
+		if(user != null)
+		{
+			/*EventDao eventDao = new EventDao();
+			eventDao.ackEvent(eventId, System.currentTimeMillis(), user.getId(), 0);*/
+			try
+			{
+				DAO.getInstance().getJdbcTemp().update(
+						"UPDATE events SET ackTs=?, ackUserId=?, alternateAckSource=? WHERE id=?", 
+					new Object[] {System.currentTimeMillis(), user.getId(), 0, eventId});
+			}catch (Exception e){
+				LOG.info("Erro no UPDATE do evento: " + e);
+			}
+			
 		}
+			
 		return eventId;
 	}
 
 	public void acknowledgeAllPendingEvents() {
 		User user = Common.getUser();
-		if (user != null) {
-			EventDao eventDao = new EventDao();
-			long now = System.currentTimeMillis();
-			for (EventInstance evt : eventDao.getPendingEvents(user.getId()))
-				eventDao.ackEvent(evt.getId(), now, user.getId(), 0);
+		//EventDao eventDao = new EventDao();
+		if (user != null) 
+		{
+			/*for (EventInstance evt : eventDao.getPendingEvents(user.getId()))
+			  eventDao.ackEvent(evt.getId(), System.currentTimeMillis(), user.getId(), 0);
+			resetLastAlarmLevelChange();*/
+			
+			try
+			{
+				DAO.getInstance().getJdbcTemp().update(
+					"UPDATE events SET ackTs=?, ackUserId=?, alternateAckSource=? WHERE ackTs=0", 
+					new Object[] {System.currentTimeMillis(), user.getId(), 0});
+			}catch (Exception e){
+				LOG.info("Erro no UPDATE do evento: " + e);
+			}
 			resetLastAlarmLevelChange();
+			
 		}
 	}
 
@@ -276,7 +308,7 @@ public class MiscDwr extends BaseDwr {
 	public String getHomeUrl() {
 		String url = Common.getUser().getHomeUrl();
 		if (StringUtils.isEmpty(url))
-			url = "watch_list.shtm";
+			url = "views.shtm";
 		return url;
 	}
 
