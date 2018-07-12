@@ -58,26 +58,22 @@ public class UserAPI {
                     private String name;
                     private String password;
                     private String email;
-                    private Boolean admin;
 
-                    UserJSON(long id, String name, String password, String email, Boolean admin) {
+                    UserJSON(long id, String name, String password, String email) {
                         this.setId(id);
                         this.setName(name);
                         this.setPassword(password);
                         this.setEmail(email);
-                        this.setAdmin(admin);
                     }
 
                     public long getId() { return id; }
                     public void setId(long id) { this.id = id; }
-
                     public String getName() {
                         return name;
                     }
                     public void setName(String xid) {
                         this.name = xid;
                     }
-
                     public String getPassword() {
                         return password;
                     }
@@ -88,12 +84,10 @@ public class UserAPI {
                     public String getEmail() {
                         return email;
                     }
+
                     public void setEmail(String email) {
                         this.email = email;
                     }
-
-                    public Boolean isAdmin() { return admin; }
-                    public void setAdmin(Boolean admin) { this.admin = admin; }
                 }
 
                 int userId = user.getId();
@@ -106,7 +100,7 @@ public class UserAPI {
 
                 List<UserJSON> lst = new ArrayList<UserJSON>();
                 for (User u:lstUsers) {
-                    UserJSON dsU = new UserJSON(u.getId(), u.getUsername(), u.getPassword(), u.getEmail(), u.isAdmin());
+                    UserJSON dsU = new UserJSON(u.getId(), u.getUsername(), u.getPassword(), u.getEmail());
                     lst.add(dsU);
                 }
 
