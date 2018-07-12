@@ -239,11 +239,13 @@
           <c:if test="${!empty sessionUser}">
             <c:if test="${sessionUser.admin}">
               <li><a href="users.shtm" ><tag:img id="Users" png="user" title="header.users"/> <br> Usuários </a></li>
+              <li><a href="usersProfiles.shtm" ><tag:img id="UsersProfiles" png="user-group" title="header.usersProfiles"/> <br> Perfis de Usuários </a></li>
               <li><a href="emport.shtm" ><tag:img id="Emport" png="script_code" title="header.emport"/> <br> Import </a></li>
               <li><a href="watch_list.shtm" > <tag:img id="Whatchlist"  png="eye" title="header.watchlist"  /><br> Whatchlist </a></li>
               <li><a href="event_handlers.shtm" ><tag:img id="event_handlers" png="cog" title="header.eventHandlers"/> <br> Event Handlers </a></li>
               <li><a href="data_sources.shtm" ><tag:img id="data_sources" png="icon_ds" title="header.dataSources"/> <br> Data Sources </a></li>
               <li><a href="estatisticas.shtm" ><tag:img id="chart" png="chart" title="header.estatisticas"/> <br> Estatísticas </a></li>
+              <li><a href="funcoes.shtm" ><tag:img id="plugin_add" png="plugin_add" title="header.funcoes"/> <br> Funções Especiais </a></li>
               <li><a href="scheduled_events.shtm" ><tag:img id="scheduled_events" png="clock" title="header.scheduledEvents"/> <br> Eventos Programados </a></li>
               <li><a href="compound_events.shtm" ><tag:img id="compound_events" png="multi_bell" title="header.compoundEvents"/> <br> Eventos Compostos </a></li>
               <li><a href="point_links.shtm" ><tag:img id="point_links" png="link" title="header.pointLinks"/> <br> Point Links </a></li>
