@@ -298,7 +298,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td><fmt:message key="emport.importInstruction" /> <input
+				<td align="center"><fmt:message key="emport.importInstruction" /> <input
 					id="importJsonBtn" type="button"
 					value="<fmt:message key="emport.import"/>" onclick="doImport()" />
 					<input id="cancelBtn" type="button"
@@ -397,11 +397,11 @@
 				</tr>
 
 				<tr>
-					<td><fmt:message key="emport.importProjectInstruction" /></td>
+					<td align="center"><fmt:message key="emport.importProjectInstruction" /></td>
 				</tr>
 
 				<tr>
-					<td><input type="file" name="importFile" id="importFile" /> <input
+					<td align="center"><input type="file" name="importFile" id="importFile" /> <input
 						id="importBtn" type="submit"
 						value="<fmt:message key="emport.send"/>" /></td>
 				</tr>
@@ -422,7 +422,7 @@
 		</table>
 	</div>
 
-	<div style="clear: both;">
+	<div style="clear: both; align: center; padding: 0% 0% 0% 3%;">
 		<span class="formLabelRequired"><fmt:message key="emport.data" />
 		</span><br />
 		<textarea rows="40" cols="150" id="emportData"></textarea>
