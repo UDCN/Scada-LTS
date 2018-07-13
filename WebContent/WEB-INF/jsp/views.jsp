@@ -372,5 +372,10 @@
 
 			checkFullScreen();
 		</script>
-		<tag:displayView view="${currentView}" emptyMessageKey="views.noViews" />
+		<c:if test="${currentView.id == 17}" >
+			<tag:displayView2 view="${currentView}" emptyMessageKey="views.noViews" />
+		</c:if>
+		<c:if test="${currentView.id != 17}" >
+				<tag:displayView view="${currentView}" emptyMessageKey="views.noViews" />
+		</c:if>
 	</tag:page>
