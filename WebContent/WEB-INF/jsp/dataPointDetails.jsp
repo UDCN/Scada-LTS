@@ -208,6 +208,9 @@
               <td class="formLabelRequired"><fmt:message key="common.time"/></td>
               <td id="pointValueTime" class="formField"></td>
             </tr>
+           
+        <c:if test="${sessionUser.admin}">
+        
             <tr id="pointChangeNode" style="display:none">
               <td class="formLabelRequired">
                 <tag:img id="pointChanging" png="icon_edit" title="common.set"/>
@@ -215,6 +218,9 @@
               </td>
               <td id="pointChange" class="formField"></td>
             </tr>
+        
+        </c:if>
+
             <tr>
               <td class="formLabelRequired"><fmt:message key="common.xid"/></td>
               <td class="formField">${point.xid}</td>

@@ -83,6 +83,12 @@ public class WatchListController extends ParameterizableViewController {
 				//watchLists.stream().filter(watchList -> mapToCheckId.get(watchList.getKey()) != null );
 				// ACL end;
 			}
+			else
+			{
+				watchLists = watchListDao.getWatchLists(user.getId(), user.getUserProfile());
+				
+				
+			}
 
 		} else {
 			watchLists = watchListDao.getWatchLists();

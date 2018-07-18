@@ -100,7 +100,7 @@ public class DataPointDao {
     	try {
     		return dataPointService.getDataPoint(id);
     	} catch (EmptyResultDataAccessException e) {
-    		LOG.error(e);
+    		LOG.error(Integer.toString(id) + " " + e);
     		return null;
     	}
     	

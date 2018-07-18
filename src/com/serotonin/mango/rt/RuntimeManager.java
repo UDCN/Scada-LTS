@@ -162,7 +162,17 @@ public class RuntimeManager {
 		// initialize such that point listeners in meta points and set point
 		// handlers can run properly.
 		for (DataSourceVO<?> config : pollingRound)
+		{
+			//Delay necessário para sincrozinar os Data Sources e não ocorre travamento
+			try {
+				Thread.sleep( Integer.toUnsignedLong( 997 ));
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			startDataSourcePolling(config);
+		}
+			
 
 		// Initialize the scheduled events.
 		ScheduledEventDao scheduledEventDao = new ScheduledEventDao();
@@ -353,21 +363,30 @@ public class RuntimeManager {
 				// Add the enabled points to the data source.
 				List<DataPointVO> dataSourcePoints = new DataPointDao()
 						.getDataPoints(vo.getId(), null);
-				for (DataPointVO dataPoint : dataSourcePoints) {
+				for (DataPointVO dataPoint : dataSourcePoints) 
+				{
 					if (dataPoint.isEnabled())
 						startDataPoint(dataPoint);
 				}
 
 				LOG.info("Data source '" + vo.getName() + "' initialized");
+				
 			}
 			
 			return true;
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	private boolean aguardaConectar(DataSourceVO<?> vo, DataSourceRT dataSource)
 	{
 		int tentativas = 0;
+		
+		int tempoDelayMs = 499;
+		
+		tempoDelayMs = 
+				Common.getEnvironmentProfile().getInt("abilit.msDelay", 499);
+		
 		for(tentativas = 0; tentativas < 4; tentativas++)
 		{
 			//Se não conectou
@@ -377,7 +396,7 @@ public class RuntimeManager {
 				LOG.info(vo.getName() + " - NÃO CONECTADO");
 				try {
 	    			//Delay progressivo a cada tentativa	
-     				this.wait( Integer.toUnsignedLong( (tentativas + 1) * 499 ));
+     				Thread.sleep( Integer.toUnsignedLong( (tentativas + 1) * 499 ));
 				} catch (InterruptedException e) {
 					LOG.info(e.toString());
 				}
@@ -385,7 +404,7 @@ public class RuntimeManager {
 			//Se conseguiu a conexão, sai do loop
 			else
 			{
-				LOG.info(vo.getName() + " - CONECTADO");
+				LOG.info(vo.getName() + " - CONECTADO - TEMPO: " + Integer.toString(tempoDelayMs));
 				break;
 			}
 				
@@ -426,10 +445,34 @@ public class RuntimeManager {
 		return true;
 	}
 
-	private void startDataSourcePolling(DataSourceVO<?> vo) {
+	@SuppressWarnings("deprecation")
+	private void startDataSourcePolling(DataSourceVO<?> vo) 
+	{
+		//Para inicialização com aguardar
+		boolean aguardaConectarVar = false; 
+		aguardaConectarVar = 
+			Common.getEnvironmentProfile().getBoolean("abilit.enableAguardaConexao", false);
+		
+		if(aguardaConectarVar)
+		{
+			int tempoDelayMs = 499;
+			tempoDelayMs = 
+					Common.getEnvironmentProfile().getInt("abilit.msDelay", 499);
+			try
+			{
+				Thread.sleep( Integer.toUnsignedLong(tempoDelayMs));
+			}
+			catch (InterruptedException e) {
+				LOG.info(e.toString());
+			}
+		}
+		
+		
 		DataSourceRT dataSource = getRunningDataSource(vo.getId());
 		if (dataSource != null)
 			dataSource.beginPolling();
+		
+		LOG.info(dataSource.getName() + " - INICIADO");
 	}
 
 	public void stopDataSource(int id) {
@@ -517,8 +560,7 @@ public class RuntimeManager {
 				dataPoint.initialize();
 				DataPointListener l = getDataPointListeners(vo.getId());
 				if (l != null)
-					l.pointInitialized();
-
+					l.pointInitialized();				
 				// Add/update it in the data source.
 				ds.addDataPoint(dataPoint);
 			}
