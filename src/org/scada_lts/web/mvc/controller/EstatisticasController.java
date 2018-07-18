@@ -343,28 +343,50 @@ public class EstatisticasController extends ParameterizableViewController
 	
 	public void dataSourcesPadrao(Map<String,List> resposta)
 	{
+		String dsPadraoStr = "zPadrao";
+		dsPadraoStr = Common.getEnvironmentProfile().getString("abilit.dsPadrao", "zPadrao");
+		
 		String MODBUS_IP = "dsEdit.modbusIp";
-		int MINUTES = 2;
-		int idCount = 1;
-		List<DataSourceVO<?>> dataS = Common.ctx.getRuntimeManager().getDataSources();
 		String[] medidasTempo = {"SECONDS", "MINUTES", "HOURS", "DAYS", "WEEKS",
 				"MONTHS", "YEARS", "MILLISECONDS"};
-		
 		
 		List<String> id = new ArrayList<String>();
 		List<String> Xid = new ArrayList<String>();
 		List<String> nome = new ArrayList<String>();
 		List<String> resultadoLst = new ArrayList<String>();
+		
+		/*int MINUTES = 2;*/
+		
+		int idCount = 1;
+		
+		DataSourceDao dsDao = new DataSourceDao();
+		
+		ModbusIpDataSourceVO dsPadrao = null;
+		
+		//Coleta os dados do Data Source Padrao
+		for (DataSourceVO<?> ds : dsDao.getDataSources())
+		{
+			if(dsPadraoStr.equals(( ds.getName())))
+			{
+				dsPadrao = (ModbusIpDataSourceVO) Common
+						.ctx.getRuntimeManager().getDataSource(ds.getId());
+			}
+				
+		}
+		
+		List<DataSourceVO<?>> dataS = Common.ctx.getRuntimeManager().getDataSources();
 		 
 		for (DataSourceVO<?> ds : dataS) 
         {
+			
 			String resultado = "";
+			
 			if(ds.getType().getKey().equals(MODBUS_IP))
 			{
 				ModbusIpDataSourceVO dataSourceModbusIP = (ModbusIpDataSourceVO) Common
 						.ctx.getRuntimeManager().getDataSource(ds.getId());
 				
-				if(dataSourceModbusIP.getUpdatePeriodType() != MINUTES) 
+				/*if(dataSourceModbusIP.getUpdatePeriodType() != MINUTES) 
 					resultado = resultado.concat("updatePeriodType: " + 
 										medidasTempo[dataSourceModbusIP.getUpdatePeriodType()-1] + "; ");
 				
@@ -416,6 +438,61 @@ public class EstatisticasController extends ParameterizableViewController
 				if(dataSourceModbusIP.getUpdatePeriods() != 1000)
 					resultado = resultado.concat("updatePeriods: " +
 										dataSourceModbusIP.getUpdatePeriods() + "; ");
+				*/
+				
+				if(dataSourceModbusIP.getUpdatePeriodType() != dsPadrao.getUpdatePeriodType()) 
+					resultado = resultado.concat("updatePeriodType: " + 
+										medidasTempo[dataSourceModbusIP.getUpdatePeriodType()-1] + "; ");
+				
+				if(dataSourceModbusIP.getTransportType() != dsPadrao.getTransportType())
+					resultado = resultado.concat("transportType: " + 
+										dataSourceModbusIP.getTransportType().getKey().
+										replaceAll("dsEdit.modbusIp.transportType.", "").toUpperCase() + "; ");	
+				
+				if(dataSourceModbusIP.isContiguousBatches() != dsPadrao.isContiguousBatches())
+					resultado = resultado.concat("contiguousBatches: " +
+										dataSourceModbusIP.isContiguousBatches() + "; ");
+				
+				if(dataSourceModbusIP.isCreateSlaveMonitorPoints() != dsPadrao.isCreateSlaveMonitorPoints())
+					resultado = resultado.concat("createSlaveMonitorPoints: " +
+										dataSourceModbusIP.isCreateSlaveMonitorPoints() + "; ");
+			
+				if(dataSourceModbusIP.isEncapsulated() != dsPadrao.isEncapsulated())
+					resultado = resultado.concat("encapsulated: " +
+										dataSourceModbusIP.isEncapsulated() + "; ");
+
+				if(!dataSourceModbusIP.getHost().equals(dsPadrao.getHost()))
+					resultado = resultado.concat("host: " +
+										dataSourceModbusIP.getHost() + "; ");
+				
+				if(dataSourceModbusIP.getMaxReadBitCount() != dsPadrao.getMaxReadBitCount())
+					resultado = resultado.concat("maxReadBitCount: " +
+										dataSourceModbusIP.getMaxReadBitCount() + "; ");
+				
+				if(dataSourceModbusIP.getMaxReadRegisterCount() != dsPadrao.getMaxReadRegisterCount())
+					resultado = resultado.concat("maxReadRegisterCount: " +
+										dataSourceModbusIP.getMaxReadRegisterCount() + "; "); 
+				
+				if(dataSourceModbusIP.getMaxWriteRegisterCount() != dsPadrao.getMaxWriteRegisterCount())
+					resultado = resultado.concat("maxWriteRegisterCount: " +
+										dataSourceModbusIP.getMaxWriteRegisterCount() + "; "); 
+				
+				if(dataSourceModbusIP.isQuantize() != dsPadrao.isQuantize())
+					resultado = resultado.concat("quantize: " +
+										dataSourceModbusIP.isQuantize() + "; "); 
+				
+				if(dataSourceModbusIP.getRetries() != dsPadrao.getRetries())
+					resultado = resultado.concat("retries: " +
+										dataSourceModbusIP.getRetries() + "; ");
+				
+				if(dataSourceModbusIP.getTimeout() != dsPadrao.getTimeout())
+					resultado = resultado.concat("timeout: " +
+										dataSourceModbusIP.getTimeout() + "; ");
+				
+				if(dataSourceModbusIP.getUpdatePeriods() != dsPadrao.getUpdatePeriods())
+					resultado = resultado.concat("updatePeriods: " +
+										dataSourceModbusIP.getUpdatePeriods() + "; ");
+				
 				
 				if(!resultado.equals("")) 
 				{

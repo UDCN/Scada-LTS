@@ -298,7 +298,7 @@ mango.view.watchList.setDataImpl = function(state) {
             setTimeout('mango.view.watchList.safeRemoveClass("'+ node.id +'", "viewChangeBkgd")', 2000);
         }
         
-        if (state.change != null) {
+        if (state.change != null && document.getElementById("p"+ state.id +"ChangeMin") ) {
             show($("p"+ state.id +"ChangeMin"));
             if (!mango.view.setEditing)
                 $set("p"+ state.id +"Change", state.change);
@@ -360,7 +360,8 @@ mango.view.pointDetails.setData = function(state) {
     if (state.time != null)
         $("pointValueTime").innerHTML = state.time;
     
-    if (state.change != null) {
+    //Apenas caso seja admin
+    if (state.change != null && document.getElementById('pointChangeNode')) {
         show($("pointChangeNode"));
         $set("pointChange", state.change);
     }
