@@ -58,7 +58,10 @@
   </script>
   <!-- script type="text/javascript" src="http://o.aolcdn.com/dojo/0.4.2/dojo.js"></script -->
   <script type="text/javascript" src="resources/dojo/dojo.js"></script>
-  <script type="text/javascript" src="resources/jQuery/jquery-1.10.2.min.js"></script>
+  <!--  <script type="text/javascript" src="resources/jQuery/jquery-1.10.2.min.js"></script> -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> 
+  
   <c:forTokens items="${jqplugins}" var="plugin" delims=", ">
     <script type="text/javascript" src="resources/jQuery/plugins/${plugin}.js"></script>
   </c:forTokens>
@@ -177,7 +180,7 @@
           <a class="navbar-brand" href="#" style="font-size: 18pt; font-family: Impact, Charcoal, sans-serif; color: black;">Supervisorio ScadaBR Natal/RN</a>
           <c:if test="${!empty sessionUser}"> <br> Usuário: <b>${sessionUser.username}</b> </c:if>
         </div>
-        <div id="navbar" class="navbar-collapse collapse">
+        <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
             <c:if test="${!empty sessionUser}">
               <li><a><tag:img png="house" title="header.goHomeUrl" onclick="goHomeUrl()" onmouseover="hideLayer('localeEdit')"/> <br> Home</a></li>
