@@ -20,6 +20,10 @@ html {
       background-color: #4C5A50; }
 
 /* Hoverable icons */
+.controlsDiv {
+	left: 20px;
+}
+
 img.ptr {
   margin: 0;
   padding: .2rem;
@@ -296,7 +300,8 @@ span#__header__alarmLevelText {
       width: 30%;
       text-align: center; }
     .borderDiv > table input[type=checkbox], .borderDivPadded > table input[type=checkbox] {
-      width: auto; }
+      width: auto; 
+      height: auto; }
 
 .content {
   margin-bottom: 40px;
