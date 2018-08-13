@@ -85,6 +85,14 @@ mango.longPoll.poll = function() {
 }
 
 mango.longPoll.pollCB = function(response) {
+
+    /*if(mango.longPoll.pollRequest.customCaern == true &&
+        mango.longPoll.pollRequest.arrayCustomCaern == true)
+    {
+        MiscDwr.terminateLongPoll(mango.longPoll.pollSessionId);
+        return;      
+    }*/
+
     if (response.terminated)
         return;
     
@@ -112,6 +120,12 @@ mango.longPoll.pollCB = function(response) {
     
     if (response.viewStates)
         mango.view.setData(response.viewStates);
+
+    if (response.customCaernStates)
+        mango.view.setCaernView(response.customCaernStates);
+
+    if (response.customCaernTimes)
+        mango.view.caernTimes(response.customCaernTimes);
     
     if (typeof(response.pendingAlarmsContent) != "undefined")
         updatePendingAlarmsContent(response.pendingAlarmsContent);

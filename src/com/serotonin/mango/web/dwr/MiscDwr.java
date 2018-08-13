@@ -27,6 +27,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -54,8 +55,14 @@ import com.serotonin.mango.Common;
 import com.serotonin.mango.db.DatabaseAccess;
 import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.db.dao.MailingListDao;
+import com.serotonin.mango.db.dao.DataPointDao;
+import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.rt.dataImage.PointValueTime;
+import com.serotonin.mango.rt.dataImage.types.MangoValue;
 
 import org.scada_lts.dao.DAO;
+import org.scada_lts.dao.DataPointDAO;
+import org.scada_lts.dao.pointvalues.PointValueDAO;
 import org.scada_lts.dao.SystemSettingsDAO;
 import com.serotonin.mango.db.dao.UserDao;
 import com.serotonin.mango.rt.EventManager;
@@ -67,6 +74,7 @@ import com.serotonin.mango.vo.DataPointVO;
 import com.serotonin.mango.vo.User;
 import com.serotonin.mango.vo.WatchList;
 import com.serotonin.mango.web.dwr.beans.CustomComponentState;
+import com.serotonin.mango.web.dwr.beans.CustomCaernState;
 import com.serotonin.mango.web.dwr.beans.RecipientListEntryBean;
 import com.serotonin.mango.web.dwr.beans.ViewComponentState;
 import com.serotonin.mango.web.dwr.beans.WatchListState;
@@ -443,6 +451,81 @@ public class MiscDwr extends BaseDwr {
 					response.put("viewStates", differentStates);
 					state.setViewComponentStates(newStates);
 				}
+			}
+
+
+			if(pollRequest.isCustomCaern())
+			{
+				boolean times = false;
+				String arrayIds[];
+				arrayIds = pollRequest.getArrayCustomCaern().split(",");
+				List<CustomCaernState> oldListCaernState = state.getCustomCaernStates();
+				List<CustomCaernState> differentListCaernState = new ArrayList<CustomCaernState>();
+				List<CustomCaernState> newListCaernState = new ArrayList<CustomCaernState>();
+
+				for(String id : arrayIds)
+				{	
+					CustomCaernState customCaernStateOld = state.getCustomCaernState(id);
+					CustomCaernState caernState = new CustomCaernState();
+					caernState.setId(id);
+					DataPointDAO dataPointDao = new DataPointDAO();
+
+					try
+					{
+						DataPointVO dataPoint = dataPointDao.getDataPoint(id);
+					
+						PointValueDAO pointValue = new PointValueDAO();
+						Long idPV = pointValue.getLatestPointValueId(dataPoint.getId());
+						PointValueTime pv = pointValue.getPointValue(idPV);
+						String valores[] = pv.valueString().split(",");
+						if(valores[0].equals("false"))
+							valores[0] = "0";
+						if(valores[0].equals("true"))
+							valores[0] = "1";
+						caernState.setValue(valores[0]);
+						caernState.setTime(valores[1]);
+						newListCaernState.add(caernState);
+						
+						if(customCaernStateOld == null)
+							differentListCaernState.add(caernState);
+						else
+						{
+							if(!customCaernStateOld.getValue().equals(caernState.getValue()))
+								differentListCaernState.add(caernState);
+							
+						}	
+						
+					}
+					catch(Exception e)
+					{
+						caernState.setValue("3,");
+						if(customCaernStateOld.getValue() != caernState.getValue())
+							differentListCaernState.add(caernState);
+					}
+				}
+
+				if (!differentListCaernState.isEmpty()) 
+					response.put("customCaernStates", differentListCaernState);
+				else
+				{
+					List<String> timeList = new ArrayList<String>();
+					String time;
+					Timestamp timeNow = new Timestamp(System.currentTimeMillis());
+
+					for(CustomCaernState stateCaern : newListCaernState)
+					{
+						if( (timeNow.getTime() - Long.parseLong(stateCaern.getTime())) > 5000)
+						{
+							time = stateCaern.getId() + "," + stateCaern.getTime();
+							timeList.add(time);
+						}
+					}
+					if (!timeList.isEmpty()) 
+						response.put("customCaernTimes", timeList);
+				}
+				
+				state.setCustomCaernStates(newListCaernState);
+				
 			}
 
 			if (pollRequest.isCustomView()) {

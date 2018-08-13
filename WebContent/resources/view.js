@@ -23,6 +23,101 @@ mango.view.graphic = {};
 mango.view.setEditing = false;
 mango.view.setEditingContent = null;
 
+mango.view.customCaernView = function()
+{
+    //MiscDwr.terminateLongPoll(mango.longPoll.pollSessionId);
+    var array = "";
+    var custom = false;
+    jQuery('.custom').each(function(i, obj)
+    {
+        var newClass = jQuery(this).attr("class").split(' ')[2].toString();
+        array += newClass + ",";
+        custom = true;
+    });    
+    console.log(array);
+    if(custom == true)
+    {   
+        mango.longPoll.pollRequest.arrayCustomCaern = array;
+        mango.longPoll.pollRequest.customCaern = true;
+    }
+    else
+    {
+        mango.longPoll.pollRequest.customCaern = false;   
+    }
+    mango.longPoll.start();
+    //MiscDwr.initializeLongPoll(mango.longPoll.pollSessionId, mango.longPoll.pollRequest, mango.longPoll.pollCB);
+}
+
+function timeDifference(date1,date2) 
+{
+    var difference = (date1 - date2)-5000;
+    var secondsDifference = Math.floor(difference/1000);
+    difference -= secondsDifference;
+    var minutesDifference = Math.floor(difference/1000/60);
+
+    if(difference < 0)
+    {
+        return "0:00";
+    }   
+    else
+    {
+        if(secondsDifference<10)
+            return "" + minutesDifference + ":0" + secondsDifference;
+        else
+            return "" + minutesDifference + ":" + secondsDifference;
+    }
+
+}
+
+mango.view.caernTimes = function(timesArr)
+{
+    for (var i=0; i<timesArr.length; i++) 
+    {
+        var id = timesArr[i].split(',')[0];
+        var date = timesArr[i].split(',')[1];
+
+        var texto = jQuery('.'+id).html().split("<br>")[0];
+
+        var date_now = Date.now();
+        
+        diferenca = date_now - date;
+
+        texto += "<br>" + timeDifference(date_now, date);
+        //if(2*1000*1000*60 < diferenca)
+            jQuery('.' + id).html(texto);
+
+    }
+}
+
+mango.view.setCaernView = function(stateArr)
+{
+    var state;
+    for (var i=0; i<stateArr.length; i++) 
+    {
+        state = stateArr[i];
+        var texto = jQuery('.'+state.id).html().split("<br>")[0];
+        jQuery('.'+state.id).removeClass("verde");
+        jQuery('.'+state.id).removeClass("vermelho");
+
+        if(state.value == "0")
+            jQuery('.'+state.id).addClass("vermelho");
+        if(state.value == "1")
+            jQuery('.'+state.id).addClass("verde");
+
+        var date = state.time;
+        var date_now = Date.now();
+        
+        diferenca = date_now - date;
+
+        //texto += "<br>" + Date(date_now) + " " + date;
+
+        texto += "<br>" + timeDifference(date_now, date);
+        jQuery('.'+state.id).html(texto);
+
+    }
+    
+}
+
 mango.view.setData = function(stateArr) {
     var state;
     for (var i=0; i<stateArr.length; i++) {
@@ -50,7 +145,9 @@ mango.view.setData = function(stateArr) {
             if (state.chart != null) {
             	 $set("c"+ state.id +"Chart", state.chart);
             }
-               
+         
+
+
         }
         
         mango.view.setMessages(state);
@@ -106,7 +203,10 @@ mango.view.runScripts = function(node) {
     var arr = [];
     mango.view.findScripts(node, arr);
     for (var i=0; i<arr.length; i++)
+    {
         eval(arr[i]);
+        console.log(arr[i]);
+    }
 }
 
 mango.view.findScripts = function(node, arr) {
@@ -195,10 +295,20 @@ mango.view.anon.setPoint = function(pointId, viewComponentId, value) {
 
 //
 // Normal views
-mango.view.initNormalView = function() {
+mango.view.initNormalView = function() 
+{
     mango.view.setPoint = mango.view.norm.setPoint;
     // Tell the long poll request that we're interested in view data.
     mango.longPoll.pollRequest.view = true;
+    
+    //Chama a função modificada para caern para reconhecer os DS
+    jQuery(document).ready(function()
+    {
+        mango.view.customCaernView();
+    });
+
+
+
 };
 
 mango.view.norm = {};
