@@ -57,8 +57,10 @@ import com.serotonin.mango.db.dao.EventDao;
 import com.serotonin.mango.db.dao.MailingListDao;
 import com.serotonin.mango.db.dao.DataPointDao;
 import com.serotonin.mango.vo.DataPointVO;
+import com.serotonin.mango.vo.permission.Permissions;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
+import com.serotonin.mango.rt.dataImage.SetPointSource;
 
 import org.scada_lts.dao.DAO;
 import org.scada_lts.dao.DataPointDAO;
@@ -498,9 +500,18 @@ public class MiscDwr extends BaseDwr {
 					}
 					catch(Exception e)
 					{
-						caernState.setValue("3,");
-						if(customCaernStateOld.getValue() != caernState.getValue())
+						String teste = e.toString();
+						caernState.setValue("0");
+						caernState.setTime("0");
+						newListCaernState.add(caernState);
+						if(customCaernStateOld == null)
 							differentListCaernState.add(caernState);
+						else
+						{
+							if(!customCaernStateOld.getValue().equals(caernState.getValue()))
+								differentListCaernState.add(caernState);
+							
+						}
 					}
 				}
 
@@ -514,11 +525,11 @@ public class MiscDwr extends BaseDwr {
 
 					for(CustomCaernState stateCaern : newListCaernState)
 					{
-						if( (timeNow.getTime() - Long.parseLong(stateCaern.getTime())) > 5000)
-						{
+						//if( (timeNow.getTime() - Long.parseLong(stateCaern.getTime())) > 2000000) //2 minutos
+						//{
 							time = stateCaern.getId() + "," + stateCaern.getTime();
 							timeList.add(time);
-						}
+						//}
 					}
 					if (!timeList.isEmpty()) 
 						response.put("customCaernTimes", timeList);
@@ -709,4 +720,60 @@ public class MiscDwr extends BaseDwr {
 			}
 		}
 	}
+
+
+	public void setPointValue(String xid, String value)
+	{
+		User user = Common.getUser();
+		DataPointVO point = new DataPointDao().getDataPoint(xid);
+		
+		// Check permissions.
+        Permissions.ensureDataPointSetPermission(user, point);
+
+        setPointImpl(point, value, user);
+	}
+
+	@MethodFilter
+    public int setPoint(int pointId, int componentId, String valueStr) {
+        User user = Common.getUser();
+        DataPointVO point = new DataPointDao().getDataPoint(pointId);
+
+        // Check permissions.
+        Permissions.ensureDataPointSetPermission(user, point);
+
+        setPointImpl(point, valueStr, user);
+        return componentId;
+    }
+
+    protected void setPointImpl(DataPointVO point, String valueStr, SetPointSource source) {
+        if (point == null)
+            return;
+
+        if (valueStr == null)
+            Common.ctx.getRuntimeManager().relinquish(point.getId());
+        else {
+            // Convert the string value into an object.
+            MangoValue value = MangoValue.stringToValue(valueStr, point.getPointLocator().getDataTypeId());
+            Common.ctx.getRuntimeManager().setDataPointValue(point.getId(), value, source);
+        }
+    }
+
+    public void pointReadValue(String xid)
+    {
+    	DataPointDAO dataPointDao = new DataPointDAO();
+    	DataPointVO point = new DataPointVO();
+    	point = dataPointDao.getDataPoint(xid);
+    	Common.ctx.getRuntimeManager().forcePointRead(point.getId());
+    }
+
+    @MethodFilter
+    public void forcePointRead(int pointId) {
+        User user = Common.getUser();
+        DataPointVO point = new DataPointDao().getDataPoint(pointId);
+
+        // Check permissions.
+        Permissions.ensureDataPointReadPermission(user, point);
+
+        Common.ctx.getRuntimeManager().forcePointRead(pointId);
+    }
 }

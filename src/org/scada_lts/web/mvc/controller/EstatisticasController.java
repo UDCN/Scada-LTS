@@ -962,7 +962,13 @@ public class EstatisticasController extends ParameterizableViewController
 		{
 			DataSourceVO<?> ds;
 			ds = dataSourceDao.getDataSource(xid);
-			nome.add(ds.getName());
+			try{
+				nome.add(ds.getName());	
+			}
+			catch(Exception e){
+				nome.add("");
+			}
+			
 		}
 		
 		List<String> tabelaHeader = new ArrayList<String>();

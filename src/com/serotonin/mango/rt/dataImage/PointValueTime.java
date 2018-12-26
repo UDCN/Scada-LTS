@@ -124,6 +124,10 @@ public class PointValueTime implements Serializable, IValueTime,
 				+ ")";
 	}
 
+	public String valueString() {
+		return "" + value + "," + time;
+	}
+
 	@Override
 	public void jsonDeserialize(JsonReader arg0, JsonObject arg1)
 			throws JsonException {

@@ -131,6 +131,14 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			   + "pointValues "
 			+"where "
 			   + COLUMN_NAME_DATA_POINT_ID + "=?";
+
+	private static final String POINT_VALUE_SELECT_ID_ON_DATA_POINT_ID = ""
+			+"select "
+				+"id "
+			+"from "
+			   + "pointValues "
+			+"where "
+			   + COLUMN_NAME_DATA_POINT_ID + "=? order by ts desc limit 1";
 					
 	
 	private static final String POINT_VALUE_SELECT_ON_BASE_ID = "" 
@@ -495,6 +503,14 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
 			return null;
 		}		
 	}
+
+	public Long getLatestPointValueId(int dataPointId) {
+		try {
+			return  DAO.getInstance().getJdbcTemp().queryForObject(POINT_VALUE_SELECT_ID_ON_DATA_POINT_ID, new Object[] {dataPointId}, Long.class);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}		
+	}
 		
 	/**
 	 * When save value ALPHANUMERIC or IMAGE then data save in adnnotations
@@ -542,6 +558,7 @@ public class PointValueDAO implements GenericDaoCR<PointValue> {
     
     public PointValueTime getPointValue(long id) {
 		return ((PointValue) DAO.getInstance().getJdbcTemp().queryForObject(POINT_VALUE_SELECT + " where " + POINT_VALUE_FILTER_BASE_ON_ID, new Object[] {id}, new PointValueRowMapper())).getPointValue();
+		//return ((PointValue) DAO.getInstance().getJdbcTemp().queryForObject(POINT_VALUE_SELECT + " where " + POINT_VALUE_FILTER_BASE_ON_ID, new Object[] {id}, new PointValueRowMapper()));
 	}
 
 	public long getMinTs(int dataPointId) {
