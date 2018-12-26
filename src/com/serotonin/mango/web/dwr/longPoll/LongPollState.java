@@ -28,6 +28,7 @@ import com.serotonin.mango.web.dwr.beans.BasePointState;
 import com.serotonin.mango.web.dwr.beans.CustomComponentState;
 import com.serotonin.mango.web.dwr.beans.ViewComponentState;
 import com.serotonin.mango.web.dwr.beans.WatchListState;
+import com.serotonin.mango.web.dwr.beans.CustomCaernState;
 
 /**
  * @author Matthew Lohbihler
@@ -42,6 +43,7 @@ public class LongPollState implements Serializable {
     private List<ViewComponentState> viewComponentStates = new ArrayList<ViewComponentState>();
     private String pendingAlarmsContent;
     private List<CustomComponentState> customViewStates = new ArrayList<CustomComponentState>();
+    private List<CustomCaernState> CustomCaernStates = new ArrayList<CustomCaernState>();
 
     public WatchListState getWatchListState(String id) {
         return (WatchListState) getBasePointState(id, watchListStates);
@@ -49,6 +51,16 @@ public class LongPollState implements Serializable {
 
     public ViewComponentState getViewComponentState(String id) {
         return (ViewComponentState) getBasePointState(id, viewComponentStates);
+    }
+
+    public CustomCaernState getCustomCaernState(String id) 
+    {
+        for (CustomCaernState state : CustomCaernStates) {
+            if (state.getId().equals(id))
+                return state;
+        }
+        return null;
+
     }
 
     public CustomComponentState getCustomViewState(int id) {
@@ -121,6 +133,14 @@ public class LongPollState implements Serializable {
 
     public void setCustomViewStates(List<CustomComponentState> customViewStates) {
         this.customViewStates = customViewStates;
+    }
+
+    public List<CustomCaernState> getCustomCaernStates() {
+        return CustomCaernStates;
+    }
+
+    public void setCustomCaernStates(List<CustomCaernState> CustomCaernStates) {
+        this.CustomCaernStates = CustomCaernStates;
     }
 
     /**

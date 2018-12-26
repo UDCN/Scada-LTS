@@ -34,6 +34,8 @@ public class LongPollRequest implements Serializable {
     private boolean pointDetails;
     private boolean pendingAlarms;
     private boolean customView;
+    private boolean customCaern;
+    private String arrayCustomCaern = "";
 
     private int anonViewId;
 
@@ -107,5 +109,21 @@ public class LongPollRequest implements Serializable {
 
     public void setCustomView(boolean customView) {
         this.customView = customView;
+    }
+
+    public boolean isCustomCaern() {
+        return customCaern;
+    }
+
+    public void setCustomCaern(boolean customCaern) {
+        this.customCaern = customCaern;
+    }
+
+    public String getArrayCustomCaern() {
+        return arrayCustomCaern;
+    }
+
+    public void setArrayCustomCaern(String arrayCustomCaern) {
+        this.arrayCustomCaern = arrayCustomCaern;
     }
 }
