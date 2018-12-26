@@ -25,6 +25,7 @@ import com.serotonin.json.*;
 import com.serotonin.mango.Common;
 import com.serotonin.mango.DataTypes;
 import com.serotonin.mango.db.dao.DataPointDao;
+import com.serotonin.mango.vo.dataSource.DataSourceVO;
 import com.serotonin.mango.rt.dataImage.PointValueTime;
 import com.serotonin.mango.rt.dataImage.types.MangoValue;
 import com.serotonin.mango.rt.event.type.AuditEventType;
@@ -44,6 +45,7 @@ import com.serotonin.util.StringUtils;
 import com.serotonin.web.dwr.DwrResponseI18n;
 import com.serotonin.web.i18n.LocalizableMessage;
 import org.scada_lts.utils.ColorUtils;
+import org.scada_lts.dao.DataSourceDAO;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -202,7 +204,19 @@ public class DataPointVO implements Serializable, Cloneable, JsonSerializable, C
     }
 
     public String getExtendedName() {
-        return deviceName + " - " + name;
+        String nome = "";
+        try
+        {
+            DataSourceDAO dsDAO = new DataSourceDAO();
+            DataSourceVO ds = dsDAO.getDataSource(dataSourceXid);    
+            nome = ds.getName() + " - " + name;
+        }
+        catch (Exception e)
+        {
+            nome = deviceName + " - " + name;
+        }
+        
+        return nome;
     }
 
     public void defaultTextRenderer() {
