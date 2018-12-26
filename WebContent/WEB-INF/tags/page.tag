@@ -53,8 +53,8 @@
 
   <!-- Scripts -->
   <script type="text/javascript">
-  	var djConfig = { isDebug: false, extraLocale: ['en-us', 'nl', 'nl-nl', 'ja-jp', 'fi-fi', 'sv-se', 'zh-cn', 'zh-tw','xx'] };
-  	var ctxPath = "<%=request.getContextPath()%>";
+    var djConfig = { isDebug: false, extraLocale: ['en-us', 'nl', 'nl-nl', 'ja-jp', 'fi-fi', 'sv-se', 'zh-cn', 'zh-tw','xx'] };
+    var ctxPath = "<%=request.getContextPath()%>";
   </script>
   <!-- script type="text/javascript" src="http://o.aolcdn.com/dojo/0.4.2/dojo.js"></script -->
   <script type="text/javascript" src="resources/dojo/dojo.js"></script>
@@ -63,9 +63,12 @@
     <script type="text/javascript" src="resources/jQuery/plugins/${plugin}.js"></script>
   </c:forTokens>
   <script type="text/javascript">
-	var jQuery = $;
-	$ = null;
+  var jQuery = $;
+  $ = null;
   </script>
+
+
+
   <script type="text/javascript" src="dwr/engine.js"></script>
   <script type="text/javascript" src="dwr/util.js"></script>
   <script type="text/javascript" src="dwr/interface/MiscDwr.js"></script>
@@ -82,20 +85,20 @@
     <script type="text/javascript" src="resources/header.js"></script>
     <script type="text/javascript">
 
-	    function loadjscssfile(filename, filetype){
-			if (filetype=="js"){ //if filename is a external JavaScript file
-	    		var fileref=document.createElement('script')
-	    		fileref.setAttribute("type","text/javascript")
-	    		fileref.setAttribute("src", filename)
-			} else if (filetype=="css"){ //if filename is an external CSS file
-	    		var fileref=document.createElement("link")
-	    		fileref.setAttribute("rel", "stylesheet")
-	    		fileref.setAttribute("type", "text/css")
-	    		fileref.setAttribute("href", filename)
-			}
-			if (typeof fileref!="undefined")
-	    		document.getElementsByTagName("head")[0].appendChild(fileref)
-		};
+      function loadjscssfile(filename, filetype){
+      if (filetype=="js"){ //if filename is a external JavaScript file
+          var fileref=document.createElement('script')
+          fileref.setAttribute("type","text/javascript")
+          fileref.setAttribute("src", filename)
+      } else if (filetype=="css"){ //if filename is an external CSS file
+          var fileref=document.createElement("link")
+          fileref.setAttribute("rel", "stylesheet")
+          fileref.setAttribute("type", "text/css")
+          fileref.setAttribute("href", filename)
+      }
+      if (typeof fileref!="undefined")
+          document.getElementsByTagName("head")[0].appendChild(fileref)
+    };
 
       dwr.util.setEscapeHtml(false);
       <c:if test="${!empty sessionUser}">
@@ -185,26 +188,27 @@
                 <li id="dropbtn" onclick="myDropdownFunction()" class="dropbtn"><a><tag:img id="Systems" png="modulos" title="header.sistemas"/><br>Sistemas</a></li>
                 <div id="myDropdown" class="dropdown-content">
                   <input type="text" placeholder="Procurar..." id="myInput" onkeyup="filterFunction()">
-                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=82">CANDELARIA</a>
-                    <a href="http://scadabr.caern.govrn:8080/ScadaBR/views.shtm?viewId=110">DUNAS</a>
-                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=82">SAN VALE</a>
-                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=85">NOVO CAMPO</a>
-                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=104"><f>FELIPE CAMARÃO</f></a>
-                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=106">LAGOA NOVA I</a>
-                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=107">LAGOA NOVA II</a>
-                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=81">PONTA NEGRA</a>
-                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=86">SATÉLITE</a>
-                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=84">PLANALTO</a>
-                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=112">JIQUI</a>
-                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=108">PIRANGI</a>
-                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=109">GUARAPES</a>
-                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=105">NOVA CIDADE</a>
-                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=111">DIX SEPT ROSADO</a>
-                    <a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=111">BOOSTER GMS</a>
+                    <a href="http://10.18.0.214:8080/scadalts/views.shtm?viewId=689">CANDELARIA</a>
+                    <a href="http://10.18.0.214:8080/scadalts/views.shtm?viewId=684">DUNAS</a>
+                    <a href="http://10.18.0.214:8080/scadalts/views.shtm?viewId=689">SAN VALE</a>
+                    <a href="http://10.18.0.214:8080/scadalts/views.shtm?viewId=677">NOVO CAMPO</a>
+                    <a href="http://10.18.0.214:8080/scadalts/views.shtm?viewId=678"><f>FELIPE CAMARÃO</f></a>
+                    <a href="http://10.18.0.214:8080/scadalts/views.shtm?viewId=680">LAGOA NOVA I</a>
+                    <a href="http://10.18.0.214:8080/scadalts/views.shtm?viewId=681">LAGOA NOVA II</a>
+                    <a href="http://10.18.0.214:8080/scadalts/views.shtm?viewId=676">PONTA NEGRA</a>
+                    <a href="http://10.18.0.214:8080/scadalts/views.shtm?viewId=688">SATÉLITE</a>
+                    <a href="http://10.18.0.214:8080/scadalts/views.shtm?viewId=687">PLANALTO</a>
+                    <a href="http://10.18.0.214:8080/scadalts/views.shtm?viewId=686">JIQUI</a>
+                    <a href="http://10.18.0.214:8080/scadalts/views.shtm?viewId=682">PIRANGI</a>
+                    <a href="http://10.18.0.214:8080/scadalts/views.shtm?viewId=683">GUARAPES</a>
+                    <a href="http://10.18.0.214:8080/scadalts/views.shtm?viewId=679">NOVA CIDADE</a>
+                    <a href="http://10.18.0.214:8080/scadalts/views.shtm?viewId=685">DIX SEPT ROSADO</a>
+                    <!--<a href="https://scadabr-smn.caern.com.br/ScadaBR/views.shtm?viewId=111">BOOSTER GMS</a>-->
                   </div>
                 </li>
                 <li><a href="reports.shtm" onclick="onClickHelp(this,'reportInstancesMenu')" > <tag:img id="Reports" png="report" title="header.reports"/> <br> Relatorios</a></li>
                 <li><a href="events.shtm" onclick="" > <tag:img id="Alarms" png="flag_white" title="header.alarms"/> <br> Alarmes </a></li>
+                <li><a href="watch_list.shtm" > <tag:img id="Whatchlist"  png="eye" title="header.watchlist"  /><br> Whatchlist </a></li>
                 <li><a href="views.shtm?viewId=16"  > <tag:img id="Maps" png="maps" title="header.maps"/> <br> Mapa </a></li>
                 <li><a href="contato.shtm" ><tag:img id="Contact" png="email" title="header.contato"/> <br> Contato </a></li>
                 <li><a> <tag:img png="full" title="header.full" onclick="full()"/> <br> Full </a></li>
@@ -218,7 +222,7 @@
               <!-- <li class="active"><a href="./"><span class="sr-only">(current)</span></a></li> -->
 
               <c:if test="${!simple}">
-                <div align="right" width="30%" id="eventsRow" class="projectTitle" style="clear:right; padding:8px;	background: gray;">
+                <div align="right" width="30%" id="eventsRow" class="projectTitle" style="clear:right; padding:8px; background: gray;">
                   <a href="events.shtm">
                     <span id="__header__alarmLevelDiv" style="display:none;">
                       <img id="__header__alarmLevelImg" src="images/spacer.gif" alt="" border="0" title=""/>
@@ -241,7 +245,6 @@
               <li><a href="users.shtm" ><tag:img id="Users" png="user" title="header.users"/> <br> Usuários </a></li>
               <li><a href="usersProfiles.shtm" ><tag:img id="UsersProfiles" png="user-group" title="header.usersProfiles"/> <br> Perfis de Usuários </a></li>
               <li><a href="emport.shtm" ><tag:img id="Emport" png="script_code" title="header.emport"/> <br> Import </a></li>
-              <li><a href="watch_list.shtm" > <tag:img id="Whatchlist"  png="eye" title="header.watchlist"  /><br> Whatchlist </a></li>
               <li><a href="event_handlers.shtm" ><tag:img id="event_handlers" png="cog" title="header.eventHandlers"/> <br> Event Handlers </a></li>
               <li><a href="data_sources.shtm" ><tag:img id="data_sources" png="icon_ds" title="header.dataSources"/> <br> Data Sources </a></li>
               <li><a href="estatisticas.shtm" ><tag:img id="chart" png="chart" title="header.estatisticas"/> <br> Estatísticas </a></li>
@@ -282,4 +285,13 @@
 </c:if>
 
 </body>
+
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+      setTimeout(function(){
+        jQuery(".row").toggleClass('row smRow');
+        console.log("ATUALIZOU");}, 7000);
+    });
+</script>
+
 </html>
