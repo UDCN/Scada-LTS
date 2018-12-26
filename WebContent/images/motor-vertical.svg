@@ -1,0 +1,386 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="schematicSVG" width="200" height="320" viewBox="0 0 200 320" style="">
+
+    <style type="text/css">
+
+
+.grid line {
+stroke: lightgrey;
+stroke-opacity: 0.7;
+shape-rendering: crispEdges;
+}
+.grid path {
+stroke-width: 0;
+}
+.gridVFD line {
+stroke: black;
+stroke-opacity: 0.5;
+}
+.gridVFD path {
+stroke-width: 0;
+}
+.gaugeLine {
+fill: none;
+stroke: black;
+stroke-width: 1;
+}
+.axisRed line{
+stroke: red;
+}
+.axisRed path{
+stroke: red;
+}
+.axisBlue line{
+stroke: blue;
+}
+.axisBlue path{
+stroke: blue;
+}
+.axisPurple line{
+stroke: purple;
+}
+.axisPurple path{
+stroke: purple;
+}
+.chartLineLeft {
+fill: none;
+stroke: DarkViolet;
+stroke-width: 3;
+}
+.chartLineRight2 {
+fill: none;
+stroke: red;
+stroke-width: 3;
+}
+.chartLineRight1 {
+fill: none;
+stroke: blue;
+stroke-width: 3;
+}
+.chartLineCI {
+fill: none;
+stroke: purple;
+stroke-width: 3;
+}
+.chartLineVAC {
+fill: none;
+stroke: red;
+stroke-width: 3;
+}
+.chartLineHZ {
+fill: none;
+stroke: blue;
+stroke-width: 3;
+}
+.axisred line{
+stroke: red;
+}
+.axisred path{
+stroke: red;
+}
+.axisBlue line{
+stroke: blue;
+}
+.axisBlue path{
+stroke: blue;
+}
+.axisDarkViolet line{
+stroke: DarkViolet;
+}
+.axisDarkViolet path{
+stroke: DarkViolet;
+}
+
+.ticks-automanual {
+  font: 10px sans-serif;
+}
+.track,
+.track-inset,
+.track-overlay {
+  stroke-linecap: round;
+}
+.track {
+  stroke: #000;
+  stroke-opacity: 0.3;
+  stroke-width: 12px;
+}
+.track-inset {
+  stroke: #ddd;
+  stroke-width: 8px;
+}
+.track-overlay {
+  pointer-events: stroke;
+  stroke-width: 50px;
+  stroke: transparent;
+
+}
+.handle {
+
+  stroke: #000;
+  stroke-opacity: 0.5;
+  stroke-width: 1.25px;
+}
+
+
+</style>
+
+<defs id="endArrowDefs">
+<marker id="endArrow" viewBox="0 0 8000 8000" vector-effect="non-scaling-stroke" refX="250" refY="150" markerUnits="strokeWidth" markerWidth="300" markerHeight="300" orient="auto" fill="violet" stroke-linejoin="bevel">
+<path d="M2 59,293 148,1 243,121 151,Z" stroke="RGB(0,0,0)">
+<marker id="cloneArrow" viewBox="0 0 8000 8000" vector-effect="non-scaling-stroke" refX="250" refY="150" markerUnits="strokeWidth" markerWidth="300" markerHeight="300" orient="auto" fill="RGB(0,0,0)" stroke-linejoin="bevel">
+<path d="M2 59,293 148,1 243,121 151,Z" stroke="RGB(0,0,0)"/>
+</marker>
+</path>
+</marker>
+</defs>
+<defs id="pilotLightDefs">
+<radialGradient id="blueGradient" cx="50%" cy="50%" r="75%">
+<stop offset="0%" stop-color="rgb(0,0,255)" stop-opacity="1"/>
+<stop offset="100%" stop-color="rgb(0,0,0)" stop-opacity="1"/>
+</radialGradient>
+<radialGradient id="greenGradient" cx="50%" cy="50%" r="75%">
+<stop offset="0%" stop-color="rgb(0,191,0)" stop-opacity="1"/>
+<stop offset="100%" stop-color="rgb(0,0,0)" stop-opacity="1"/>
+</radialGradient>
+<radialGradient id="greyGradient" cx="50%" cy="50%" r="75%">
+<stop offset="0%" stop-color="rgb(255,255,255)" stop-opacity="1"/>
+<stop offset="100%" stop-color="rgb(0,0,0)" stop-opacity="1"/>
+</radialGradient>
+<radialGradient id="redGradient" cx="50%" cy="50%" r="75%">
+<stop offset="0%" stop-color="rgb(255,0,0)" stop-opacity="1"/>
+<stop offset="100%" stop-color="rgb(0,0,0)" stop-opacity="1"/>
+</radialGradient>
+<radialGradient id="violetGradient" cx="50%" cy="50%" r="75%">
+<stop offset="0%" stop-color="rgb(219,0,219)" stop-opacity="1"/>
+<stop offset="100%" stop-color="rgb(0,0,0)" stop-opacity="1"/>
+</radialGradient>
+<radialGradient id="aquaGradient" cx="50%" cy="50%" r="75%">
+<stop offset="0%" stop-color="aqua" stop-opacity="1"/>
+<stop offset="100%" stop-color="rgb(0,0,0)" stop-opacity="1"/>
+</radialGradient>
+</defs>
+<defs id="arrowDefs"/>
+<defs id="defsPattern"/>
+<defs id="defsGradient"/>
+<defs id="defsShadow">
+<filter id="drop-shadow" height="150%" width="150%">
+<feGaussianBlur in="SourceAlpha" stdDeviation="5" result="blur"/>
+<feOffset in="blur" dx="5" dy="5" result="offsetBlur"/>
+<feMerge>
+<feMergeNode in="offsetBlur"/>
+<feMergeNode in="SourceGraphic"/>
+</feMerge>
+</filter>
+</defs>
+<defs id="pipe3dDefs">
+<filter id="pipe3D">
+<feFlood flood-color="black"/>
+<feComposite operator="out" in2="SourceGraphic"/>
+<feGaussianBlur stdDeviation="6"/>
+<feComposite operator="atop" in2="SourceGraphic"/>
+</filter>
+</defs>
+<defs id="alarmWarningTrendDefs">
+<linearGradient id="warningMaxTrend" x1="84%" y1="24%" x2="82%" y2="72%">
+<stop offset="0%" stop-color="#FF0000" stop-opacity="1"/>
+<stop offset="100%" stop-color="#FFA500" stop-opacity="1" stop-offset="100%"/>
+</linearGradient>
+<linearGradient id="warningMinTrend" x1="84%" y1="24%" x2="82%" y2="72%">
+<stop offset="0%" stop-color="#FFA500" stop-opacity="1" stop-offset="0%"/>
+<stop offset="100%" stop-color="#FF0000" stop-opacity="1"/>
+</linearGradient>
+</defs>
+<defs id="alarmWarningBarDefs">
+<linearGradient id="warningMaxBar" y1="84%" x1="24%" y2="82%" x2="72%">
+<stop offset="0" stop-color="#FFA500" stop-opacity="1"/>
+<stop offset="100%" stop-color="#FF0000" stop-opacity="1" stop-offset="100%"/>
+</linearGradient>
+<linearGradient id="warningMinBar" y2="84%" x2="24%" y1="82%" x1="72%">
+<stop offset="0" stop-color="#FFA500" stop-opacity="1"/>
+<stop offset="100%" stop-color="#FF0000" stop-opacity="1" stop-offset="100%"/>
+</linearGradient>
+</defs>
+<defs id="alarmWarningTankLevelDefs">
+<linearGradient id="warningMaxTankLevel" x1="84%" y1="24%" x2="82%" y2="72%">
+<stop offset="0%" stop-color="#FF0000" stop-opacity="1"/>
+<stop offset="100%" stop-color="#FFA500" stop-opacity="1" stop-offset="100%"/>
+</linearGradient>
+<linearGradient id="warningMinTankLevel" x1="84%" y1="24%" x2="82%" y2="72%">
+<stop offset="0%" stop-color="#FFA500" stop-opacity="1" stop-offset="0%"/>
+<stop offset="100%" stop-color="#FF0000" stop-opacity="1"/>
+</linearGradient>
+</defs>
+<g id="zoomG">
+<g id="domElemG" shape-rendering="geometricPrecision" text-rendering="geometricPrecision">
+<g title="Chemical Pump" parentid="" nativewidth="154" nativeheight="94" myscale="2" transform="matrix(7.21645e-16, -2, 2, 7.21645e-16, 5.5001, 312.5)" id="process1527013124036" class="processElem" filter="url(#drop-shadow)">
+<svg title="Chemical Pump" class="Pumps" xmlns:xlink="http://www.w3.org/1999/xlink" height="94" xmlns="http://www.w3.org/2000/svg" width="154" viewBox="0 0 154 94" nativewidth="154" nativeheight="94" overflow="visible" myscale="1.0">
+
+    <defs>
+
+        <linearGradient x1="0%" y2="100%" x2="0%" y1="0%" id="lg1_197">
+
+            <stop stop-color="#bdbdbd" offset="0"/>
+
+            <stop stop-color="#ffffff" offset="0.15"/>
+
+            <stop stop-color="#ffffff" offset="0.25"/>
+
+            <stop stop-color="#dfdfdf" offset="0.52"/>
+
+            <stop stop-color="#c7c7c7" offset="0.69"/>
+
+            <stop stop-color="#bcbcbc" offset="0.8"/>
+
+            <stop stop-color="#b1b1b1" offset="0.92"/>
+
+            <stop stop-color="#cbcbcb" offset="1"/>
+
+        </linearGradient>
+
+        <linearGradient x1="100%" y2="0%" x2="0%" y1="0%" id="lg2_197">
+
+            <stop stop-color="#adab86" offset="0"/>
+
+            <stop stop-color="#ebe9bb" offset="0.15"/>
+
+            <stop stop-color="#f4f2db" offset="0.25"/>
+
+            <stop stop-color="#cdca9f" offset="0.52"/>
+
+            <stop stop-color="#b6b48d" offset="0.69"/>
+
+            <stop stop-color="#acaa85" offset="0.8"/>
+
+            <stop stop-color="#a2a07d" offset="0.92"/>
+
+            <stop stop-color="#bab890" offset="1"/>
+
+        </linearGradient>
+
+        <linearGradient x1="100%" y2="0%" x2="0%" y1="0%" id="lg3_197">
+
+            <stop stop-color="#bdbdbd" offset="0"/>
+
+            <stop stop-color="#ffffff" offset="0.15"/>
+
+            <stop stop-color="#ffffff" offset="0.25"/>
+
+            <stop stop-color="#dfdfdf" offset="0.52"/>
+
+            <stop stop-color="#c7c7c7" offset="0.69"/>
+
+            <stop stop-color="#bcbcbc" offset="0.8"/>
+
+            <stop stop-color="#b1b1b1" offset="0.92"/>
+
+            <stop stop-color="#cbcbcb" offset="1"/>
+
+        </linearGradient>
+
+        <linearGradient x1="0%" y2="100%" x2="0%" y1="0%" id="lg4_197">
+
+            <stop stop-color="#adab86" offset="0"/>
+
+            <stop stop-color="#ebe9bb" offset="0.15"/>
+
+            <stop stop-color="#f4f2db" offset="0.25"/>
+
+            <stop stop-color="#cdca9f" offset="0.52"/>
+
+            <stop stop-color="#b6b48d" offset="0.69"/>
+
+            <stop stop-color="#acaa85" offset="0.8"/>
+
+            <stop stop-color="#a2a07d" offset="0.92"/>
+
+            <stop stop-color="#bab890" offset="1"/>
+
+        </linearGradient>
+
+        <linearGradient x1="0%" y2="100%" x2="0%" y1="0%" id="lg5_197">
+
+            <stop stop-color="#979898" offset="0"/>
+
+            <stop stop-color="#d0d1d1" offset="0.15"/>
+
+            <stop stop-color="#e5e6e6" offset="0.25"/>
+
+            <stop stop-color="#b3b4b4" offset="0.52"/>
+
+            <stop stop-color="#9fa0a0" offset="0.69"/>
+
+            <stop stop-color="#969797" offset="0.8"/>
+
+            <stop stop-color="#8e8e8e" offset="0.92"/>
+
+            <stop stop-color="#a3a4a4" offset="1"/>
+
+        </linearGradient>
+
+        <linearGradient x1="0%" y2="100%" x2="0%" y1="0%" id="lg6_197">
+
+            <stop stop-color="#adab86" stop-opacity="0.3" offset="0"/>
+
+            <stop stop-color="#ebe9bb" stop-opacity="0.3" offset="0.15"/>
+
+            <stop stop-color="#f4f2db" stop-opacity="0.3" offset="0.25"/>
+
+            <stop stop-color="#cdca9f" stop-opacity="0.3" offset="0.52"/>
+
+            <stop stop-color="#b6b48d" stop-opacity="0.3" offset="0.69"/>
+
+            <stop stop-color="#acaa85" stop-opacity="0.3" offset="0.8"/>
+
+            <stop stop-color="#a2a07d" stop-opacity="0.3" offset="0.92"/>
+
+            <stop stop-color="#bab890" stop-opacity="0.3" offset="1"/>
+
+        </linearGradient>
+
+    </defs>
+
+    <g transform="translate(1.01,1.03)">
+
+        <path transform="translate(45.22,24.01)" id="shape1" fill="url(#lg1_197)" d="M0,0L42.2,0C42.8,0,43.3,.5,43.3,1.1L43.3,58.3C43.3,58.9,42.8,59.4,42.2,59.4L0,59.4L0,0z"/>
+
+        <path transform="translate(27.85,4.94)" id="shape2" fill="url(#lg2_197)" d="M0,11.5L13,11.5L13,0L0,0L0,11.5z"/>
+
+        <path transform="translate(18.2,-0.03)" id="shape3" fill="url(#lg2_197)" d="M1.1,0L31.2,0C31.8,0,32.3,.5,32.3,1.1L32.3,3.9C32.3,4.5,31.8,5,31.2,5L1.1,5C.5,5,0,4.5,0,3.9L0,1.1C0,.5,.5,0,1.1,0z"/>
+
+        <path transform="translate(105.79,26.22)" id="shape4" fill="url(#lg3_197)" d="M0,7.6L8.5,8.7L8.5,0L0,0L0,7.6z"/>
+
+        <path transform="translate(103.21,20.54)" id="shape5" fill="url(#lg2_197)" d="M1.1,-0L12.6,-0C13.2,-0,13.7,.5,13.7,1.3L13.7,4.4C13.7,5.1,13.2,5.7,12.6,5.7L1.1,5.7C.5,5.7,-0,5.1,-0,4.4L-0,1.3C-0,.5,.5,-0,1.1,-0z"/>
+
+        <path transform="translate(25.09,16.27)" id="shape6" fill="url(#lg4_197)" d="M1.1,0L17.7,0L17.7,74.9L1.1,74.9C.5,74.9,0,74.4,0,73.8L0,1.1C0,.5,.5,0,1.1,0z"/>
+
+        <path transform="translate(4.3,28.43)" id="shape7" fill="url(#lg4_197)" d="M20.8,0L0,0L0,51.4L20.8,51.4L20.8,0z"/>
+
+        <path transform="translate(-0.01,21.24)" id="shape8" fill="url(#lg4_197)" d="M1.1,0L3.3,0C3.9,0,4.4,.5,4.4,1.1L4.4,65.5C4.4,66.1,3.9,66.6,3.3,66.6L1.1,66.6C.5,66.6,0,66.1,0,65.5L0,1.1C0,.5,.5,0,1.1,0z"/>
+
+        <path transform="translate(132.27,52.26)" id="shape9" fill="url(#lg4_197)" d="M0,0L17.5,0C17.5,0,19.7,.1,19.7,3.8C19.7,7.5,17.5,7.5,17.5,7.5L0,7.5L0,0z"/>
+
+        <path transform="translate(88.52,31.19)" id="shape10" fill="url(#lg1_197)" d="M0,0L41.9,5.9C41.9,5.9,45.5,6.6,45.5,25.1C45.5,43.7,41.9,43.6,41.9,43.6L0,49.5L0,0z"/>
+
+        <path transform="translate(44.26,16.42)" id="shape11" fill="url(#lg4_197)" d="M1.1,0L3.9,0C4.5,0,5,.5,5,1.1L5,4.7C5,5.3,4.5,5.8,3.9,5.8L1.1,5.8C.5,5.8,0,5.3,0,4.7L0,1.1C0,.5,.5,0,1.1,0z"/>
+
+        <path transform="translate(44.26,29.82)" id="shape12" fill="url(#lg4_197)" d="M1.1,0L3.9,0C4.5,0,5,.5,5,1.1L5,4.7C5,5.3,4.5,5.8,3.9,5.8L1.1,5.8C.5,5.8,0,5.3,0,4.7L0,1.1C0,.5,.5,0,1.1,0z"/>
+
+        <path transform="translate(44.26,43.21)" id="shape13" fill="url(#lg4_197)" d="M1.1,0L3.9,0C4.5,0,5,.5,5,1.1L5,4.7C5,5.3,4.5,5.8,3.9,5.8L1.1,5.8C.5,5.8,0,5.3,0,4.7L0,1.1C0,.5,.5,0,1.1,0z"/>
+
+        <path transform="translate(44.26,56.61)" id="shape14" fill="url(#lg4_197)" d="M1.1,0L3.9,0C4.5,0,5,.5,5,1.1L5,4.7C5,5.3,4.5,5.8,3.9,5.8L1.1,5.8C.5,5.8,0,5.3,0,4.7L0,1.1C0,.5,.5,0,1.1,0z"/>
+
+        <path transform="translate(44.26,70.01)" id="shape15" fill="url(#lg4_197)" d="M1.1,0L3.9,0C4.5,0,5,.5,5,1.1L5,4.7C5,5.3,4.5,5.8,3.9,5.8L1.1,5.8C.5,5.8,0,5.3,0,4.7L0,1.1C0,.5,.5,0,1.1,0z"/>
+
+        <path transform="translate(44.26,83.41)" id="shape16" fill="url(#lg4_197)" d="M1.1,0L3.9,0C4.5,0,5,.5,5,1.1L5,4.7C5,5.3,4.5,5.8,3.9,5.8L1.1,5.8C.5,5.8,0,5.3,0,4.7L0,1.1C0,.5,.5,0,1.1,0z"/>
+
+        <path transform="translate(42.74,15.17)" id="shape17" fill="url(#lg5_197)" d="M1.1,0C2,0,2.5,.5,2.5,1.1L2.5,75.7C2.5,76.3,2,76.8,1.4,76.8C.5,76.8,0,76.3,0,75.7L0,1.1C0,.5,.5,0,1.1,0z"/>
+
+        <path transform="translate(54.44,35.23)" id="shape18" fill="url(#lg6_197)" d="M1.1,0L22.3,0C22.9,0,23.4,.5,23.4,1.1L23.4,34.3C23.4,34.9,22.9,35.4,22.3,35.4L1.1,35.4C.5,35.4,0,34.9,0,34.3L0,1.1C0,.5,.5,0,1.1,0z"/>
+
+    </g>
+
+</svg>
+<rect width="154" height="94" stroke="none" stroke-width="2" fill="white" fill-opacity="0" style="cursor: default;" onmousedown="editProcess(process1527013124036, evt)"/>
+</g>
+</g>
+</g>
+</svg>

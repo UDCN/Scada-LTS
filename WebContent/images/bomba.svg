@@ -1,0 +1,290 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="schematicSVG" width="200" height="150" viewBox="0 0 200 150" style="">
+
+    <style type="text/css">
+
+
+.grid line {
+stroke: lightgrey;
+stroke-opacity: 0.7;
+shape-rendering: crispEdges;
+}
+.grid path {
+stroke-width: 0;
+}
+.gridVFD line {
+stroke: black;
+stroke-opacity: 0.5;
+}
+.gridVFD path {
+stroke-width: 0;
+}
+.gaugeLine {
+fill: none;
+stroke: black;
+stroke-width: 1;
+}
+.axisRed line{
+stroke: red;
+}
+.axisRed path{
+stroke: red;
+}
+.axisBlue line{
+stroke: blue;
+}
+.axisBlue path{
+stroke: blue;
+}
+.axisPurple line{
+stroke: purple;
+}
+.axisPurple path{
+stroke: purple;
+}
+.chartLineLeft {
+fill: none;
+stroke: DarkViolet;
+stroke-width: 3;
+}
+.chartLineRight2 {
+fill: none;
+stroke: red;
+stroke-width: 3;
+}
+.chartLineRight1 {
+fill: none;
+stroke: blue;
+stroke-width: 3;
+}
+.chartLineCI {
+fill: none;
+stroke: purple;
+stroke-width: 3;
+}
+.chartLineVAC {
+fill: none;
+stroke: red;
+stroke-width: 3;
+}
+.chartLineHZ {
+fill: none;
+stroke: blue;
+stroke-width: 3;
+}
+.axisred line{
+stroke: red;
+}
+.axisred path{
+stroke: red;
+}
+.axisBlue line{
+stroke: blue;
+}
+.axisBlue path{
+stroke: blue;
+}
+.axisDarkViolet line{
+stroke: DarkViolet;
+}
+.axisDarkViolet path{
+stroke: DarkViolet;
+}
+
+.ticks-automanual {
+  font: 10px sans-serif;
+}
+.track,
+.track-inset,
+.track-overlay {
+  stroke-linecap: round;
+}
+.track {
+  stroke: #000;
+  stroke-opacity: 0.3;
+  stroke-width: 12px;
+}
+.track-inset {
+  stroke: #ddd;
+  stroke-width: 8px;
+}
+.track-overlay {
+  pointer-events: stroke;
+  stroke-width: 50px;
+  stroke: transparent;
+
+}
+.handle {
+
+  stroke: #000;
+  stroke-opacity: 0.5;
+  stroke-width: 1.25px;
+}
+
+
+</style>
+
+<defs id="endArrowDefs">
+<marker id="endArrow" viewBox="0 0 8000 8000" vector-effect="non-scaling-stroke" refX="250" refY="150" markerUnits="strokeWidth" markerWidth="300" markerHeight="300" orient="auto" fill="violet" stroke-linejoin="bevel">
+<path d="M2 59,293 148,1 243,121 151,Z" stroke="RGB(0,0,0)">
+<marker id="cloneArrow" viewBox="0 0 8000 8000" vector-effect="non-scaling-stroke" refX="250" refY="150" markerUnits="strokeWidth" markerWidth="300" markerHeight="300" orient="auto" fill="RGB(0,0,0)" stroke-linejoin="bevel">
+<path d="M2 59,293 148,1 243,121 151,Z" stroke="RGB(0,0,0)"/>
+</marker>
+</path>
+</marker>
+</defs>
+<defs id="pilotLightDefs">
+<radialGradient id="blueGradient" cx="50%" cy="50%" r="75%">
+<stop offset="0%" stop-color="rgb(0,0,255)" stop-opacity="1"/>
+<stop offset="100%" stop-color="rgb(0,0,0)" stop-opacity="1"/>
+</radialGradient>
+<radialGradient id="greenGradient" cx="50%" cy="50%" r="75%">
+<stop offset="0%" stop-color="rgb(0,191,0)" stop-opacity="1"/>
+<stop offset="100%" stop-color="rgb(0,0,0)" stop-opacity="1"/>
+</radialGradient>
+<radialGradient id="greyGradient" cx="50%" cy="50%" r="75%">
+<stop offset="0%" stop-color="rgb(255,255,255)" stop-opacity="1"/>
+<stop offset="100%" stop-color="rgb(0,0,0)" stop-opacity="1"/>
+</radialGradient>
+<radialGradient id="redGradient" cx="50%" cy="50%" r="75%">
+<stop offset="0%" stop-color="rgb(255,0,0)" stop-opacity="1"/>
+<stop offset="100%" stop-color="rgb(0,0,0)" stop-opacity="1"/>
+</radialGradient>
+<radialGradient id="violetGradient" cx="50%" cy="50%" r="75%">
+<stop offset="0%" stop-color="rgb(219,0,219)" stop-opacity="1"/>
+<stop offset="100%" stop-color="rgb(0,0,0)" stop-opacity="1"/>
+</radialGradient>
+<radialGradient id="aquaGradient" cx="50%" cy="50%" r="75%">
+<stop offset="0%" stop-color="aqua" stop-opacity="1"/>
+<stop offset="100%" stop-color="rgb(0,0,0)" stop-opacity="1"/>
+</radialGradient>
+</defs>
+<defs id="arrowDefs"/>
+<defs id="defsPattern"/>
+<defs id="defsGradient"/>
+<defs id="defsShadow">
+<filter id="drop-shadow" height="150%" width="150%">
+<feGaussianBlur in="SourceAlpha" stdDeviation="5" result="blur"/>
+<feOffset in="blur" dx="5" dy="5" result="offsetBlur"/>
+<feMerge>
+<feMergeNode in="offsetBlur"/>
+<feMergeNode in="SourceGraphic"/>
+</feMerge>
+</filter>
+</defs>
+<defs id="pipe3dDefs">
+<filter id="pipe3D">
+<feFlood flood-color="black"/>
+<feComposite operator="out" in2="SourceGraphic"/>
+<feGaussianBlur stdDeviation="6"/>
+<feComposite operator="atop" in2="SourceGraphic"/>
+</filter>
+</defs>
+<defs id="alarmWarningTrendDefs">
+<linearGradient id="warningMaxTrend" x1="84%" y1="24%" x2="82%" y2="72%">
+<stop offset="0%" stop-color="#FF0000" stop-opacity="1"/>
+<stop offset="100%" stop-color="#FFA500" stop-opacity="1" stop-offset="100%"/>
+</linearGradient>
+<linearGradient id="warningMinTrend" x1="84%" y1="24%" x2="82%" y2="72%">
+<stop offset="0%" stop-color="#FFA500" stop-opacity="1" stop-offset="0%"/>
+<stop offset="100%" stop-color="#FF0000" stop-opacity="1"/>
+</linearGradient>
+</defs>
+<defs id="alarmWarningBarDefs">
+<linearGradient id="warningMaxBar" y1="84%" x1="24%" y2="82%" x2="72%">
+<stop offset="0" stop-color="#FFA500" stop-opacity="1"/>
+<stop offset="100%" stop-color="#FF0000" stop-opacity="1" stop-offset="100%"/>
+</linearGradient>
+<linearGradient id="warningMinBar" y2="84%" x2="24%" y1="82%" x1="72%">
+<stop offset="0" stop-color="#FFA500" stop-opacity="1"/>
+<stop offset="100%" stop-color="#FF0000" stop-opacity="1" stop-offset="100%"/>
+</linearGradient>
+</defs>
+<defs id="alarmWarningTankLevelDefs">
+<linearGradient id="warningMaxTankLevel" x1="84%" y1="24%" x2="82%" y2="72%">
+<stop offset="0%" stop-color="#FF0000" stop-opacity="1"/>
+<stop offset="100%" stop-color="#FFA500" stop-opacity="1" stop-offset="100%"/>
+</linearGradient>
+<linearGradient id="warningMinTankLevel" x1="84%" y1="24%" x2="82%" y2="72%">
+<stop offset="0%" stop-color="#FFA500" stop-opacity="1" stop-offset="0%"/>
+<stop offset="100%" stop-color="#FF0000" stop-opacity="1"/>
+</linearGradient>
+</defs>
+<g id="zoomG">
+<g id="domElemG" shape-rendering="geometricPrecision" text-rendering="geometricPrecision">
+<g title="Simple Blower" parentid="" nativewidth="154" nativeheight="128" myscale="1.1" transform="matrix(1.1, 0, 0, 1.1, 15.8, 4.8)" id="process1527259862937" class="processElem">
+<svg title="Simple Blower" class="Blowers" xmlns:xlink="http://www.w3.org/1999/xlink" height="128" xmlns="http://www.w3.org/2000/svg" width="154" viewBox="0 0 154 127.971" nativewidth="154" nativeheight="128" overflow="visible" myscale="1.0">
+
+    <defs>
+
+        <linearGradient x1="0%" y2="0%" x2="100%" y1="0%" id="lg1_21">
+
+            <stop stop-color="#9aa1aa" offset="0"/>
+
+            <stop stop-color="#aeb5c0" offset="0.22"/>
+
+            <stop stop-color="#dce0e5" offset="0.57"/>
+
+            <stop stop-color="#cacfd7" offset="0.84"/>
+
+            <stop stop-color="#a7afb9" offset="1"/>
+
+        </linearGradient>
+
+        <linearGradient x1="0%" y2="0%" x2="100%" y1="0%" id="lg2_21">
+
+            <stop stop-color="#8f969d" offset="0"/>
+
+            <stop stop-color="#d3d8de" offset="0.64"/>
+
+            <stop stop-color="#9aa0a8" offset="1"/>
+
+        </linearGradient>
+
+        <linearGradient x1="0%" y2="0%" x2="100%" y1="0%" id="lg3_21">
+
+            <stop stop-color="#626974" offset="0"/>
+
+            <stop stop-color="#ccd0d5" offset="0.66"/>
+
+            <stop stop-color="#5e6670" offset="1"/>
+
+        </linearGradient>
+
+        <radialGradient fy="62" r="87.9" id="rg1" cy="62" cx="62" gradientUnits="userSpaceOnUse" fx="62">
+
+            <stop stop-color="#c7cbd1" offset="0"/>
+
+            <stop stop-color="#c4c7cd" offset="0.91"/>
+
+            <stop stop-color="#d4d8dd" offset="0.74"/>
+
+            <stop stop-color="#b6bcc4" offset="0.54"/>
+
+        </radialGradient>
+
+    </defs>
+
+    <g transform="translate(1.02,1)">
+
+        <path transform="matrix(0,-1,-1,0,144.6,49.3)" id="shape1" fill="url(#lg1_21)" d="M0,0L47.4,0L47.4,82.6L0,82.6L0,0z"/>
+
+        <path transform="matrix(0,-1,-1,0,152,52)" id="shape2" fill="url(#lg2_21)" d="M1.7,-0L50.3,-0C51.2,-0,52,1.6,52,3.7C52,5.7,51.2,7.3,50.3,7.3L1.7,7.3C.8,7.3,0,5.7,0,3.7C0,1.6,.8,-0,1.7,-0z"/>
+
+        <path transform="matrix(0,-1,-1,0,147,51.8)" id="shape3" fill="url(#lg3_21)" d="M51.6,0C51.4,1.3,50.8,2.3,49.9,2.3L1.7,2.3C.7,2.3,.1,1.2,0,0C0,0,51.6,0,51.6,0z"/>
+
+        <path transform="matrix(0,-1,-1,0,151.6,51.1)" id="shape4" fill="#ffffff" fill-opacity="0.75" d="M.8,0L49.5,0C49.9,0,50.3,.3,50.3,.7C50.3,1.1,49.9,1.4,49.5,1.4L.8,1.4C.4,1.4,0,1.1,0,.7C0,.3,.4,0,.8,0z"/>
+
+        <path transform="matrix(0,-1,-1,0,124.2,126)" id="shape5" fill="url(#rg1)" stroke="#d4d6db" stroke-width="0.25" d="M0,62.1C0,27.8,27.8,0,62.2,0C96.6,0,124.4,27.8,124.4,62.1C124.4,96.4,96.6,124.2,62.2,124.2C27.8,124.2,0,96.4,0,62.1z"/>
+
+        <path transform="matrix(0,-1,-1,0,113.7,115.5)" id="shape6" fill="#ffffff" fill-opacity="0.27" d="M0,51.6C0,23.1,23.1,0,51.7,0C80.3,0,103.4,23.1,103.4,51.6C103.4,80.1,80.3,103.3,51.7,103.3C23.1,103.3,0,80.1,0,51.6z"/>
+
+        <path transform="matrix(0,-1,-1,0,103.8,115.5)" id="shape7" fill="#ffffff" fill-opacity="0.13" d="M0,41.7C-0.4,15.7,20.8,0,20.8,0L88.7,77.2C88.7,77.2,75.5,93.3,51.7,93.3C23.1,93.3,0,70.2,0,41.7z"/>
+
+    </g>
+
+</svg>
+<rect width="154" height="128" stroke="none" stroke-width="2" fill="white" fill-opacity="0" style="cursor: default;" onmousedown="editProcess(process1527259862937, evt)"/>
+</g>
+</g>
+</g>
+</svg>
