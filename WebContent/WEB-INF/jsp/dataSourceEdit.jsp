@@ -271,11 +271,15 @@
     }
     
     function getAlarms() {
-        DataSourceEditDwr.getAlarms(writeAlarms);
+        //Alterado para retirar alarmes da tela
+        //DataSourceEditDwr.getAlarms(writeAlarms);
+        show("noAlarmsMsg");
+        hide("alarmsList");
     }
     
     function writeAlarms(alarms) {
-        dwr.util.removeAllRows("alarmsList");
+        //Alterado para retirar alarmes da tela
+        /*dwr.util.removeAllRows("alarmsList");
         if (alarms.length == 0) {
             show("noAlarmsMsg");
             hide("alarmsList");
@@ -303,7 +307,7 @@
                             return td;
                         }
                     });
-        }
+        }*/
     }
     
     function alarmLevelChanged(eventId) {

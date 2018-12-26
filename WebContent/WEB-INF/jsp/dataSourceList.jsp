@@ -121,7 +121,7 @@
                 <c:set var="hideText"><fmt:message key="dsList.hide"/></c:set>
                 <c:set var="showText"><fmt:message key="dsList.show"/></c:set>
                 <c:forEach items="${data}" var="listParent">
-                    <tr class="row" id="dataSourceRow${listParent.parent.id}">
+                    <tr class="smRow" id="dataSourceRow${listParent.parent.id}">
                     <td><b>${listParent.parent.name}</b></td>
                     <td><fmt:message key="${listParent.parent.type.key}"/></td>
                     <td><sst:i18n message="${listParent.parent.connectionDescription}"/></td>
