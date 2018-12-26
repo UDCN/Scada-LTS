@@ -31,11 +31,15 @@ window.onerror = function mangoHandler(desc, page, line)  {
 
 mango.header = {};
 mango.header.onLoad = function() {
-    if (dojo.render.html.ie)
-        mango.header.evtVisualizer = new IEBlinker($("__header__alarmLevelDiv"), 500, 200);
-    else
-        mango.header.evtVisualizer = new ImageFader($("__header__alarmLevelDiv"), 75, .2);
-    mango.longPoll.start();
+    if(!mango.longPoll.pollRequest.view)
+    {
+        if (dojo.render.html.ie)
+            mango.header.evtVisualizer = new IEBlinker($("__header__alarmLevelDiv"), 500, 200);
+        else
+            mango.header.evtVisualizer = new ImageFader($("__header__alarmLevelDiv"), 75, .2);
+    
+        mango.longPoll.start();
+    }
 };
 
 function hMD(desc, source) {
@@ -134,7 +138,7 @@ function SoundPlayer() {
         this.stop();
         this.soundId = soundId;
         if (!this.mute)
-        	this._repeat();
+            this._repeat();
     };
     
     this.stop = function() {
@@ -150,15 +154,15 @@ function SoundPlayer() {
     };
     
     this.setMute = function(muted) {
-    	if (muted != this.mute) {
-	        this.mute = muted;
-	        if (this.soundId) {
-		        if (muted)
-		            this._stopRepeat(this.soundId);
-		        else
-		            this._repeat();
-	        }
-    	}
+        if (muted != this.mute) {
+            this.mute = muted;
+            if (this.soundId) {
+                if (muted)
+                    this._stopRepeat(this.soundId);
+                else
+                    this._repeat();
+            }
+        }
     };
     
     this._stopRepeat = function(sId) {
@@ -266,7 +270,7 @@ var BrowserDetect = {
             subString: "Camino",
             identity: "Camino"
         },
-        {		// for newer Netscapes (6+)
+        {       // for newer Netscapes (6+)
             string: navigator.userAgent,
             subString: "Netscape",
             identity: "Netscape"
@@ -283,7 +287,7 @@ var BrowserDetect = {
             identity: "Mozilla",
             versionSearch: "rv"
         },
-        { 		// for older Netscapes (4-)
+        {       // for older Netscapes (4-)
             string: navigator.userAgent,
             subString: "Mozilla",
             identity: "Netscape",

@@ -37,12 +37,12 @@ String.prototype.trim = function() {
 }
 
 String.prototype.replaceAll = function(de, para){
-	str = this;
+    str = this;
     var pos = str.indexOf(de);
     while (pos > -1){
-		str = str.replace(de, para);
-		pos = str.indexOf(de);
-	}
+        str = str.replace(de, para);
+        pos = str.indexOf(de);
+    }
     return (str);
 }
 
@@ -61,7 +61,7 @@ function errorToString(e) {
 function isBlank(str){
   return (!str || /^\s*$/.test(str));
 };
-	
+    
 function defaultIfBlank(str, defaultStr) {
   return (isBlank(str) ? defaultStr: str);
 };
@@ -85,11 +85,21 @@ mango.longPoll.poll = function() {
 }
 
 mango.longPoll.pollCB = function(response) {
+
+    /*if(mango.longPoll.pollRequest.customCaern == true &&
+        mango.longPoll.pollRequest.arrayCustomCaern == true)
+    {
+        MiscDwr.terminateLongPoll(mango.longPoll.pollSessionId);
+        return;      
+    }*/
+    console.log(response);
+
     if (response.terminated)
         return;
     
     if (typeof(response.highestUnsilencedAlarmLevel) != "undefined") {
         if (response.highestUnsilencedAlarmLevel > 0) {
+            console.log(response.highestUnsilencedAlarmLevel);
             setAlarmLevelImg(response.highestUnsilencedAlarmLevel, $("__header__alarmLevelImg"));
             setAlarmLevelText(response.highestUnsilencedAlarmLevel, $("__header__alarmLevelText"));
             if (!mango.header.evtVisualizer.started)
@@ -98,7 +108,7 @@ mango.longPoll.pollCB = function(response) {
             mango.soundPlayer.play("level"+ response.highestUnsilencedAlarmLevel);
         }
         else {
-        	mango.header.evtVisualizer.stop();
+            mango.header.evtVisualizer.stop();
             hide("__header__alarmLevelDiv");
             mango.soundPlayer.stop();
         }
@@ -112,6 +122,12 @@ mango.longPoll.pollCB = function(response) {
     
     if (response.viewStates)
         mango.view.setData(response.viewStates);
+
+    if (response.customCaernStates)
+        mango.view.setCaernView(response.customCaernStates);
+
+    if (response.customCaernTimes)
+        mango.view.caernTimes(response.customCaernTimes);
     
     if (typeof(response.pendingAlarmsContent) != "undefined")
         updatePendingAlarmsContent(response.pendingAlarmsContent);
@@ -163,12 +179,12 @@ function contains(arr, e) {
 
 // onmouseover and onmouseout betterment.
 function isMouseLeaveOrEnter(e, handler) {
-	  if (e.type != 'mouseout' && e.type != 'mouseover')
-		  return false;
-	  var reltg = e.relatedTarget ? e.relatedTarget : e.type == 'mouseout' ? e.toElement : e.fromElement;
-	  while (reltg && reltg != handler)
-		  reltg = reltg.parentNode;
-	  return (reltg != handler);
+      if (e.type != 'mouseout' && e.type != 'mouseover')
+          return false;
+      var reltg = e.relatedTarget ? e.relatedTarget : e.type == 'mouseout' ? e.toElement : e.fromElement;
+      while (reltg && reltg != handler)
+          reltg = reltg.parentNode;
+      return (reltg != handler);
 }      
 
 //
@@ -475,6 +491,8 @@ function getMangoId(node) {
 }
 
 function setAlarmLevelImg(alarmLevel, imgNode) {
+    console.log(alarmLevel);
+    
     if (alarmLevel == 0)
         updateImg(imgNode, "images/flag_green.png", mango.i18n["common.alarmLevel.none"], false);
     else if (alarmLevel == 1)
@@ -670,9 +688,9 @@ function getElement(arr, id, idName) {
 }
 
 function getElements(arr, id, idName) {
-	var elements = [];
-	
-	if (!idName)
+    var elements = [];
+    
+    if (!idName)
         idName = "id";
     for (var i=0; i<arr.length; i++) {
         if (arr[i][idName].indexOf(id) != -1){
@@ -999,52 +1017,52 @@ function createValidationMessage(node, message) {
 
 
 function updateChartComparatorComponent(idPrefix, width, height) {
-	var fromDate = $get(idPrefix+"_fromDate1");
-	var toDate = $get(idPrefix+"_toDate1");
-	var fromDate2 = $get(idPrefix+"_fromDate2");
-	var toDate2 = $get(idPrefix+"_toDate2");
-	
-	var fromDateMatch = fromDate.match(/^(\d\d)\/(\d\d)\/(\d{4}) (\d\d):(\d\d):(\d\d)$/);
-	var toDateMatch = toDate.match(/^(\d\d)\/(\d\d)\/(\d{4}) (\d\d):(\d\d):(\d\d)$/);
-	var fromDateMatch2 = fromDate2.match(/^(\d\d)\/(\d\d)\/(\d{4}) (\d\d):(\d\d):(\d\d)$/);
-	var toDateMatch2 = toDate2.match(/^(\d\d)\/(\d\d)\/(\d{4}) (\d\d):(\d\d):(\d\d)$/);
-	
-	
-	if(fromDateMatch == null || toDateMatch == null || fromDateMatch2 == null || toDateMatch2 == null) {
-		alert("Data inválida! (dd/MM/yyyy hh:mm:ss)");
-		return;
-	}
-	
-	var dps = new Array();
-	
-	var dp1 = $get(idPrefix+"_dp1");
-	var dp2 = $get(idPrefix+"_dp2");
-	var dp3 = $get(idPrefix+"_dp3");
-	var dp4 = $get(idPrefix+"_dp4");
-	
-	if(dp1 > 0)
-		dps.push(dp1);
-	if(dp2 > 0)
-		dps.push(dp2);
-	if(dp3 > 0)
-		dps.push(dp3);
-	if(dp4 > 0)
-		dps.push(dp4);
-	
-	//alert(fromDate +" to " +toDate +" (" +dp1 +"," +dp2 +","+dp3+","+dp4+")");
-	if(dps.length == 0) {
-		alert('Selecione pelo menos um datapoint!');
-		return;
-	}
-	
-	ViewDwr.getChartData(dps,fromDate,toDate, fromDate2, toDate2,width,height,
-			function(response) {	
-//			alert(response[0]);
-			$(idPrefix+"_chart1").src = response[0];
-			$(idPrefix+"_chart2").src = response[1];
-	});
-	
-	//alert(dps.length);
-	
+    var fromDate = $get(idPrefix+"_fromDate1");
+    var toDate = $get(idPrefix+"_toDate1");
+    var fromDate2 = $get(idPrefix+"_fromDate2");
+    var toDate2 = $get(idPrefix+"_toDate2");
+    
+    var fromDateMatch = fromDate.match(/^(\d\d)\/(\d\d)\/(\d{4}) (\d\d):(\d\d):(\d\d)$/);
+    var toDateMatch = toDate.match(/^(\d\d)\/(\d\d)\/(\d{4}) (\d\d):(\d\d):(\d\d)$/);
+    var fromDateMatch2 = fromDate2.match(/^(\d\d)\/(\d\d)\/(\d{4}) (\d\d):(\d\d):(\d\d)$/);
+    var toDateMatch2 = toDate2.match(/^(\d\d)\/(\d\d)\/(\d{4}) (\d\d):(\d\d):(\d\d)$/);
+    
+    
+    if(fromDateMatch == null || toDateMatch == null || fromDateMatch2 == null || toDateMatch2 == null) {
+        alert("Data inválida! (dd/MM/yyyy hh:mm:ss)");
+        return;
+    }
+    
+    var dps = new Array();
+    
+    var dp1 = $get(idPrefix+"_dp1");
+    var dp2 = $get(idPrefix+"_dp2");
+    var dp3 = $get(idPrefix+"_dp3");
+    var dp4 = $get(idPrefix+"_dp4");
+    
+    if(dp1 > 0)
+        dps.push(dp1);
+    if(dp2 > 0)
+        dps.push(dp2);
+    if(dp3 > 0)
+        dps.push(dp3);
+    if(dp4 > 0)
+        dps.push(dp4);
+    
+    //alert(fromDate +" to " +toDate +" (" +dp1 +"," +dp2 +","+dp3+","+dp4+")");
+    if(dps.length == 0) {
+        alert('Selecione pelo menos um datapoint!');
+        return;
+    }
+    
+    ViewDwr.getChartData(dps,fromDate,toDate, fromDate2, toDate2,width,height,
+            function(response) {    
+//          alert(response[0]);
+            $(idPrefix+"_chart1").src = response[0];
+            $(idPrefix+"_chart2").src = response[1];
+    });
+    
+    //alert(dps.length);
+    
 }
 
